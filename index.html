@@ -319,6 +319,36 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .reply-del{background:transparent;border:none;font-size:11px;color:var(--t4);cursor:pointer;font-family:inherit;padding:2px 6px;border-radius:6px;transition:all .2s;flex-shrink:0}
 .reply-del:hover{color:var(--red);background:rgba(255,59,48,.08)}
 
+/* ARCHIVE DETAIL PAGE */
+.pg-arc-detail{display:none;min-height:calc(100vh - var(--nh))}
+.pg-arc-detail.on{display:block;animation:slideInRight .35s var(--smooth)}
+@keyframes slideInRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.arc-back{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:.5px solid var(--gb);border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;font-family:inherit;transition:all .2s var(--ease);backdrop-filter:blur(12px);margin-bottom:8px}
+.arc-back:hover{background:var(--bg3);color:var(--t1);transform:translateX(-2px)}
+.arc-back svg{transition:transform .2s var(--spring)}
+.arc-back:hover svg{transform:translateX(-3px)}
+
+/* SUGGEST ADOPTED */
+.sg-adopted{position:relative}
+.sg-adopted .sg-body{color:var(--t4)}
+.sg-strikethrough{position:absolute;top:50%;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .6s var(--spring);pointer-events:none}
+.sg-adopted .sg-strikethrough{transform:scaleX(1)}
+.adopted-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--c1d),var(--c4d));border:.5px solid rgba(48,209,88,.3);color:var(--c4);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.04em}
+.adopted-section-title{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t4);text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.adopted-section-title::after{content:'';flex:1;height:.5px;background:var(--bg3)}
+.sg-adopt-btn{display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;font-size:12px;color:var(--t4);cursor:pointer;font-family:inherit;padding:5px 8px;border-radius:8px;transition:all .2s}
+.sg-adopt-btn:hover{color:var(--c4);background:rgba(48,209,88,.1)}
+
+/* 위로가기 버튼 */
+.scroll-top{position:fixed;bottom:calc(32px + env(safe-area-inset-bottom));right:20px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:.5px solid var(--gb);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;opacity:0;transform:translateY(12px) scale(.8);transition:all .35s var(--spring);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.scroll-top.visible{opacity:1;transform:translateY(0) scale(1)}
+.scroll-top:hover{background:var(--accent);border-color:transparent;transform:translateY(-2px) scale(1.08)}
+.scroll-top:hover svg{stroke:#fff}
+.scroll-top svg{stroke:var(--t2);transition:stroke .2s}
+
+/* NTAB-BADGE dot only */
+.ntab-badge{width:7px;height:7px;border-radius:50%;background:var(--c1);margin-left:5px;display:none;flex-shrink:0;animation:ripple 2.5s 1s infinite}
+
 /* RESPONSIVE */
 @media(min-width:600px){
   nav{padding:0 32px}
@@ -338,14 +368,14 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 <body>
 
 <nav>
-  <div class="nav-brand">
+  <div class="nav-brand" id="navBrand" style="cursor:pointer">
     <span class="nav-brand-main">Pilgrim</span>
     <span class="nav-brand-sub">Vision Youth</span>
   </div>
   <div class="nav-center">
     <button class="ntab on" id="tab-home">이번 주</button>
     <button class="ntab" id="tab-archive">지난 기록</button>
-    <button class="ntab" id="tab-suggest">찬양 추천<span class="ntab-badge" id="suggestBadge" style="display:none">0</span></button>
+    <button class="ntab" id="tab-suggest">찬양 추천<span class="ntab-badge" id="suggestBadge" style="display:none"></span></button>
   </div>
   <button class="nav-admin" id="adminBtn">관리자</button>
 </nav>
@@ -422,6 +452,19 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
     </div>
   </div>
 
+  <!-- ARCHIVE DETAIL -->
+  <div class="pg-arc-detail" id="pg-arc-detail">
+    <div class="hero" style="padding-bottom:20px">
+      <button class="arc-back" id="arcBackBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        지난 기록
+      </button>
+      <div class="hero-eyebrow" style="margin-top:8px"><div class="edot" style="background:var(--c1)"></div><span class="etxt" id="arcDetailWeekLabel" style="color:var(--c1)"></span></div>
+      <h1 class="hero-title" id="arcDetailTitle" style="font-size:clamp(24px,4vw,40px)"></h1>
+    </div>
+    <div class="sec" style="margin-top:0" id="arcDetailContent"></div>
+  </div>
+
   <!-- ARCHIVE -->
   <div class="pg" id="pg-archive">
     <div class="hero">
@@ -494,6 +537,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 </div>
 
 <div class="toast" id="toast"></div>
+<button class="scroll-top" id="scrollTopBtn">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -539,12 +585,26 @@ function bBars(){
 function goPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  // 아카이브 상세 숨기기
+  document.getElementById('pg-arc-detail').classList.remove('on');
   document.getElementById('pg-'+id).classList.add('on');
   if(id==='home'){document.getElementById('tab-home').classList.add('on');renderHome();}
   if(id==='archive'){document.getElementById('tab-archive').classList.add('on');renderArchive();}
   if(id==='suggest'){document.getElementById('tab-suggest').classList.add('on');renderSuggest();}
   if(id==='admin')renderAdminForms();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// 위로가기 버튼
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('scrollTopBtn');
+  if(window.scrollY>300)btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+document.getElementById('scrollTopBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+
+// 로고 클릭 → 홈
+document.getElementById('navBrand').onclick=()=>goPage('home');
 
 document.getElementById('tab-home').onclick=()=>goPage('home');
 document.getElementById('tab-archive').onclick=()=>goPage('archive');
@@ -562,6 +622,12 @@ document.getElementById('noticeSuggestBtn').onclick=()=>goPage('suggest');
 document.getElementById('sgSubmit').onclick=submitSuggest;
 document.getElementById('sortNew').onclick=()=>setSortMode('new');
 document.getElementById('sortLike').onclick=()=>setSortMode('like');
+document.getElementById('arcBackBtn').onclick=()=>{
+  document.getElementById('pg-arc-detail').classList.remove('on');
+  document.getElementById('pg-archive').classList.add('on');
+  document.getElementById('tab-archive').classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+};
 
 // ── 찬양 추천 게시판 ────────────────────────────────────
 let sgSortMode='new';
@@ -608,7 +674,7 @@ async function updateSuggestBadge(){
     const badge=document.getElementById('suggestBadge');
     const total=document.getElementById('sgTotal');
     if(badge){
-      if(n>0){badge.style.display='inline-flex';badge.textContent=n>99?'99+':n;}
+      if(n>0){badge.style.display='inline-flex';}
       else{badge.style.display='none';}
     }
     if(total)total.textContent='총 '+n+'개';
@@ -616,6 +682,138 @@ async function updateSuggestBadge(){
 }
 
 async function renderSuggest(){
+  const list=document.getElementById('suggestList');
+  list.innerHTML=`<div class="loading"><div class="spin"></div>불러오는 중...</div>`;
+  try{
+    const order=sgSortMode==='like'?'likes':'ts';
+    const snaps=await db.collection('suggests').orderBy(order,'desc').get();
+    sgAllTexts=[];
+    if(snaps.empty){
+      list.innerHTML=`<div class="empty"><div class="ei">🎵</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해봐요!</p></div>`;
+      return;
+    }
+    list.innerHTML='';
+    const activeItems=[];
+    const adoptedItems=[];
+    snaps.forEach(doc=>{
+      const d=doc.data();
+      if(d.adopted)adoptedItems.push({doc,d});
+      else activeItems.push({doc,d});
+    });
+
+    const renderCard=(doc,d,delay)=>{
+      const id=doc.id;
+      sgAllTexts.push(d.text||'');
+      const liked=likedSet.has(id);
+      const el=document.createElement('div');
+      el.className='sg-card'+(d.adopted?' sg-adopted':'');
+      el.dataset.id=id;
+      el.innerHTML=`
+        <div style="position:relative">
+          <div class="sg-body">${d.text}</div>
+          <div class="sg-strikethrough"></div>
+        </div>
+        <div class="sg-footer">
+          ${d.adopted?`<span class="adopted-badge">✓ 콘티 반영됨</span>`:''}
+          <span class="sg-time">${timeAgo(d.ts)}</span>
+          ${!d.adopted?`<button class="sg-like${liked?' liked':''}" data-id="${id}">${liked?'❤️':'🤍'} ${d.likes||0}</button>`:''}
+          ${!d.adopted?`<button class="sg-reply-btn" data-id="${id}">💬 ${d.replyCount||0}</button>`:''}
+          ${isAdmin&&!d.adopted?`<button class="sg-adopt-btn" data-id="${id}">✓ 반영</button>`:''}
+          ${isAdmin?`<button class="sg-del" data-id="${id}">🗑</button>`:''}
+        </div>
+        <div class="sg-replies" id="replies-${id}" style="display:none"></div>`;
+      el.style.transitionDelay=`${delay}s`;
+      list.appendChild(el);
+      setTimeout(()=>el.classList.add('visible'),30);
+    };
+
+    activeItems.forEach(({doc,d},i)=>renderCard(doc,d,i*0.05));
+
+    if(adoptedItems.length>0){
+      const sep=document.createElement('div');
+      sep.className='adopted-section-title';
+      sep.textContent='반영된 찬양';
+      list.appendChild(sep);
+      adoptedItems.forEach(({doc,d},i)=>renderCard(doc,d,i*0.05));
+    }
+
+    updateSuggestBadge();
+
+    list.onclick=async function(e){
+      const likeBtn=e.target.closest('.sg-like');
+      const replyBtn=e.target.closest('.sg-reply-btn');
+      const delBtn=e.target.closest('.sg-del');
+      const replyDelBtn=e.target.closest('.reply-del');
+      const sendBtn=e.target.closest('.sg-reply-send');
+      const adoptBtn=e.target.closest('.sg-adopt-btn');
+
+      if(adoptBtn&&isAdmin){
+        const id=adoptBtn.dataset.id;
+        if(!confirm('이 찬양을 콘티에 반영됨으로 표시할까요?'))return;
+        await db.collection('suggests').doc(id).update({adopted:true});
+        toast('콘티 반영 표시됐어요 ✓');
+        renderSuggest();
+        return;
+      }
+      if(likeBtn){
+        const id=likeBtn.dataset.id;
+        const already=likedSet.has(id);
+        const ref=db.collection('suggests').doc(id);
+        if(already){
+          likedSet.delete(id);
+          await ref.update({likes:firebase.firestore.FieldValue.increment(-1)});
+          likeBtn.classList.remove('liked');
+          const n=Math.max(0,(parseInt(likeBtn.textContent.match(/\d+/)?.[0]||0)-1));
+          likeBtn.innerHTML=`🤍 ${n}`;
+        }else{
+          likedSet.add(id);
+          await ref.update({likes:firebase.firestore.FieldValue.increment(1)});
+          likeBtn.classList.add('liked');
+          const n=(parseInt(likeBtn.textContent.match(/\d+/)?.[0]||0)+1);
+          likeBtn.innerHTML=`❤️ ${n}`;
+        }
+        saveLikes();
+      }
+      if(replyBtn){
+        const id=replyBtn.dataset.id;
+        const box=document.getElementById('replies-'+id);
+        if(box.style.display==='none'){
+          box.style.display='flex';box.style.flexDirection='column';box.style.gap='8px';
+          await loadReplies(id,box);
+        }else{box.style.display='none';}
+      }
+      if(delBtn&&isAdmin){
+        const id=delBtn.dataset.id;
+        if(!confirm('이 추천을 삭제할까요?'))return;
+        await db.collection('suggests').doc(id).delete();
+        delBtn.closest('.sg-card').remove();
+        toast('삭제됐어요');
+        updateSuggestBadge();
+      }
+      if(replyDelBtn&&isAdmin){
+        const sgId=replyDelBtn.dataset.sgid;
+        const rpId=replyDelBtn.dataset.rpid;
+        await db.collection('suggests').doc(sgId).collection('replies').doc(rpId).delete();
+        await db.collection('suggests').doc(sgId).update({replyCount:firebase.firestore.FieldValue.increment(-1)});
+        replyDelBtn.closest('.reply-item').remove();
+        toast('댓글 삭제됐어요');
+      }
+      if(sendBtn){
+        const id=sendBtn.dataset.id;
+        const inp=document.getElementById('reply-inp-'+id);
+        const txt=inp.value.trim();if(!txt)return;
+        sendBtn.disabled=true;
+        await db.collection('suggests').doc(id).collection('replies').add({text:txt,ts:Date.now()});
+        await db.collection('suggests').doc(id).update({replyCount:firebase.firestore.FieldValue.increment(1)});
+        inp.value='';
+        await loadReplies(id,document.getElementById('replies-'+id));
+        const rBtn=list.querySelector(`.sg-reply-btn[data-id="${id}"]`);
+        if(rBtn){const n=(parseInt(rBtn.textContent.match(/\d+/)?.[0]||0)+1);rBtn.innerHTML=`💬 ${n}`;}
+        sendBtn.disabled=false;
+      }
+    };
+  }catch(e){list.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>불러오기 실패</p></div>`;}
+}
   const list=document.getElementById('suggestList');
   list.innerHTML=`<div class="loading"><div class="spin"></div>불러오는 중...</div>`;
   try{
@@ -1006,46 +1204,109 @@ async function renderArchive(){
 let arcDocIds=[];
 
 document.getElementById('arcList').addEventListener('click',async function(e){
-  // 수정 버튼
   const editBtn=e.target.closest('.arc-edit-btn');
   if(editBtn){
-    const i=+editBtn.dataset.arc;
-    const c=arcAll[i];if(!c)return;
-    // 현재 콘티로 불러와서 관리자 폼에 세팅
-    curData=c;
-    goPage('admin');
-    toast('수정할 콘티를 불러왔어요 ✏️');
-    return;
+    const i=+editBtn.dataset.arc;const c=arcAll[i];if(!c)return;
+    curData=c;goPage('admin');toast('수정할 콘티를 불러왔어요 ✏️');return;
   }
-  // 삭제 버튼
   const delBtn=e.target.closest('.arc-del-btn');
   if(delBtn){
-    const i=+delBtn.dataset.arc;
-    const c=arcAll[i];if(!c)return;
+    const i=+delBtn.dataset.arc;const c=arcAll[i];if(!c)return;
     if(!confirm(`"${c.week||'이 주차'}"를 삭제할까요?\n복구할 수 없어요.`))return;
     try{
-      if(i===0&&arcDocIds[0]===null){
-        // current 문서 삭제
-        await db.collection('conti').doc('current').delete();
-        curData=null;
-      }else{
-        const docId=arcDocIds[i];
-        if(docId)await db.collection('archives').doc(docId).delete();
-      }
-      toast('삭제됐어요 🗑');
-      renderArchive();
+      if(i===0&&arcDocIds[0]===null){await db.collection('conti').doc('current').delete();curData=null;}
+      else{const docId=arcDocIds[i];if(docId)await db.collection('archives').doc(docId).delete();}
+      toast('삭제됐어요 🗑');renderArchive();
     }catch(err){toast('삭제 실패: '+err.message);}
     return;
   }
-  // 일반 클릭 → 모달
-  const item=e.target.closest('.arcitem');
-  if(!item)return;
-  // 수정/삭제 버튼 영역 클릭 시 모달 열리지 않게
   if(e.target.closest('.arc-admin-btns'))return;
-  openModal(+item.dataset.arc);
+  const item=e.target.closest('.arcitem');if(!item)return;
+  openArcDetail(+item.dataset.arc);
 });
 
-function openModal(i){
+function openArcDetail(i){
+  const c=arcAll[i];if(!c)return;
+  // 페이지 전환
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  const detail=document.getElementById('pg-arc-detail');
+  detail.classList.add('on');
+  document.getElementById('tab-archive').classList.add('on');
+  document.getElementById('arcDetailWeekLabel').textContent=c.week||'주차 미설정';
+  document.getElementById('arcDetailTitle').textContent=c.week||'주차 미설정';
+  window.scrollTo({top:0,behavior:'instant'});
+
+  const content=document.getElementById('arcDetailContent');
+  let html='';
+
+  // 공지
+  if(c.notice)html+=`<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.12);border-radius:14px;padding:12px 16px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:8px">📢 ${c.notice}</div>`;
+
+  // 재생목록
+  if(c.playlist)html+=`<div style="margin-bottom:16px"><a href="${c.playlist}" target="_blank" class="pl-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px">▶ 재생목록 보기</a></div>`;
+
+  // 곡 카드들
+  html+=`<div class="sec-hd" style="margin-bottom:12px"><span class="sec-label">곡 순서</span></div>`;
+  html+=`<div class="songs" id="arcDetailSongs">`;
+  c.songs?.forEach((s,idx)=>{
+    if(!s.title&&!s.url)return;
+    const id=ytId(s.url);
+    const thumb=id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:null;
+    const colors=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--orange)','var(--c4)'];
+    const nums=['SONG 01','SONG 02','SONG 03','SONG 04','SONG 05','SONG 06'];
+    html+=`<div class="scard" data-i="${idx%4}" style="opacity:0;transform:translateY(20px);transition:opacity .45s ${.06+idx*.1}s var(--smooth),transform .45s ${.06+idx*.1}s var(--smooth)">
+      <div class="scard-glow"></div>
+      <div class="scard-inner">
+        <div class="scard-hdr">
+          <div class="scard-left">
+            <div class="snum" style="color:${colors[idx]}">${nums[idx]||'SONG 0'+(idx+1)}<div class="snum-dash"></div></div>
+            <div class="stitle">${s.title||'제목 없음'}</div>
+            <div class="sbadges">${s.key?`<span class="badge badge-key">♪ ${s.key}</span>`:''}</div>
+          </div>
+          <div class="scard-right">${s.bpm?`<div class="bpm"><div class="bpm-bars">${bBars()}</div>${s.bpm} BPM</div>`:''}</div>
+        </div>
+      </div>
+      ${thumb?`<div class="sthumb"><img src="${thumb}" alt="" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${id}/mqdefault.jpg'"><div class="sthumb-ov">${s.url?`<a class="yt-play" href="${s.url}" target="_blank">▶ YouTube에서 듣기</a>`:''}</div></div>`:''}
+      <div class="sehint"><span>디테일 보기</span><svg class="echev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="sdet"><div class="sdet-in"><div class="dtag">✦ 디테일</div>${s.detail?`<div class="dbody">${s.detail}</div>`:`<div class="dempty">등록된 디테일이 없어요</div>`}</div></div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // PDF
+  if(c.pdfUrl){
+    html+=`<div style="margin-top:24px">
+      <div class="sec-hd" style="margin-bottom:12px"><span class="sec-label">악보</span></div>
+      <div class="pdf-card">
+        <div class="pdf-hd">
+          <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
+            <div class="pdf-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+            <div class="pdf-info"><div class="pdf-name">${c.pdfName||'악보.pdf'}</div><div class="pdf-meta">악보 · PDF</div></div>
+          </div>
+          <a class="dl-btn" href="${c.pdfUrl}" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>다운로드</a>
+        </div>
+        <div class="pdf-wrap"><iframe class="pdf-frame" src="${c.pdfUrl}" style="height:520px"></iframe></div>
+      </div>
+    </div>`;
+  }
+
+  content.innerHTML=html;
+
+  // 카드 스크롤 애니메이션
+  setTimeout(()=>{
+    content.querySelectorAll('.scard').forEach(card=>{io.observe(card);});
+    // 디테일 토글
+    content.querySelectorAll('.scard').forEach(card=>{
+      card.addEventListener('click',function(e){
+        if(e.target.closest('a'))return;
+        const det=card.querySelector('.sdet');
+        const open=card.classList.toggle('open');
+        det.style.maxHeight=open?det.scrollHeight+'px':'0';
+        det.classList.toggle('open',open);
+      });
+    });
+  },100);
+}
   const c=arcAll[i];if(!c)return;
   document.getElementById('arcTitle').textContent=c.week||'주차 미설정';
   let body='';
