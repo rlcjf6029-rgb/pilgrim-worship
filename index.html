@@ -531,9 +531,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 <button class="scroll-top" id="scrollTopBtn">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
 </button>
-<button class="scroll-top" id="scrollTopBtn">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
-</button>
+
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -599,13 +597,7 @@ document.getElementById('scrollTopBtn').onclick=()=>window.scrollTo({top:0,behav
 // 로고 클릭 → 홈
 document.getElementById('navBrand').onclick=()=>goPage('home');
 
-// 위로가기 버튼
-window.addEventListener('scroll',()=>{
-  const btn=document.getElementById('scrollTopBtn');
-  if(window.scrollY>300)btn.classList.add('visible');
-  else btn.classList.remove('visible');
-});
-document.getElementById('scrollTopBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+
 
 document.getElementById('tab-home').onclick=()=>goPage('home');
 document.getElementById('tab-archive').onclick=()=>goPage('archive');
