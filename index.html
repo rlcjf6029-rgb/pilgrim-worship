@@ -262,13 +262,6 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .lerr{font-size:12px;color:var(--red);background:rgba(255,59,48,.08);border-radius:9px;padding:9px 13px;margin-top:10px;display:none}
 .lerr.on{display:block;animation:revealUp .2s var(--smooth)}
 
-/* 위로가기 버튼 */
-.scroll-top{position:fixed;bottom:calc(32px + env(safe-area-inset-bottom));right:20px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:.5px solid var(--gb);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;opacity:0;transform:translateY(12px) scale(.8);transition:all .35s var(--spring);box-shadow:0 4px 16px rgba(0,0,0,.12)}
-.scroll-top.visible{opacity:1;transform:translateY(0) scale(1)}
-.scroll-top:hover{background:var(--accent);border-color:transparent;transform:translateY(-2px) scale(1.08)}
-.scroll-top:hover svg{stroke:#fff}
-.scroll-top svg{stroke:var(--t2);transition:stroke .2s}
-
 /* TOAST */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px) scale(.9);background:rgba(28,28,30,.95);backdrop-filter:blur(16px);color:#fff;font-size:13px;font-weight:500;padding:11px 22px;border-radius:22px;z-index:500;opacity:0;transition:all .35s var(--spring);pointer-events:none;white-space:nowrap;border:.5px solid rgba(255,255,255,.1)}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
@@ -281,13 +274,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .empty .ei{font-size:40px;margin-bottom:12px}.empty p{font-size:14px}
 
 /* SUGGEST */
-.ntab-badge{width:7px;height:7px;border-radius:50%;background:var(--c1);margin-left:5px;display:none;flex-shrink:0;animation:ripple 2.5s 1s infinite;vertical-align:middle}
-.sg-adopt-btn{display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;font-size:12px;color:var(--t4);cursor:pointer;font-family:inherit;padding:5px 8px;border-radius:8px;transition:all .2s}
-.sg-adopt-btn:hover{color:var(--c4);background:rgba(48,209,88,.1)}
-.adopted-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--c1d),var(--c4d));border:.5px solid rgba(48,209,88,.3);color:var(--c4);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
-.sg-adopted .sg-body{color:var(--t4);text-decoration:line-through;text-decoration-color:var(--c1);text-decoration-thickness:2px}
-.adopted-section-title{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t4);text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
-.adopted-section-title::after{content:'';flex:1;height:.5px;background:var(--bg3)}
+.ntab-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 4px;margin-left:4px;line-height:1}
 .notice-row{display:flex;align-items:center;gap:8px}
 .notice-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;background:var(--adim2);border:.5px solid rgba(0,113,227,.15);font-size:13px;color:var(--t2);backdrop-filter:blur(8px);animation:revealUp .4s var(--smooth) both;flex:1}
 .suggest-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;background:linear-gradient(135deg,var(--c1d),var(--c2d));border:.5px solid rgba(94,92,230,.2);font-size:12px;font-weight:600;color:var(--c1);cursor:pointer;white-space:nowrap;animation:revealUp .4s .05s var(--smooth) both;transition:all .2s var(--ease);flex-shrink:0}
@@ -331,6 +318,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .reply-time{font-size:10px;color:var(--t4);margin-top:3px}
 .reply-del{background:transparent;border:none;font-size:11px;color:var(--t4);cursor:pointer;font-family:inherit;padding:2px 6px;border-radius:6px;transition:all .2s;flex-shrink:0}
 .reply-del:hover{color:var(--red);background:rgba(255,59,48,.08)}
+
 
 /* SUGGEST ADOPTED */
 .sg-adopted{position:relative}
@@ -532,7 +520,6 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
 </button>
 
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
@@ -577,7 +564,6 @@ function bBars(){
 function goPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
-  // 아카이브 상세 숨기기 제거됨
   document.getElementById('pg-'+id).classList.add('on');
   if(id==='home'){document.getElementById('tab-home').classList.add('on');renderHome();}
   if(id==='archive'){document.getElementById('tab-archive').classList.add('on');renderArchive();}
@@ -596,8 +582,6 @@ document.getElementById('scrollTopBtn').onclick=()=>window.scrollTo({top:0,behav
 
 // 로고 클릭 → 홈
 document.getElementById('navBrand').onclick=()=>goPage('home');
-
-
 
 document.getElementById('tab-home').onclick=()=>goPage('home');
 document.getElementById('tab-archive').onclick=()=>goPage('archive');
@@ -1212,6 +1196,7 @@ document.getElementById('arcList').addEventListener('click',async function(e){
   openModal(+item.dataset.arc);
 });
 
+
 function openModal(i){
   const c=arcAll[i];if(!c)return;
   document.getElementById('arcTitle').textContent=c.week||'주차 미설정';
@@ -1233,13 +1218,7 @@ function openModal(i){
       ${s.detail?`<div style="font-size:13px;color:var(--t2);margin-top:12px;border-top:.5px solid var(--bg3);padding-top:12px;white-space:pre-wrap;line-height:1.8">${s.detail}</div>`:''}
     </div>`;
   }).join('')||'';
-  if(c.pdfUrl)body+=`<div style="margin-top:8px">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t4);text-transform:uppercase;margin-bottom:12px">악보</div>
-    <a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:14px;display:inline-flex">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>악보 다운로드
-    </a>
-    <iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg);display:block"></iframe>
-  </div>`;
+  if(c.pdfUrl)body+=`<div style="margin-top:8px"><a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:14px;display:inline-flex"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>악보 다운로드</a><iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg);display:block"></iframe></div>`;
   document.getElementById('arcBody').innerHTML=body;
   document.getElementById('arcDrop').classList.add('on');
 }
