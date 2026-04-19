@@ -1307,36 +1307,6 @@ function openArcDetail(i){
     });
   },100);
 }
-  const c=arcAll[i];if(!c)return;
-  document.getElementById('arcTitle').textContent=c.week||'주차 미설정';
-  let body='';
-  if(c.notice)body+=`<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.12);border-radius:12px;padding:11px 16px;font-size:13px;margin-bottom:16px">📢 ${c.notice}</div>`;
-  if(c.playlist)body+=`<a href="${c.playlist}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:12px;text-decoration:none;margin-bottom:16px">▶ 재생목록 보기</a>`;
-  body+=c.songs?.map((s,i)=>{
-    if(!s.title&&!s.url)return'';
-    const id=ytId(s.url);const thumb=id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:null;
-    return `<div style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:10px;border:.5px solid var(--bg3)">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${COLS[i]};margin-bottom:6px">${NUMS[i]}</div>
-      ${thumb?`<img src="${thumb}" style="width:100%;border-radius:10px;margin-bottom:10px;display:block;aspect-ratio:16/9;object-fit:cover" loading="lazy">`:''}
-      <div style="font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px">${s.title||'제목 없음'}</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-        ${s.key?`<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--adim2);color:var(--accent)">♪ ${s.key}</span>`:''}
-        ${s.bpm?`<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--bg3);color:var(--t2)">${s.bpm} BPM</span>`:''}
-      </div>
-      ${s.url?`<a href="${s.url}" target="_blank" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:600">▶ YouTube에서 보기</a>`:''}
-      ${s.detail?`<div style="font-size:13px;color:var(--t2);margin-top:12px;border-top:.5px solid var(--bg3);padding-top:12px;white-space:pre-wrap;line-height:1.8">${s.detail}</div>`:''}
-    </div>`;
-  }).join('')||'';
-  if(c.pdfUrl)body+=`<div style="margin-top:8px">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t4);text-transform:uppercase;margin-bottom:12px">악보</div>
-    <a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:14px;display:inline-flex">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>악보 다운로드
-    </a>
-    <iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg);display:block"></iframe>
-  </div>`;
-  document.getElementById('arcBody').innerHTML=body;
-  document.getElementById('arcDrop').classList.add('on');
-}
 function closeModal(){document.getElementById('arcDrop').classList.remove('on');}
 
 renderHome();
