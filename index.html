@@ -57,7 +57,7 @@ main{padding-top:calc(var(--nh) + env(safe-area-inset-top))}
 .nav-brand-main{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--t1)}
 .nav-brand-sub{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:.04em;text-transform:uppercase}
 .nav-center{display:flex;gap:2px;background:var(--bg3);padding:3px;border-radius:11px;flex-shrink:0}
-.ntab{height:28px;padding:0 12px;border-radius:8px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all .25s var(--ease);font-family:inherit;letter-spacing:-.1px;white-space:nowrap}
+.ntab{height:28px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all .25s var(--ease);font-family:inherit;letter-spacing:-.1px;white-space:nowrap}
 .ntab.on{background:var(--bg2);color:var(--t1);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .nav-admin{height:32px;padding:0 12px;border-radius:20px;font-size:13px;font-weight:500;border:.5px solid var(--gb);background:var(--surface2);color:var(--t2);cursor:pointer;font-family:inherit;flex-shrink:0;transition:all .25s var(--ease);backdrop-filter:blur(8px);white-space:nowrap}
 @media(max-width:400px){.nav-brand-sub{display:none}.nav-brand-main{font-size:14px}.ntab{padding:0 10px;font-size:12px}.nav-admin{padding:0 10px;font-size:12px}}
@@ -201,7 +201,8 @@ main{padding-top:var(--nh)}
 .pdf-meta{font-size:11px;color:var(--t4);margin-top:1px}
 .dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;padding:9px 16px;border-radius:12px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;flex-shrink:0;transition:all .25s var(--ease);box-shadow:0 2px 8px var(--adim)}
 .dl-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 6px 20px var(--adim)}
-.pdf-frame{width:100%;border:none;background:var(--bg3);display:block;min-height:500px}
+.pdf-frame{width:100%;border:none;background:var(--bg);display:block;min-height:500px}
+.pdf-wrap{background:var(--bg);padding:16px}
 .pdf-empty{padding:60px 24px;text-align:center;color:var(--t4)}
 .pdf-empty svg{margin-bottom:12px;opacity:.3}.pdf-empty p{font-size:14px}
 
@@ -272,6 +273,73 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .empty{text-align:center;padding:64px 20px;color:var(--t4)}
 .empty .ei{font-size:40px;margin-bottom:12px}.empty p{font-size:14px}
 
+/* SUGGEST */
+.ntab-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 4px;margin-left:4px;line-height:1}
+.notice-row{display:flex;align-items:center;gap:8px}
+.notice-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;background:var(--adim2);border:.5px solid rgba(0,113,227,.15);font-size:13px;color:var(--t2);backdrop-filter:blur(8px);animation:revealUp .4s var(--smooth) both;flex:1}
+.suggest-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;background:linear-gradient(135deg,var(--c1d),var(--c2d));border:.5px solid rgba(94,92,230,.2);font-size:12px;font-weight:600;color:var(--c1);cursor:pointer;white-space:nowrap;animation:revealUp .4s .05s var(--smooth) both;transition:all .2s var(--ease);flex-shrink:0}
+.suggest-pill:hover{background:linear-gradient(135deg,rgba(94,92,230,.2),rgba(50,173,230,.2));transform:translateY(-1px);box-shadow:0 4px 14px rgba(94,92,230,.2)}
+.sg-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sg-sort{display:flex;gap:4px;background:var(--bg3);padding:3px;border-radius:10px}
+.sg-sort-btn{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .2s}
+.sg-sort-btn.on{background:var(--bg2);color:var(--t1);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.sg-total{font-size:12px;color:var(--t4)}
+.suggest-input-card{background:var(--surface);border-radius:18px;border:.5px solid var(--gb);padding:20px;margin-bottom:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.suggest-input-title{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:12px}
+.sg-char{font-size:11px;color:var(--t4);text-align:right;margin-top:4px}
+.sg-char.warn{color:var(--red)}
+.suggest-submit{display:inline-flex;align-items:center;gap:6px;background:var(--c1);color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;margin-top:10px;transition:all .25s var(--ease);box-shadow:0 2px 10px rgba(94,92,230,.3)}
+.suggest-submit:hover{background:var(--c2);transform:translateY(-1px)}
+.suggest-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.sg-dup-warn{font-size:12px;color:var(--orange);background:rgba(255,159,10,.1);border-radius:9px;padding:8px 12px;margin-top:8px;display:none;border:.5px solid rgba(255,159,10,.2)}
+.suggest-list{display:flex;flex-direction:column;gap:10px}
+.sg-card{background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:18px 20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:0;transform:translateY(12px);transition:opacity .4s var(--smooth),transform .4s var(--smooth)}
+.sg-card.visible{opacity:1;transform:translateY(0)}
+.sg-card:hover{border-color:rgba(94,92,230,.25)}
+.sg-body{font-size:15px;font-weight:600;color:var(--t1);line-height:1.6;margin-bottom:12px;white-space:pre-wrap}
+.sg-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sg-time{font-size:11px;color:var(--t4);flex:1;min-width:0}
+.sg-like{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;font-family:inherit;transition:all .2s}
+.sg-like:hover{background:rgba(255,59,48,.1);color:var(--red)}
+.sg-like.liked{background:rgba(255,59,48,.12);color:var(--red)}
+.sg-reply-btn{display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;font-size:12px;color:var(--t4);cursor:pointer;font-family:inherit;padding:5px 8px;border-radius:8px;transition:all .2s}
+.sg-reply-btn:hover{color:var(--accent);background:var(--adim2)}
+.sg-del{display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;font-size:12px;color:var(--t4);cursor:pointer;font-family:inherit;padding:5px 8px;border-radius:8px;transition:all .2s}
+.sg-del:hover{color:var(--red);background:rgba(255,59,48,.08)}
+.sg-replies{margin-top:12px;padding-top:12px;border-top:.5px solid var(--gb);display:flex;flex-direction:column;gap:8px}
+.sg-reply-input{display:flex;gap:8px;margin-top:8px}
+.sg-reply-input input{flex:1;padding:9px 12px;border:.5px solid var(--bg3);border-radius:10px;font-size:13px;font-family:inherit;color:var(--t1);background:var(--bg);outline:none;transition:all .2s}
+.sg-reply-input input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--adim)}
+.sg-reply-send{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.sg-reply-send:hover{background:var(--accent2)}
+.reply-item{background:var(--bg);border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px}
+.reply-dot{width:6px;height:6px;border-radius:50%;background:var(--c1);flex-shrink:0;margin-top:6px}
+.reply-body{flex:1;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap}
+.reply-time{font-size:10px;color:var(--t4);margin-top:3px}
+.reply-del{background:transparent;border:none;font-size:11px;color:var(--t4);cursor:pointer;font-family:inherit;padding:2px 6px;border-radius:6px;transition:all .2s;flex-shrink:0}
+.reply-del:hover{color:var(--red);background:rgba(255,59,48,.08)}
+
+/* SUGGEST ADOPTED */
+.sg-adopted{position:relative}
+.sg-adopted .sg-body{color:var(--t4)}
+.sg-strikethrough{position:absolute;top:50%;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .6s var(--spring);pointer-events:none}
+.sg-adopted .sg-strikethrough{transform:scaleX(1)}
+.adopted-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--c1d),var(--c4d));border:.5px solid rgba(48,209,88,.3);color:var(--c4);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.04em}
+.adopted-section-title{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t4);text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.adopted-section-title::after{content:'';flex:1;height:.5px;background:var(--bg3)}
+.sg-adopt-btn{display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;font-size:12px;color:var(--t4);cursor:pointer;font-family:inherit;padding:5px 8px;border-radius:8px;transition:all .2s}
+.sg-adopt-btn:hover{color:var(--c4);background:rgba(48,209,88,.1)}
+
+/* 위로가기 버튼 */
+.scroll-top{position:fixed;bottom:calc(32px + env(safe-area-inset-bottom));right:20px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:.5px solid var(--gb);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;opacity:0;transform:translateY(12px) scale(.8);transition:all .35s var(--spring);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.scroll-top.visible{opacity:1;transform:translateY(0) scale(1)}
+.scroll-top:hover{background:var(--accent);border-color:transparent;transform:translateY(-2px) scale(1.08)}
+.scroll-top:hover svg{stroke:#fff}
+.scroll-top svg{stroke:var(--t2);transition:stroke .2s}
+
+/* NTAB-BADGE dot only */
+.ntab-badge{width:7px;height:7px;border-radius:50%;background:var(--c1);margin-left:5px;display:none;flex-shrink:0;animation:ripple 2.5s 1s infinite}
+
 /* RESPONSIVE */
 @media(min-width:600px){
   nav{padding:0 32px}
@@ -297,7 +365,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
   </div>
   <div class="nav-center">
     <button class="ntab on" id="tab-home">이번 주</button>
-    <button class="ntab" id="tab-archive">아카이브</button>
+    <button class="ntab" id="tab-archive">지난 기록</button>
+    <button class="ntab" id="tab-suggest">찬양 추천<span class="ntab-badge" id="suggestBadge" style="display:none"></span></button>
   </div>
   <button class="nav-admin" id="adminBtn">관리자</button>
 </nav>
@@ -311,7 +380,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       <p class="hero-sub" id="heroDate">매주 업데이트되는 예배 콘티를 확인하세요</p>
     </div>
     <div class="notice-wrap" id="noticeWrap" style="display:none">
-      <div class="notice-pill">📢 <span id="noticeText"></span></div>
+      <div class="notice-row">
+        <div class="notice-pill">📢 <span id="noticeText"></span></div>
+        <div class="suggest-pill" id="noticeSuggestBtn">🎶 찬양 추천 →</div>
+      </div>
     </div>
     <div class="sec" style="margin-top:20px">
       <div class="sec-hd"><span class="sec-label">곡 순서</span></div>
@@ -340,6 +412,34 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
     <div class="sec">
       <div class="sec-hd"><span class="sec-label">악보</span></div>
       <div class="pdf-card" id="pdfSec"><div class="pdf-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p>등록된 악보가 없어요</p></div></div>
+    </div>
+  </div>
+
+  <!-- SUGGEST -->
+  <div class="pg" id="pg-suggest">
+    <div class="hero">
+      <div class="hero-eyebrow" style="animation-delay:.05s"><div class="edot" style="background:var(--c1)"></div><span class="etxt" style="color:var(--c1)">찬양 추천</span></div>
+      <h1 class="hero-title" style="animation-delay:.12s">추천 게시판</h1>
+      <p class="hero-sub" style="animation-delay:.2s">다음 예배에서 부르고 싶은 곡을 자유롭게 올려봐요 🎵</p>
+    </div>
+    <div class="sec">
+      <div class="suggest-input-card">
+        <div class="suggest-input-title">✏️ 찬양 추천하기</div>
+        <textarea id="sgInput" placeholder="곡 제목과 추천 이유를 적어주세요&#10;예) 주 품에 - 요즘 너무 은혜로워요!" style="width:100%;min-height:80px" maxlength="200" oninput="sgCharCount(this)"></textarea>
+        <div class="sg-char" id="sgChar">0 / 200</div>
+        <div class="sg-dup-warn" id="sgDupWarn">💡 비슷한 추천이 이미 있어요! 좋아요를 눌러보는 건 어떨까요?</div>
+        <button class="suggest-submit" id="sgSubmit">추천하기 ✦</button>
+      </div>
+      <div class="sg-toolbar">
+        <span class="sg-total" id="sgTotal">총 0개</span>
+        <div class="sg-sort">
+          <button class="sg-sort-btn on" id="sortNew">최신순</button>
+          <button class="sg-sort-btn" id="sortLike">좋아요순</button>
+        </div>
+      </div>
+      <div class="suggest-list" id="suggestList">
+        <div class="loading"><div class="spin"></div>불러오는 중...</div>
+      </div>
     </div>
   </div>
 
@@ -415,6 +515,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 </div>
 
 <div class="toast" id="toast"></div>
+<button class="scroll-top" id="scrollTopBtn">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -460,16 +563,30 @@ function bBars(){
 function goPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  // 아카이브 상세 숨기기 제거됨
   document.getElementById('pg-'+id).classList.add('on');
   if(id==='home'){document.getElementById('tab-home').classList.add('on');renderHome();}
   if(id==='archive'){document.getElementById('tab-archive').classList.add('on');renderArchive();}
+  if(id==='suggest'){document.getElementById('tab-suggest').classList.add('on');renderSuggest();}
   if(id==='admin')renderAdminForms();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// 위로가기 버튼
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('scrollTopBtn');
+  if(window.scrollY>300)btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+document.getElementById('scrollTopBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+
+// 로고 클릭 → 홈
+document.getElementById('navBrand').onclick=()=>goPage('home');
 
 document.getElementById('tab-home').onclick=()=>goPage('home');
 document.getElementById('tab-archive').onclick=()=>goPage('archive');
+document.getElementById('tab-suggest').onclick=()=>goPage('suggest');
 document.getElementById('adminBtn').onclick=()=>isAdmin?goPage('admin'):goPage('login');
-document.getElementById('navBrand').onclick=()=>goPage('home');
 document.getElementById('loginBtn').onclick=doLogin;
 document.getElementById('pwInput').onkeydown=e=>{if(e.key==='Enter')doLogin();};
 document.getElementById('saveBtn').onclick=saveConti;
@@ -478,6 +595,334 @@ document.getElementById('arcClose').onclick=closeModal;
 document.getElementById('arcDrop').onclick=e=>{if(e.target===e.currentTarget)closeModal();};
 document.getElementById('dropz').onclick=()=>document.getElementById('pdfInput').click();
 document.getElementById('pdfInput').onchange=function(){onPdfPick(this);};
+document.getElementById('noticeSuggestBtn').onclick=()=>goPage('suggest');
+document.getElementById('sgSubmit').onclick=submitSuggest;
+document.getElementById('sortNew').onclick=()=>setSortMode('new');
+document.getElementById('sortLike').onclick=()=>setSortMode('like');
+
+// ── 찬양 추천 게시판 ────────────────────────────────────
+let sgSortMode='new';
+let likedSet=new Set(JSON.parse(localStorage.getItem('sg_likes')||'[]'));
+function saveLikes(){localStorage.setItem('sg_likes',JSON.stringify([...likedSet]));}
+
+function setSortMode(mode){
+  sgSortMode=mode;
+  document.getElementById('sortNew').classList.toggle('on',mode==='new');
+  document.getElementById('sortLike').classList.toggle('on',mode==='like');
+  renderSuggest();
+}
+
+function timeAgo(ts){
+  const d=Date.now()-ts;
+  if(d<60000)return'방금 전';
+  if(d<3600000)return Math.floor(d/60000)+'분 전';
+  if(d<86400000)return Math.floor(d/3600000)+'시간 전';
+  return Math.floor(d/86400000)+'일 전';
+}
+
+function sgCharCount(el){
+  const n=el.value.length;
+  const c=document.getElementById('sgChar');
+  c.textContent=n+' / 200';
+  c.classList.toggle('warn',n>180);
+  // 중복 감지 (간단히 현재 목록 제목과 비교)
+  checkDup(el.value);
+}
+
+let sgAllTexts=[];
+function checkDup(val){
+  const warn=document.getElementById('sgDupWarn');
+  if(!val.trim()||sgAllTexts.length===0){warn.style.display='none';return;}
+  const v=val.trim().toLowerCase();
+  const dup=sgAllTexts.some(t=>t.toLowerCase().includes(v.slice(0,6))||v.includes(t.toLowerCase().slice(0,6)));
+  warn.style.display=dup?'block':'none';
+}
+
+async function updateSuggestBadge(){
+  try{
+    const snaps=await db.collection('suggests').get();
+    const n=snaps.size;
+    const badge=document.getElementById('suggestBadge');
+    const total=document.getElementById('sgTotal');
+    if(badge){
+      if(n>0){badge.style.display='inline-flex';}
+      else{badge.style.display='none';}
+    }
+    if(total)total.textContent='총 '+n+'개';
+  }catch(e){}
+}
+
+async function renderSuggest(){
+  const list=document.getElementById('suggestList');
+  list.innerHTML=`<div class="loading"><div class="spin"></div>불러오는 중...</div>`;
+  try{
+    const order=sgSortMode==='like'?'likes':'ts';
+    const snaps=await db.collection('suggests').orderBy(order,'desc').get();
+    sgAllTexts=[];
+    if(snaps.empty){
+      list.innerHTML=`<div class="empty"><div class="ei">🎵</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해봐요!</p></div>`;
+      return;
+    }
+    list.innerHTML='';
+    const activeItems=[];
+    const adoptedItems=[];
+    snaps.forEach(doc=>{
+      const d=doc.data();
+      if(d.adopted)adoptedItems.push({doc,d});
+      else activeItems.push({doc,d});
+    });
+
+    const renderCard=(doc,d,delay)=>{
+      const id=doc.id;
+      sgAllTexts.push(d.text||'');
+      const liked=likedSet.has(id);
+      const el=document.createElement('div');
+      el.className='sg-card'+(d.adopted?' sg-adopted':'');
+      el.dataset.id=id;
+      el.innerHTML=`
+        <div style="position:relative">
+          <div class="sg-body">${d.text}</div>
+          <div class="sg-strikethrough"></div>
+        </div>
+        <div class="sg-footer">
+          ${d.adopted?`<span class="adopted-badge">✓ 콘티 반영됨</span>`:''}
+          <span class="sg-time">${timeAgo(d.ts)}</span>
+          ${!d.adopted?`<button class="sg-like${liked?' liked':''}" data-id="${id}">${liked?'❤️':'🤍'} ${d.likes||0}</button>`:''}
+          ${!d.adopted?`<button class="sg-reply-btn" data-id="${id}">💬 ${d.replyCount||0}</button>`:''}
+          ${isAdmin&&!d.adopted?`<button class="sg-adopt-btn" data-id="${id}">✓ 반영</button>`:''}
+          ${isAdmin?`<button class="sg-del" data-id="${id}">🗑</button>`:''}
+        </div>
+        <div class="sg-replies" id="replies-${id}" style="display:none"></div>`;
+      el.style.transitionDelay=`${delay}s`;
+      list.appendChild(el);
+      setTimeout(()=>el.classList.add('visible'),30);
+    };
+
+    activeItems.forEach(({doc,d},i)=>renderCard(doc,d,i*0.05));
+
+    if(adoptedItems.length>0){
+      const sep=document.createElement('div');
+      sep.className='adopted-section-title';
+      sep.textContent='반영된 찬양';
+      list.appendChild(sep);
+      adoptedItems.forEach(({doc,d},i)=>renderCard(doc,d,i*0.05));
+    }
+
+    updateSuggestBadge();
+
+    list.onclick=async function(e){
+      const likeBtn=e.target.closest('.sg-like');
+      const replyBtn=e.target.closest('.sg-reply-btn');
+      const delBtn=e.target.closest('.sg-del');
+      const replyDelBtn=e.target.closest('.reply-del');
+      const sendBtn=e.target.closest('.sg-reply-send');
+      const adoptBtn=e.target.closest('.sg-adopt-btn');
+
+      if(adoptBtn&&isAdmin){
+        const id=adoptBtn.dataset.id;
+        if(!confirm('이 찬양을 콘티에 반영됨으로 표시할까요?'))return;
+        await db.collection('suggests').doc(id).update({adopted:true});
+        toast('콘티 반영 표시됐어요 ✓');
+        renderSuggest();
+        return;
+      }
+      if(likeBtn){
+        const id=likeBtn.dataset.id;
+        const already=likedSet.has(id);
+        const ref=db.collection('suggests').doc(id);
+        if(already){
+          likedSet.delete(id);
+          await ref.update({likes:firebase.firestore.FieldValue.increment(-1)});
+          likeBtn.classList.remove('liked');
+          const n=Math.max(0,(parseInt(likeBtn.textContent.match(/\d+/)?.[0]||0)-1));
+          likeBtn.innerHTML=`🤍 ${n}`;
+        }else{
+          likedSet.add(id);
+          await ref.update({likes:firebase.firestore.FieldValue.increment(1)});
+          likeBtn.classList.add('liked');
+          const n=(parseInt(likeBtn.textContent.match(/\d+/)?.[0]||0)+1);
+          likeBtn.innerHTML=`❤️ ${n}`;
+        }
+        saveLikes();
+      }
+      if(replyBtn){
+        const id=replyBtn.dataset.id;
+        const box=document.getElementById('replies-'+id);
+        if(box.style.display==='none'){
+          box.style.display='flex';box.style.flexDirection='column';box.style.gap='8px';
+          await loadReplies(id,box);
+        }else{box.style.display='none';}
+      }
+      if(delBtn&&isAdmin){
+        const id=delBtn.dataset.id;
+        if(!confirm('이 추천을 삭제할까요?'))return;
+        await db.collection('suggests').doc(id).delete();
+        delBtn.closest('.sg-card').remove();
+        toast('삭제됐어요');
+        updateSuggestBadge();
+      }
+      if(replyDelBtn&&isAdmin){
+        const sgId=replyDelBtn.dataset.sgid;
+        const rpId=replyDelBtn.dataset.rpid;
+        await db.collection('suggests').doc(sgId).collection('replies').doc(rpId).delete();
+        await db.collection('suggests').doc(sgId).update({replyCount:firebase.firestore.FieldValue.increment(-1)});
+        replyDelBtn.closest('.reply-item').remove();
+        toast('댓글 삭제됐어요');
+      }
+      if(sendBtn){
+        const id=sendBtn.dataset.id;
+        const inp=document.getElementById('reply-inp-'+id);
+        const txt=inp.value.trim();if(!txt)return;
+        sendBtn.disabled=true;
+        await db.collection('suggests').doc(id).collection('replies').add({text:txt,ts:Date.now()});
+        await db.collection('suggests').doc(id).update({replyCount:firebase.firestore.FieldValue.increment(1)});
+        inp.value='';
+        await loadReplies(id,document.getElementById('replies-'+id));
+        const rBtn=list.querySelector(`.sg-reply-btn[data-id="${id}"]`);
+        if(rBtn){const n=(parseInt(rBtn.textContent.match(/\d+/)?.[0]||0)+1);rBtn.innerHTML=`💬 ${n}`;}
+        sendBtn.disabled=false;
+      }
+    };
+  }catch(e){list.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>불러오기 실패</p></div>`;}
+}
+  const list=document.getElementById('suggestList');
+  list.innerHTML=`<div class="loading"><div class="spin"></div>불러오는 중...</div>`;
+  try{
+    const order=sgSortMode==='like'?'likes':'ts';
+    const snaps=await db.collection('suggests').orderBy(order,'desc').get();
+    sgAllTexts=[];
+    if(snaps.empty){
+      list.innerHTML=`<div class="empty"><div class="ei">🎵</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해봐요!</p></div>`;
+      return;
+    }
+    list.innerHTML='';
+    snaps.forEach(doc=>{
+      const d=doc.data();const id=doc.id;
+      sgAllTexts.push(d.text||'');
+      const liked=likedSet.has(id);
+      const el=document.createElement('div');
+      el.className='sg-card';el.dataset.id=id;
+      el.innerHTML=`
+        <div class="sg-body">${d.text}</div>
+        <div class="sg-footer">
+          <span class="sg-time">${timeAgo(d.ts)}</span>
+          <button class="sg-like${liked?' liked':''}" data-id="${id}">
+            ${liked?'❤️':'🤍'} ${d.likes||0}
+          </button>
+          <button class="sg-reply-btn" data-id="${id}">
+            💬 ${d.replyCount||0}
+          </button>
+          ${isAdmin?`<button class="sg-del" data-id="${id}">🗑</button>`:''}
+        </div>
+        <div class="sg-replies" id="replies-${id}" style="display:none"></div>`;
+      list.appendChild(el);
+      setTimeout(()=>el.classList.add('visible'),30);
+    });
+    updateSuggestBadge();
+
+    list.onclick=async function(e){
+      const likeBtn=e.target.closest('.sg-like');
+      const replyBtn=e.target.closest('.sg-reply-btn');
+      const delBtn=e.target.closest('.sg-del');
+      const replyDelBtn=e.target.closest('.reply-del');
+      const sendBtn=e.target.closest('.sg-reply-send');
+
+      if(likeBtn){
+        const id=likeBtn.dataset.id;
+        const already=likedSet.has(id);
+        const ref=db.collection('suggests').doc(id);
+        if(already){
+          likedSet.delete(id);
+          await ref.update({likes:firebase.firestore.FieldValue.increment(-1)});
+          likeBtn.classList.remove('liked');
+          const n=Math.max(0,(parseInt(likeBtn.textContent.match(/\d+/)?.[0]||0)-1));
+          likeBtn.innerHTML=`🤍 ${n}`;
+        }else{
+          likedSet.add(id);
+          await ref.update({likes:firebase.firestore.FieldValue.increment(1)});
+          likeBtn.classList.add('liked');
+          const n=(parseInt(likeBtn.textContent.match(/\d+/)?.[0]||0)+1);
+          likeBtn.innerHTML=`❤️ ${n}`;
+        }
+        saveLikes();
+      }
+      if(replyBtn){
+        const id=replyBtn.dataset.id;
+        const box=document.getElementById('replies-'+id);
+        if(box.style.display==='none'){
+          box.style.display='flex';box.style.flexDirection='column';box.style.gap='8px';
+          await loadReplies(id,box);
+        }else{box.style.display='none';}
+      }
+      if(delBtn&&isAdmin){
+        const id=delBtn.dataset.id;
+        if(!confirm('이 추천을 삭제할까요?'))return;
+        await db.collection('suggests').doc(id).delete();
+        delBtn.closest('.sg-card').remove();
+        toast('삭제됐어요');
+        updateSuggestBadge();
+      }
+      if(replyDelBtn&&isAdmin){
+        const sgId=replyDelBtn.dataset.sgid;
+        const rpId=replyDelBtn.dataset.rpid;
+        await db.collection('suggests').doc(sgId).collection('replies').doc(rpId).delete();
+        await db.collection('suggests').doc(sgId).update({replyCount:firebase.firestore.FieldValue.increment(-1)});
+        replyDelBtn.closest('.reply-item').remove();
+        toast('댓글 삭제됐어요');
+      }
+      if(sendBtn){
+        const id=sendBtn.dataset.id;
+        const inp=document.getElementById('reply-inp-'+id);
+        const txt=inp.value.trim();if(!txt)return;
+        sendBtn.disabled=true;
+        await db.collection('suggests').doc(id).collection('replies').add({text:txt,ts:Date.now()});
+        await db.collection('suggests').doc(id).update({replyCount:firebase.firestore.FieldValue.increment(1)});
+        inp.value='';
+        await loadReplies(id,document.getElementById('replies-'+id));
+        const rBtn=list.querySelector(`.sg-reply-btn[data-id="${id}"]`);
+        if(rBtn){const n=(parseInt(rBtn.textContent.match(/\d+/)?.[0]||0)+1);rBtn.innerHTML=`💬 ${n}`;}
+        sendBtn.disabled=false;
+      }
+    };
+  }catch(e){list.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>불러오기 실패</p></div>`;}
+}
+
+async function loadReplies(sgId,box){
+  const snaps=await db.collection('suggests').doc(sgId).collection('replies').orderBy('ts','asc').get();
+  const items=[];
+  snaps.forEach(doc=>{
+    const d=doc.data();
+    items.push(`<div class="reply-item">
+      <div class="reply-dot"></div>
+      <div style="flex:1">
+        <div class="reply-body">${d.text}</div>
+        <div class="reply-time">${timeAgo(d.ts)}</div>
+      </div>
+      ${isAdmin?`<button class="reply-del" data-sgid="${sgId}" data-rpid="${doc.id}">삭제</button>`:''}
+    </div>`);
+  });
+  box.innerHTML=items.join('')+`<div class="sg-reply-input">
+    <input id="reply-inp-${sgId}" placeholder="댓글을 입력하세요...">
+    <button class="sg-reply-send" data-id="${sgId}">등록</button>
+  </div>`;
+}
+
+async function submitSuggest(){
+  const txt=document.getElementById('sgInput').value.trim();
+  if(!txt){toast('내용을 입력해주세요');return;}
+  const btn=document.getElementById('sgSubmit');
+  btn.disabled=true;btn.textContent='등록 중...';
+  try{
+    await db.collection('suggests').add({text:txt,ts:Date.now(),likes:0,replyCount:0});
+    document.getElementById('sgInput').value='';
+    document.getElementById('sgChar').textContent='0 / 200';
+    document.getElementById('sgDupWarn').style.display='none';
+    toast('추천이 등록됐어요 🎉');
+    renderSuggest();
+  }catch(e){toast('등록 실패: '+e.message);}
+  btn.disabled=false;btn.textContent='추천하기 ✦';
+}
+// ────────────────────────────────────────────────────────
 
 // 카카오 공유
 document.getElementById('kakaoShareBtn').onclick=function(){
@@ -489,19 +934,19 @@ document.getElementById('kakaoShareBtn').onclick=function(){
       title:`🎵 ${d.week||'이번 주'} 필그림 찬양팀 콘티`,
       description:songs,
       imageUrl:`https://img.youtube.com/vi/${ytId(d.songs?.[0]?.url)||'default'}/mqdefault.jpg`,
-      link:{mobileWebUrl:'https://pilgrim-worship.netlify.app',webUrl:'https://pilgrim-worship.netlify.app'}
+      link:{mobileWebUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship',webUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship'}
     },
-    buttons:[{title:'콘티 확인하기',link:{mobileWebUrl:'https://pilgrim-worship.netlify.app',webUrl:'https://pilgrim-worship.netlify.app'}}]
+    buttons:[{title:'콘티 확인하기',link:{mobileWebUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship',webUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship'}}]
   });
 };
 
 // 링크 복사
 document.getElementById('copyLinkBtn').onclick=function(){
-  navigator.clipboard.writeText('https://pilgrim-worship.netlify.app')
+  navigator.clipboard.writeText('https://rlcjf6029-rgb.github.io/pilgrim-worship')
     .then(()=>toast('링크가 복사됐어요 🔗'))
     .catch(()=>{
       const el=document.createElement('input');
-      el.value='https://pilgrim-worship.netlify.app';
+      el.value='https://rlcjf6029-rgb.github.io/pilgrim-worship';
       document.body.appendChild(el);el.select();
       document.execCommand('copy');document.body.removeChild(el);
       toast('링크가 복사됐어요 🔗');
@@ -680,19 +1125,23 @@ async function renderHome(){
 
   const pdfSec=document.getElementById('pdfSec');
   if(d.pdfUrl){
-    pdfSec.innerHTML=`<div class="pdf-hd">
-      <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
-        <div class="pdf-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-        <div class="pdf-info"><div class="pdf-name">${d.pdfName||'악보.pdf'}</div><div class="pdf-meta">이번 주 악보 · PDF</div></div>
+    pdfSec.innerHTML=`
+      <div class="pdf-hd">
+        <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
+          <div class="pdf-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <div class="pdf-info"><div class="pdf-name">${d.pdfName||'악보.pdf'}</div><div class="pdf-meta">이번 주 악보 · PDF</div></div>
+        </div>
+        <a class="dl-btn" href="${d.pdfUrl}" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>다운로드
+        </a>
       </div>
-      <a class="dl-btn" href="${d.pdfUrl}" target="_blank">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>다운로드
-      </a>
-    </div>
-    <iframe class="pdf-frame" src="${d.pdfUrl}" style="height:620px"></iframe>`;
+      <div class="pdf-wrap">
+        <iframe class="pdf-frame" src="${d.pdfUrl}" style="height:620px"></iframe>
+      </div>`;
   }else{
     pdfSec.innerHTML=`<div class="pdf-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p>등록된 악보가 없어요</p></div>`;
   }
+  updateSuggestBadge();
 }
 
 async function renderArchive(){
@@ -701,21 +1150,48 @@ async function renderArchive(){
   try{
     if(!curData){const snap=await db.collection('conti').doc('current').get();if(snap.exists)curData=snap.data();}
     const snaps=await db.collection('archives').orderBy('ts','desc').get();
-    const archives=[];snaps.forEach(d=>archives.push(d.data()));
+    const archives=[];
+    const archiveDocs=[];
+    snaps.forEach(d=>{archives.push(d.data());archiveDocs.push(d.id);});
     arcAll=curData?[curData,...archives]:archives;
-    if(!arcAll.length){list.innerHTML=`<div class="empty"><div class="ei">📂</div><p>아직 아카이브가 없어요</p></div>`;return;}
+    arcDocIds=curData?[null,...archiveDocs]:archiveDocs; // null = current doc
+    if(!arcAll.length){list.innerHTML=`<div class="empty"><div class="ei">📂</div><p>아직 기록이 없어요</p></div>`;return;}
     list.innerHTML=arcAll.map((c,i)=>`
       <div class="arcitem" data-arc="${i}">
         <div style="flex:1;min-width:0">
           <div class="arcweek">${c.week||'주차 미설정'}</div>
           <div class="arcsongs">${c.songs?.filter(s=>s.title).map(s=>s.title).join(' · ')||'곡 정보 없음'}</div>
         </div>
-        <div class="arcarrow">›</div>
+        ${isAdmin?`<div class="arc-admin-btns" style="display:flex;gap:6px;flex-shrink:0">
+          <button class="arc-edit-btn" data-arc="${i}" style="background:var(--adim2);color:var(--accent);border:none;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s">수정</button>
+          <button class="arc-del-btn" data-arc="${i}" style="background:rgba(255,59,48,.1);color:var(--red);border:none;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s">삭제</button>
+        </div>`:''}
+        <div class="arcarrow" style="${isAdmin?'display:none':''}">›</div>
       </div>`).join('');
     list.querySelectorAll('.arcitem').forEach((el,i)=>{el.style.transitionDelay=`${i*0.05}s`;io.observe(el);});
   }catch(e){list.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>불러오기 실패</p></div>`;}
 }
-document.getElementById('arcList').addEventListener('click',function(e){
+
+let arcDocIds=[];
+
+document.getElementById('arcList').addEventListener('click',async function(e){
+  const editBtn=e.target.closest('.arc-edit-btn');
+  if(editBtn){
+    const i=+editBtn.dataset.arc;const c=arcAll[i];if(!c)return;
+    curData=c;goPage('admin');toast('수정할 콘티를 불러왔어요 ✏️');return;
+  }
+  const delBtn=e.target.closest('.arc-del-btn');
+  if(delBtn){
+    const i=+delBtn.dataset.arc;const c=arcAll[i];if(!c)return;
+    if(!confirm(`"${c.week||'이 주차'}"를 삭제할까요?\n복구할 수 없어요.`))return;
+    try{
+      if(i===0&&arcDocIds[0]===null){await db.collection('conti').doc('current').delete();curData=null;}
+      else{const docId=arcDocIds[i];if(docId)await db.collection('archives').doc(docId).delete();}
+      toast('삭제됐어요 🗑');renderArchive();
+    }catch(err){toast('삭제 실패: '+err.message);}
+    return;
+  }
+  if(e.target.closest('.arc-admin-btns'))return;
   const item=e.target.closest('.arcitem');if(!item)return;
   openModal(+item.dataset.arc);
 });
@@ -730,7 +1206,7 @@ function openModal(i){
     if(!s.title&&!s.url)return'';
     const id=ytId(s.url);const thumb=id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:null;
     return `<div style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:10px;border:.5px solid var(--bg3)">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${COLS[i]};margin-bottom:6px">${NUMS[i]}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${COLS[i]};margin-bottom:6px">${NUMS[i]||'SONG 0'+(i+1)}</div>
       ${thumb?`<img src="${thumb}" style="width:100%;border-radius:10px;margin-bottom:10px;display:block;aspect-ratio:16/9;object-fit:cover" loading="lazy">`:''}
       <div style="font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px">${s.title||'제목 없음'}</div>
       <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
@@ -746,7 +1222,7 @@ function openModal(i){
     <a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:14px;display:inline-flex">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>악보 다운로드
     </a>
-    <iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg3);display:block"></iframe>
+    <iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg);display:block"></iframe>
   </div>`;
   document.getElementById('arcBody').innerHTML=body;
   document.getElementById('arcDrop').classList.add('on');
