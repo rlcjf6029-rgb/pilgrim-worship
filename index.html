@@ -765,19 +765,19 @@ document.getElementById('kakaoShareBtn').onclick=function(){
       title:`🎵 ${d.week||'이번 주'} 필그림 찬양팀 콘티`,
       description:songs,
       imageUrl:`https://img.youtube.com/vi/${ytId(d.songs?.[0]?.url)||'default'}/mqdefault.jpg`,
-      link:{mobileWebUrl:'https://pilgrim-worship.netlify.app',webUrl:'https://pilgrim-worship.netlify.app'}
+      link:{mobileWebUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship',webUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship'}
     },
-    buttons:[{title:'콘티 확인하기',link:{mobileWebUrl:'https://pilgrim-worship.netlify.app',webUrl:'https://pilgrim-worship.netlify.app'}}]
+    buttons:[{title:'콘티 확인하기',link:{mobileWebUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship',webUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship'}}]
   });
 };
 
 // 링크 복사
 document.getElementById('copyLinkBtn').onclick=function(){
-  navigator.clipboard.writeText('https://pilgrim-worship.netlify.app')
+  navigator.clipboard.writeText('https://rlcjf6029-rgb.github.io/pilgrim-worship')
     .then(()=>toast('링크가 복사됐어요 🔗'))
     .catch(()=>{
       const el=document.createElement('input');
-      el.value='https://pilgrim-worship.netlify.app';
+      el.value='https://rlcjf6029-rgb.github.io/pilgrim-worship';
       document.body.appendChild(el);el.select();
       document.execCommand('copy');document.body.removeChild(el);
       toast('링크가 복사됐어요 🔗');
