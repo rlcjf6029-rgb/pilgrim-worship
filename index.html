@@ -234,24 +234,16 @@ main{padding-top:var(--nh)}
 .arc-no-result{text-align:center;padding:40px 20px;color:var(--t4);font-size:14px}
 
 /* MODAL */
-.bdrop{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0);backdrop-filter:blur(0px);display:none;align-items:flex-end;justify-content:center;transition:background .3s}
-.bdrop.on{display:flex;background:rgba(0,0,0,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.modal{background:var(--bg2);border-radius:24px 24px 0 0;width:100%;max-width:760px;max-height:92vh;overflow-y:auto;box-shadow:0 -4px 60px rgba(0,0,0,.25);animation:sheetUp .38s var(--spring);transition:max-height .4s var(--spring),border-radius .4s var(--spring)}
-.modal.expanded{max-height:100vh;border-radius:0}
+.bdrop{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0);display:none;align-items:flex-end;justify-content:center;transition:background .3s}
+.bdrop.on{display:flex;background:rgba(0,0,0,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.modal{background:var(--bg);border-radius:28px 28px 0 0;width:100%;max-width:760px;max-height:94vh;overflow-y:auto;box-shadow:0 -8px 60px rgba(0,0,0,.3);animation:sheetUp .4s var(--spring)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mhandle{width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:12px auto 0}
-.modal.expanded .mhandle{display:none}
-.mhd{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);border-radius:24px 24px 0 0;z-index:1;gap:10px}
-.modal.expanded .mhd{border-radius:0;padding-top:max(16px,env(safe-area-inset-top))}
-.mtitle{font-size:18px;font-weight:700;letter-spacing:-.4px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* 전체 보기 배너 */
-.mexpand-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--adim2);border:.5px solid rgba(0,113,227,.2);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:inherit;transition:all .2s var(--ease);flex-shrink:0;white-space:nowrap}
-.mexpand-btn:hover{background:var(--accent);color:#fff;border-color:transparent}
-.modal.expanded .mexpand-btn{background:var(--bg3);color:var(--t2);border-color:transparent}
-.modal.expanded .mexpand-btn:hover{background:var(--t1);color:var(--bg2)}
-.mclose{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t2);transition:all .2s;font-family:inherit;flex-shrink:0}
-.mclose:hover{background:var(--t1);color:var(--bg2)}
-.mbody{padding:16px 22px 40px}
+.mhandle{width:40px;height:4px;background:var(--bg3);border-radius:2px;margin:14px auto 0}
+.mhd{padding:16px 24px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);border-radius:28px 28px 0 0;z-index:1;gap:10px}
+.mtitle{font-size:20px;font-weight:800;letter-spacing:-.5px;flex:1;min-width:0}
+.mclose{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t2);transition:all .2s;font-family:inherit;flex-shrink:0}
+.mclose:hover{background:var(--t1);color:var(--bg)}
+.mbody{padding:20px 24px 48px}
 /* 관리자 삭제 버튼 (아카이브) */
 .arc-del-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;border:.5px solid rgba(255,59,48,.25);background:transparent;font-size:11px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
 .arc-del-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
@@ -548,7 +540,6 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
     <div class="mhandle"></div>
     <div class="mhd">
       <div class="mtitle" id="arcTitle"></div>
-      <button class="mexpand-btn" id="arcExpandBtn">전체 보기 &#x2191;</button>
       <button class="mclose" id="arcClose">✕</button>
     </div>
     <div class="mbody" id="arcBody"></div>
@@ -654,12 +645,6 @@ document.getElementById('saveBtn').onclick=saveConti;
 document.getElementById('logoutBtn').onclick=doLogout;
 document.getElementById('arcClose').onclick=closeModal;
 document.getElementById('arcDrop').onclick=e=>{if(e.target===e.currentTarget)closeModal();};
-document.getElementById('arcExpandBtn').onclick=function(){
-  const modal=document.getElementById('arcModal');
-  const isExpanded=modal.classList.toggle('expanded');
-  this.textContent=isExpanded?'접기 &#x2193;':'전체 보기 &#x2191;';
-  if(isExpanded)modal.scrollTop=0;
-};
 document.getElementById('scrollTop').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 window.addEventListener('scroll',function(){
   document.getElementById('scrollTop').classList.toggle('on',window.scrollY>300);
@@ -1222,38 +1207,60 @@ function openModal(i){
   const c=arcAll[i];if(!c)return;
   document.getElementById('arcTitle').textContent=c.week||'주차 미설정';
   let body='';
-  if(c.notice)body+=`<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.12);border-radius:12px;padding:11px 16px;font-size:13px;margin-bottom:16px">📢 ${c.notice}</div>`;
-  if(c.playlist)body+=`<a href="${c.playlist}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:12px;text-decoration:none;margin-bottom:16px">▶ 재생목록 보기</a>`;
-  body+=c.songs?.map((s,i)=>{
-    if(!s.title&&!s.url)return'';
-    const id=ytId(s.url);const thumb=id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:null;
-    return `<div style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:10px;border:.5px solid var(--bg3)">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${COLS[i]};margin-bottom:6px">${NUMS[i]}</div>
-      ${thumb?`<img src="${thumb}" style="width:100%;border-radius:10px;margin-bottom:10px;display:block;aspect-ratio:16/9;object-fit:cover" loading="lazy">`:''}
-      <div style="font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px">${s.title||'제목 없음'}</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-        ${s.key?`<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--adim2);color:var(--accent)">♪ ${s.key}</span>`:''}
-        ${s.bpm?`<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--bg3);color:var(--t2)">${s.bpm} BPM</span>`:''}
+
+  // 공지
+  if(c.notice)body+=`<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.12);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--t2);margin-bottom:14px">📢 ${c.notice}</div>`;
+
+  // 재생목록 배너
+  if(c.playlist)body+=`<div style="background:var(--surface);border-radius:14px;border:.5px solid var(--gb);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff0000,#cc0000);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
       </div>
-      ${s.url?`<a href="${s.url}" target="_blank" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:600">▶ YouTube에서 보기</a>`:''}
-      ${s.detail?`<div style="font-size:13px;color:var(--t2);margin-top:12px;border-top:.5px solid var(--bg3);padding-top:12px;white-space:pre-wrap;line-height:1.8">${s.detail}</div>`:''}
+      <div><div style="font-size:13px;font-weight:600;color:var(--t1)">재생목록 보기</div><div style="font-size:11px;color:var(--t3)">YouTube Playlist</div></div>
+    </div>
+    <a href="${c.playlist}" target="_blank" style="background:#ff0000;color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;text-decoration:none;flex-shrink:0">▶ 재생</a>
+  </div>`;
+
+  // 곡 카드들
+  const songs=c.songs?.filter(s=>s.title||s.url)||[];
+  body+=`<div style="display:flex;flex-direction:column;gap:12px">`;
+  songs.forEach((s,idx)=>{
+    if(!s.title&&!s.url)return;
+    const vid=ytId(s.url);
+    const thumb=vid?`https://img.youtube.com/vi/${vid}/mqdefault.jpg`:null;
+    body+=`<div style="background:var(--surface);border-radius:18px;border:.5px solid var(--gb);overflow:hidden">
+      <div style="padding:16px 18px 0">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${COLS[idx]||'var(--t4)'};margin-bottom:6px;display:flex;align-items:center;gap:8px">${NUMS[idx]||`SONG 0${idx+1}`}<div style="height:.5px;flex:1;max-width:32px;background:currentColor;opacity:.3"></div></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px">
+          <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;color:var(--t1);flex:1;min-width:0">${s.title||'제목 없음'}</div>
+          ${s.bpm?`<div style="background:var(--bg3);border-radius:10px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--t1);flex-shrink:0;white-space:nowrap">${s.bpm} BPM</div>`:''}
+        </div>
+        ${s.key?`<div style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:8px;background:var(--adim2);color:var(--accent);font-size:11px;font-weight:700;margin-bottom:12px">&#9834; ${s.key}</div>`:''}
+      </div>
+      ${thumb?`<div style="position:relative;overflow:hidden;margin:0 0 0 0">
+        <img src="${thumb}" style="width:100%;aspect-ratio:16/7;object-fit:cover;display:block" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${vid}/mqdefault.jpg'">
+        ${s.url?`<a href="${s.url}" target="_blank" style="position:absolute;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:600;padding:6px 13px;border-radius:20px;text-decoration:none">▶ YouTube에서 듣기</a>`:''}
+      </div>`:''}
+      ${s.detail?`<div style="padding:14px 18px 16px;border-top:.5px solid var(--gb);font-size:13px;color:var(--t2);line-height:1.8;white-space:pre-wrap">${s.detail}</div>`:`<div style="height:16px"></div>`}
     </div>`;
-  }).join('')||'';
-  if(c.pdfUrl)body+=`<div style="margin-top:8px">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t4);text-transform:uppercase;margin-bottom:12px">악보</div>
-    <a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:14px;display:inline-flex">
+  });
+  body+=`</div>`;
+
+  // 악보
+  if(c.pdfUrl)body+=`<div style="margin-top:16px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t4);text-transform:uppercase;margin-bottom:10px">악보</div>
+    <a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:12px;display:inline-flex">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>악보 다운로드
     </a>
     <iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg3);display:block"></iframe>
   </div>`;
+
   document.getElementById('arcBody').innerHTML=body;
   document.getElementById('arcDrop').classList.add('on');
 }
 function closeModal(){
   document.getElementById('arcDrop').classList.remove('on');
-  const modal=document.getElementById('arcModal');
-  modal.classList.remove('expanded');
-  document.getElementById('arcExpandBtn').textContent='전체 보기 &#x2191;';
 }
 
 renderHome();
