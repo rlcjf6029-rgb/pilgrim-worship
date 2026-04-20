@@ -234,16 +234,27 @@ main{padding-top:var(--nh)}
 .arc-no-result{text-align:center;padding:40px 20px;color:var(--t4);font-size:14px}
 
 /* MODAL */
-.bdrop{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0);backdrop-filter:blur(0px);display:none;align-items:flex-end;justify-content:center}
-.bdrop.on{display:flex;background:rgba(0,0,0,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.modal{background:var(--bg2);border-radius:24px 24px 0 0;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 -4px 60px rgba(0,0,0,.2);animation:sheetUp .4s var(--spring)}
+.bdrop{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0);backdrop-filter:blur(0px);display:none;align-items:flex-end;justify-content:center;transition:background .3s}
+.bdrop.on{display:flex;background:rgba(0,0,0,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.modal{background:var(--bg2);border-radius:24px 24px 0 0;width:100%;max-width:760px;max-height:92vh;overflow-y:auto;box-shadow:0 -4px 60px rgba(0,0,0,.25);animation:sheetUp .38s var(--spring);transition:max-height .4s var(--spring),border-radius .4s var(--spring)}
+.modal.expanded{max-height:100vh;border-radius:0}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .mhandle{width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:12px auto 0}
-.mhd{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);border-radius:24px 24px 0 0;z-index:1}
-.mtitle{font-size:20px;font-weight:700;letter-spacing:-.4px}
-.mclose{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t2);transition:all .2s;font-family:inherit}
+.modal.expanded .mhandle{display:none}
+.mhd{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);border-radius:24px 24px 0 0;z-index:1;gap:10px}
+.modal.expanded .mhd{border-radius:0;padding-top:max(16px,env(safe-area-inset-top))}
+.mtitle{font-size:18px;font-weight:700;letter-spacing:-.4px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 전체 보기 배너 */
+.mexpand-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--adim2);border:.5px solid rgba(0,113,227,.2);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:inherit;transition:all .2s var(--ease);flex-shrink:0;white-space:nowrap}
+.mexpand-btn:hover{background:var(--accent);color:#fff;border-color:transparent}
+.modal.expanded .mexpand-btn{background:var(--bg3);color:var(--t2);border-color:transparent}
+.modal.expanded .mexpand-btn:hover{background:var(--t1);color:var(--bg2)}
+.mclose{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t2);transition:all .2s;font-family:inherit;flex-shrink:0}
 .mclose:hover{background:var(--t1);color:var(--bg2)}
-.mbody{padding:16px 22px 36px}
+.mbody{padding:16px 22px 40px}
+/* 관리자 삭제 버튼 (아카이브) */
+.arc-del-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;border:.5px solid rgba(255,59,48,.25);background:transparent;font-size:11px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
+.arc-del-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
 
 /* ADMIN */
 .awrap{max-width:760px;margin:0 auto;padding-bottom:40px}
@@ -350,6 +361,13 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-cmt-input:focus{border-color:var(--accent);background:var(--bg2);box-shadow:0 0 0 2px var(--adim)}
 .rec-cmt-submit{padding:9px 14px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
 .rec-cmt-submit:hover{background:var(--accent2)}
+
+/* 위로가기 버튼 */
+.scroll-top{position:fixed;bottom:32px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--surface);border:.5px solid var(--gb);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;opacity:0;transform:translateY(12px) scale(.85);transition:all .35s var(--spring);pointer-events:none}
+.scroll-top.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.scroll-top:hover{background:var(--t1);border-color:var(--t1)}
+.scroll-top:hover svg{stroke:#fff}
+.scroll-top svg{width:18px;height:18px;stroke:var(--t2);fill:none;stroke-width:2.2;transition:stroke .2s}
 
 /* RESPONSIVE */
 @media(min-width:600px){
@@ -494,6 +512,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       <div class="ablock">
         <div class="abtitle">곡 정보</div>
         <div id="songForms"></div>
+        <button onclick="addSong()" style="display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:12px;background:var(--adim2);border:.5px dashed rgba(0,113,227,.3);border-radius:10px;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='var(--adim)'" onmouseout="this.style.background='var(--adim2)'">+ 곡 추가</button>
       </div>
       <div class="ablock">
         <div class="abtitle">악보 PDF</div>
@@ -525,12 +544,20 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 </main>
 
 <div class="bdrop" id="arcDrop">
-  <div class="modal">
+  <div class="modal" id="arcModal">
     <div class="mhandle"></div>
-    <div class="mhd"><div class="mtitle" id="arcTitle"></div><button class="mclose" id="arcClose">✕</button></div>
+    <div class="mhd">
+      <div class="mtitle" id="arcTitle"></div>
+      <button class="mexpand-btn" id="arcExpandBtn">전체 보기 &#x2191;</button>
+      <button class="mclose" id="arcClose">✕</button>
+    </div>
     <div class="mbody" id="arcBody"></div>
   </div>
 </div>
+
+<button class="scroll-top" id="scrollTop" aria-label="위로가기">
+  <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <div class="toast" id="toast"></div>
 
@@ -627,6 +654,16 @@ document.getElementById('saveBtn').onclick=saveConti;
 document.getElementById('logoutBtn').onclick=doLogout;
 document.getElementById('arcClose').onclick=closeModal;
 document.getElementById('arcDrop').onclick=e=>{if(e.target===e.currentTarget)closeModal();};
+document.getElementById('arcExpandBtn').onclick=function(){
+  const modal=document.getElementById('arcModal');
+  const isExpanded=modal.classList.toggle('expanded');
+  this.textContent=isExpanded?'접기 &#x2193;':'전체 보기 &#x2191;';
+  if(isExpanded)modal.scrollTop=0;
+};
+document.getElementById('scrollTop').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+window.addEventListener('scroll',function(){
+  document.getElementById('scrollTop').classList.toggle('on',window.scrollY>300);
+},{ passive:true });
 document.getElementById('dropz').onclick=()=>document.getElementById('pdfInput').click();
 document.getElementById('pdfInput').onchange=function(){onPdfPick(this);};
 document.getElementById('recShortcut').onclick=()=>goPage('rec');
@@ -901,10 +938,26 @@ function renderAdminForms(){
   document.getElementById('adminWeek').value=d?.week||'';
   document.getElementById('adminNotice').value=d?.notice||'';
   document.getElementById('adminPlaylist').value=d?.playlist||'';
-  document.getElementById('songForms').innerHTML=NUMS.map((num,i)=>{
+  // 기존 곡 수 or 기본 4곡
+  const songCount=Math.max(4,d?.songs?.length||0);
+  extraSongs=songCount-4;
+  renderSongForms(d);
+  if(d?.pdfName)document.getElementById('pdfFname').textContent=d.pdfName+' (이미 업로드됨)';
+}
+
+let extraSongs=0;
+function renderSongForms(d){
+  const total=4+extraSongs;
+  const allNums=Array.from({length:total},(_,i)=>`SONG 0${i+1}`);
+  const allCols=['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+  while(allCols.length<total)allCols.push('var(--t3)');
+  document.getElementById('songForms').innerHTML=allNums.map((num,i)=>{
     const s=d?.songs?.[i]||{};
-    return `<div class="sblock">
-      <div class="sbnum" style="color:${COLS[i]}">${num}</div>
+    return `<div class="sblock" id="sblock_${i}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="sbnum" style="color:${allCols[i]};margin-bottom:0">${num}</div>
+        ${i>=4?`<button onclick="removeSong(${i})" style="background:rgba(255,59,48,.1);border:.5px solid rgba(255,59,48,.25);color:var(--red);font-size:11px;font-weight:600;padding:3px 9px;border-radius:7px;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='var(--red)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,59,48,.1)';this.style.color='var(--red)'">삭제</button>`:''}
+      </div>
       <div class="frow"><label>유튜브 링크</label><input type="url" id="s${i}u" placeholder="https://youtube.com/watch?v=..." value="${s.url||''}"></div>
       <div class="g3">
         <div class="frow" style="margin-bottom:0"><label>곡 제목</label><input type="text" id="s${i}t" placeholder="곡 이름" value="${s.title||''}"></div>
@@ -914,7 +967,29 @@ function renderAdminForms(){
       <div class="frow" style="margin-top:11px;margin-bottom:0"><label>디테일</label><textarea id="s${i}d" placeholder="섹션 구성, 브레이크 느낌, 편곡 포인트 등">${s.detail||''}</textarea></div>
     </div>`;
   }).join('');
-  if(d?.pdfName)document.getElementById('pdfFname').textContent=d.pdfName+' (이미 업로드됨)';
+}
+function addSong(){
+  const d=curData;
+  extraSongs++;
+  renderSongForms(d);
+  const newBlock=document.getElementById(`sblock_${3+extraSongs}`);
+  if(newBlock)newBlock.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function removeSong(i){
+  const d=curData;
+  // 현재 입력값 임시 저장
+  const total=4+extraSongs;
+  const tempSongs=Array.from({length:total},(_,j)=>({
+    url:document.getElementById(`s${j}u`)?.value||'',
+    title:document.getElementById(`s${j}t`)?.value||'',
+    key:document.getElementById(`s${j}k`)?.value||'',
+    bpm:document.getElementById(`s${j}b`)?.value||'',
+    detail:document.getElementById(`s${j}d`)?.value||'',
+  }));
+  tempSongs.splice(i,1);
+  extraSongs--;
+  const fakeD={...d,songs:tempSongs};
+  renderSongForms(fakeD);
 }
 async function saveConti(){
   const week=document.getElementById('adminWeek').value.trim();
@@ -922,12 +997,13 @@ async function saveConti(){
   const btn=document.getElementById('saveBtn');
   btn.textContent='저장 중...';btn.disabled=true;
   try{
-    const songs=NUMS.map((_,i)=>({
-      url:document.getElementById(`s${i}u`).value.trim(),
-      title:document.getElementById(`s${i}t`).value.trim(),
-      key:document.getElementById(`s${i}k`).value.trim(),
-      bpm:document.getElementById(`s${i}b`).value.trim(),
-      detail:document.getElementById(`s${i}d`).value.trim(),
+    const total=4+extraSongs;
+    const songs=Array.from({length:total},(_,i)=>({
+      url:document.getElementById(`s${i}u`)?.value.trim()||'',
+      title:document.getElementById(`s${i}t`)?.value.trim()||'',
+      key:document.getElementById(`s${i}k`)?.value.trim()||'',
+      bpm:document.getElementById(`s${i}b`)?.value.trim()||'',
+      detail:document.getElementById(`s${i}d`)?.value.trim()||'',
     }));
     let pdfUrl=curData?.pdfUrl||null,pdfName=curData?.pdfName||null;
     if(pendingPdf){
@@ -1001,7 +1077,7 @@ async function renderHome(){
     catch(e){console.error(e);}
   }
   const d=curData;
-  if(!d){document.getElementById('songsList').innerHTML=`<div class="empty"><div class="ei">🎵</div><p>아직 등록된 콘티가 없어요</p></div>`;return;}
+  if(!d){document.getElementById('songsList').innerHTML=`<div class="empty"><div class="ei">🎵</div><p>콘티가 아직 등록되지 않았어요<br><span style="font-size:12px;color:var(--t4)">주일 중으로 업로드될 예정이에요</span></p></div>`;return;}
   document.getElementById('heroWeekLabel').textContent=d.week||'이번 주 콘티';
   document.getElementById('heroDate').textContent=d.savedAt?d.savedAt+' 업데이트':'';
   if(d.notice){document.getElementById('noticeText').textContent=d.notice;document.getElementById('noticeWrap').style.display='flex';}
@@ -1079,18 +1155,19 @@ function renderArcList(query){
     const songs=c.songs?.filter(s=>s.title)||[];
     const songNames=songs.map(s=>s.title).join(' · ')||'곡 정보 없음';
     const count=songs.length;
-    // 검색어 하이라이트
+    const idx=arcAll.indexOf(c);
     const weekHtml=q&&(c.week||'').toLowerCase().includes(q)
       ? (c.week||'주차 미설정').replace(new RegExp(`(${q})`, 'gi'), '<mark style="background:var(--adim);color:var(--accent);border-radius:3px;padding:0 2px">$1</mark>')
       : (c.week||'주차 미설정');
     const songsHtml=q
       ? songNames.replace(new RegExp(`(${q})`, 'gi'), '<mark style="background:var(--adim);color:var(--accent);border-radius:3px;padding:0 2px">$1</mark>')
       : songNames;
-    return `<div class="arcitem" data-arc="${arcAll.indexOf(c)}">
+    return `<div class="arcitem" data-arc="${idx}">
       <div style="flex:1;min-width:0">
         <div class="arcweek">${weekHtml}<span class="arc-songcount">${count}곡</span></div>
         <div class="arcsongs">${songsHtml}</div>
       </div>
+      ${isAdmin?`<button class="arc-del-btn" data-arc="${idx}" data-week="${c.week||''}">삭제</button>`:''}
       <div class="arcarrow">›</div>
     </div>`;
   }).join('');
@@ -1099,6 +1176,29 @@ function renderArcList(query){
     if(!q)io.observe(el);
     else el.classList.add('visible');
   });
+  // 관리자 삭제 버튼 이벤트
+  if(isAdmin){
+    list.querySelectorAll('.arc-del-btn').forEach(btn=>{
+      btn.onclick=async function(e){
+        e.stopPropagation();
+        const idx=+this.dataset.arc;
+        const week=this.dataset.week;
+        const isCurrent=(curData&&curData.week===week);
+        if(!confirm(`"${week||'이 주차'}" 를 삭제할까요?\n${isCurrent?'⚠️ 이번 주 콘티도 삭제됩니다!':''}`))return;
+        try{
+          if(isCurrent){
+            await db.collection('conti').doc('current').delete();
+            curData=null;
+          }else{
+            await db.collection('archives').doc(week).delete();
+          }
+          arcAll.splice(idx,1);
+          renderArcList(document.getElementById('arcSearch').value||'');
+          toast('삭제됐어요');
+        }catch(e){toast('삭제 실패: '+e.message);}
+      };
+    });
+  }
 }
 
 document.getElementById('arcList').addEventListener('click',function(e){
@@ -1149,7 +1249,12 @@ function openModal(i){
   document.getElementById('arcBody').innerHTML=body;
   document.getElementById('arcDrop').classList.add('on');
 }
-function closeModal(){document.getElementById('arcDrop').classList.remove('on');}
+function closeModal(){
+  document.getElementById('arcDrop').classList.remove('on');
+  const modal=document.getElementById('arcModal');
+  modal.classList.remove('expanded');
+  document.getElementById('arcExpandBtn').textContent='전체 보기 &#x2191;';
+}
 
 renderHome();
 </script>
