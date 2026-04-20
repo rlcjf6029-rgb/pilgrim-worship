@@ -219,9 +219,19 @@ main{padding-top:var(--nh)}
 .arcitem:nth-child(4n+0){border-left-color:var(--c4)}
 .arcitem:hover{transform:translateX(6px);box-shadow:0 6px 24px rgba(0,0,0,.14);background:var(--bg2)}
 .arcweek{font-size:16px;font-weight:700;letter-spacing:-.3px}
-.arcsongs{font-size:12px;color:var(--t3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.arcsongs{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.6;word-break:keep-all}
+.arc-songcount{display:inline-flex;align-items:center;padding:2px 7px;background:var(--bg3);border-radius:6px;font-size:10px;font-weight:700;color:var(--t3);margin-left:8px;vertical-align:middle;flex-shrink:0}
 .arcarrow{font-size:18px;color:var(--t4);flex-shrink:0;transition:transform .25s,color .25s}
 .arcitem:hover .arcarrow{transform:translateX(4px);color:var(--t2)}
+/* 검색 */
+.arc-search-wrap{margin-bottom:16px}
+.arc-search-box{display:flex;align-items:center;gap:10px;background:var(--surface);border:.5px solid var(--gb);border-radius:12px;padding:10px 14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:border-color .2s,box-shadow .2s}
+.arc-search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--adim)}
+.arc-search-input{flex:1;border:none;background:transparent;font-size:14px;font-family:inherit;color:var(--t1);outline:none}
+.arc-search-input::placeholder{color:var(--t4)}
+.arc-search-clear{background:none;border:none;cursor:pointer;font-size:12px;color:var(--t4);padding:2px 4px;border-radius:4px;transition:color .15s;font-family:inherit}
+.arc-search-clear:hover{color:var(--t2)}
+.arc-no-result{text-align:center;padding:40px 20px;color:var(--t4);font-size:14px}
 
 /* MODAL */
 .bdrop{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0);backdrop-filter:blur(0px);display:none;align-items:flex-end;justify-content:center}
@@ -421,7 +431,16 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       <h1 class="hero-title" style="animation-delay:.12s">지난 <span class="hl">기록</span></h1>
       <p class="hero-sub" style="animation-delay:.2s">함께했던 모든 예배의 기록 🙏</p>
     </div>
-    <div class="sec"><div class="arclist" id="arcList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div></div>
+    <div class="sec">
+      <div class="arc-search-wrap">
+        <div class="arc-search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;color:var(--t4)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" class="arc-search-input" id="arcSearch" placeholder="주차명이나 곡 이름으로 검색">
+          <button class="arc-search-clear" id="arcSearchClear" style="display:none">✕</button>
+        </div>
+      </div>
+      <div class="arclist" id="arcList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div>
+    </div>
   </div>
 
   <!-- RECOMMENDATION -->
@@ -1037,22 +1056,67 @@ async function renderArchive(){
     const snaps=await db.collection('archives').orderBy('ts','desc').get();
     const archives=[];snaps.forEach(d=>archives.push(d.data()));
     arcAll=curData?[curData,...archives]:archives;
-    if(!arcAll.length){list.innerHTML=`<div class="empty"><div class="ei">📂</div><p>아직 아카이브가 없어요</p></div>`;return;}
-    list.innerHTML=arcAll.map((c,i)=>`
-      <div class="arcitem" data-arc="${i}">
-        <div style="flex:1;min-width:0">
-          <div class="arcweek">${c.week||'주차 미설정'}</div>
-          <div class="arcsongs">${c.songs?.filter(s=>s.title).map(s=>s.title).join(' · ')||'곡 정보 없음'}</div>
-        </div>
-        <div class="arcarrow">›</div>
-      </div>`).join('');
-    list.querySelectorAll('.arcitem').forEach((el,i)=>{el.style.transitionDelay=`${i*0.05}s`;io.observe(el);});
+    if(!arcAll.length){list.innerHTML=`<div class="empty"><div class="ei">📂</div><p>아직 기록이 없어요</p></div>`;return;}
+    renderArcList('');
   }catch(e){list.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>불러오기 실패</p></div>`;}
 }
+
+function renderArcList(query){
+  const list=document.getElementById('arcList');
+  const q=query.trim().toLowerCase();
+  const filtered=q
+    ? arcAll.filter(c=>{
+        const weekMatch=(c.week||'').toLowerCase().includes(q);
+        const songMatch=c.songs?.some(s=>(s.title||'').toLowerCase().includes(q));
+        return weekMatch||songMatch;
+      })
+    : arcAll;
+  if(!filtered.length){
+    list.innerHTML=`<div class="arc-no-result">&#x1F50D; "<b>${query}</b>" 검색 결과가 없어요</div>`;
+    return;
+  }
+  list.innerHTML=filtered.map((c,i)=>{
+    const songs=c.songs?.filter(s=>s.title)||[];
+    const songNames=songs.map(s=>s.title).join(' · ')||'곡 정보 없음';
+    const count=songs.length;
+    // 검색어 하이라이트
+    const weekHtml=q&&(c.week||'').toLowerCase().includes(q)
+      ? (c.week||'주차 미설정').replace(new RegExp(`(${q})`, 'gi'), '<mark style="background:var(--adim);color:var(--accent);border-radius:3px;padding:0 2px">$1</mark>')
+      : (c.week||'주차 미설정');
+    const songsHtml=q
+      ? songNames.replace(new RegExp(`(${q})`, 'gi'), '<mark style="background:var(--adim);color:var(--accent);border-radius:3px;padding:0 2px">$1</mark>')
+      : songNames;
+    return `<div class="arcitem" data-arc="${arcAll.indexOf(c)}">
+      <div style="flex:1;min-width:0">
+        <div class="arcweek">${weekHtml}<span class="arc-songcount">${count}곡</span></div>
+        <div class="arcsongs">${songsHtml}</div>
+      </div>
+      <div class="arcarrow">›</div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.arcitem').forEach((el,i)=>{
+    el.style.transitionDelay=`${i*0.04}s`;
+    if(!q)io.observe(el);
+    else el.classList.add('visible');
+  });
+}
+
 document.getElementById('arcList').addEventListener('click',function(e){
   const item=e.target.closest('.arcitem');if(!item)return;
   openModal(+item.dataset.arc);
 });
+
+// 검색 이벤트
+document.getElementById('arcSearch').addEventListener('input',function(){
+  const q=this.value;
+  document.getElementById('arcSearchClear').style.display=q?'inline':'none';
+  renderArcList(q);
+});
+document.getElementById('arcSearchClear').onclick=function(){
+  document.getElementById('arcSearch').value='';
+  this.style.display='none';
+  renderArcList('');
+};
 
 function openModal(i){
   const c=arcAll[i];if(!c)return;
