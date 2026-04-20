@@ -1212,48 +1212,56 @@ function openModal(i){
   if(c.notice)body+=`<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.12);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--t2);margin-bottom:14px">📢 ${c.notice}</div>`;
 
   // 재생목록 배너
-  if(c.playlist)body+=`<div style="background:var(--surface);border-radius:14px;border:.5px solid var(--gb);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
-      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff0000,#cc0000);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+  if(c.playlist)body+=`<div style="background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#ff0000,#cc0000);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(255,0,0,.3)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
       </div>
-      <div><div style="font-size:13px;font-weight:600;color:var(--t1)">재생목록 보기</div><div style="font-size:11px;color:var(--t3)">YouTube Playlist</div></div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--t1)">이번 주 재생목록</div><div style="font-size:12px;color:var(--t3)">YouTube Playlist</div></div>
     </div>
-    <a href="${c.playlist}" target="_blank" style="background:#ff0000;color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;text-decoration:none;flex-shrink:0">▶ 재생</a>
+    <a href="${c.playlist}" target="_blank" style="background:#ff0000;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:12px;text-decoration:none;flex-shrink:0;box-shadow:0 2px 8px rgba(255,0,0,.3)">▶ 재생하기</a>
   </div>`;
 
-  // 곡 카드들
+  // 곡 카드 &#8212; 이번 주 탭과 동일한 2열 그리드
   const songs=c.songs?.filter(s=>s.title||s.url)||[];
-  body+=`<div style="display:flex;flex-direction:column;gap:12px">`;
+  body+=`<div style="display:grid;grid-template-columns:${songs.length>1?'1fr 1fr':'1fr'};gap:12px;margin-bottom:16px">`;
   songs.forEach((s,idx)=>{
     if(!s.title&&!s.url)return;
     const vid=ytId(s.url);
-    const thumb=vid?`https://img.youtube.com/vi/${vid}/mqdefault.jpg`:null;
-    body+=`<div style="background:var(--surface);border-radius:18px;border:.5px solid var(--gb);overflow:hidden">
-      <div style="padding:16px 18px 0">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${COLS[idx]||'var(--t4)'};margin-bottom:6px;display:flex;align-items:center;gap:8px">${NUMS[idx]||`SONG 0${idx+1}`}<div style="height:.5px;flex:1;max-width:32px;background:currentColor;opacity:.3"></div></div>
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px">
-          <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;color:var(--t1);flex:1;min-width:0">${s.title||'제목 없음'}</div>
-          ${s.bpm?`<div style="background:var(--bg3);border-radius:10px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--t1);flex-shrink:0;white-space:nowrap">${s.bpm} BPM</div>`:''}
+    const thumb=vid?`https://img.youtube.com/vi/${vid}/maxresdefault.jpg`:null;
+    const col=COLS[idx]||'var(--t4)';
+    const num=NUMS[idx]||`SONG 0${idx+1}`;
+    body+=`<div style="background:var(--surface);border-radius:20px;border:.5px solid var(--gb);overflow:hidden;backdrop-filter:blur(20px)">
+      <div style="padding:18px 18px 0">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${col};margin-bottom:6px;display:flex;align-items:center;gap:8px">${num}<div style="height:.5px;flex:1;max-width:32px;background:currentColor;opacity:.3"></div></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+          <div style="font-size:18px;font-weight:700;letter-spacing:-.4px;color:var(--t1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.title||'제목 없음'}</div>
+          ${s.bpm?`<div style="background:var(--bg3);border-radius:10px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--t1);flex-shrink:0;white-space:nowrap">${s.bpm} BPM</div>`:''}
         </div>
-        ${s.key?`<div style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:8px;background:var(--adim2);color:var(--accent);font-size:11px;font-weight:700;margin-bottom:12px">&#9834; ${s.key}</div>`:''}
+        ${s.key?`<div style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:8px;background:var(--adim2);color:var(--accent);font-size:11px;font-weight:700;margin-bottom:12px">&#9834; ${s.key}</div>`:'<div style="margin-bottom:12px"></div>'}
       </div>
-      ${thumb?`<div style="position:relative;overflow:hidden;margin:0 0 0 0">
-        <img src="${thumb}" style="width:100%;aspect-ratio:16/7;object-fit:cover;display:block" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${vid}/mqdefault.jpg'">
-        ${s.url?`<a href="${s.url}" target="_blank" style="position:absolute;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:600;padding:6px 13px;border-radius:20px;text-decoration:none">▶ YouTube에서 듣기</a>`:''}
+      ${thumb?`<div style="position:relative;overflow:hidden;aspect-ratio:16/7">
+        <img src="${thumb}" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${vid}/mqdefault.jpg'">
+        ${s.url?`<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.5),transparent 60%);display:flex;align-items:flex-end;padding:10px 12px">
+          <a href="${s.url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.35);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;text-decoration:none">▶ YouTube에서 듣기</a>
+        </div>`:''}
       </div>`:''}
-      ${s.detail?`<div style="padding:14px 18px 16px;border-top:.5px solid var(--gb);font-size:13px;color:var(--t2);line-height:1.8;white-space:pre-wrap">${s.detail}</div>`:`<div style="height:16px"></div>`}
+      <div style="padding:9px 0 14px;text-align:center;font-size:11px;color:var(--t4);border-top:.5px solid var(--gb)">디테일 보기 &#8964;</div>
     </div>`;
   });
   body+=`</div>`;
 
-  // 악보
-  if(c.pdfUrl)body+=`<div style="margin-top:16px">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t4);text-transform:uppercase;margin-bottom:10px">악보</div>
-    <a href="${c.pdfUrl}" target="_blank" class="dl-btn" style="margin-bottom:12px;display:inline-flex">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>악보 다운로드
+  // 악보 &#8212; 다운로드 버튼만
+  if(c.pdfUrl)body+=`<div style="background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#ff3b30,#ff6b6b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--t1)">${c.pdfName||'악보.pdf'}</div><div style="font-size:12px;color:var(--t3)">악보 · PDF</div></div>
+    </div>
+    <a href="${c.pdfUrl}" target="_blank" class="dl-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>다운로드
     </a>
-    <iframe src="${c.pdfUrl}" style="width:100%;height:420px;border:none;border-radius:12px;background:var(--bg3);display:block"></iframe>
   </div>`;
 
   document.getElementById('arcBody').innerHTML=body;
