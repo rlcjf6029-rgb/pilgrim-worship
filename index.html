@@ -211,13 +211,17 @@ main{padding-top:var(--nh)}
 
 /* ARCHIVE */
 .arclist{display:flex;flex-direction:column;gap:8px}
-.arcitem{background:var(--surface);border-radius:14px;border:.5px solid var(--gb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:all .28s var(--spring);gap:12px;opacity:0;transform:translateX(-12px)}
+.arcitem{background:var(--surface);border-radius:14px;border:.5px solid var(--gb);border-left:3px solid var(--accent);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:all .28s var(--spring);gap:12px;opacity:0;transform:translateX(-12px)}
 .arcitem.visible{opacity:1;transform:translateX(0)}
-.arcitem:hover{transform:translateX(6px);border-color:rgba(0,113,227,.3);box-shadow:0 4px 20px rgba(0,0,0,.08)}
-.arcweek{font-size:15px;font-weight:600}
-.arcsongs{font-size:12px;color:var(--t4);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.arcitem:nth-child(4n+1){border-left-color:var(--c1)}
+.arcitem:nth-child(4n+2){border-left-color:var(--c2)}
+.arcitem:nth-child(4n+3){border-left-color:var(--c3)}
+.arcitem:nth-child(4n+0){border-left-color:var(--c4)}
+.arcitem:hover{transform:translateX(6px);box-shadow:0 6px 24px rgba(0,0,0,.14);background:var(--bg2)}
+.arcweek{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.arcsongs{font-size:12px;color:var(--t3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 .arcarrow{font-size:18px;color:var(--t4);flex-shrink:0;transition:transform .25s,color .25s}
-.arcitem:hover .arcarrow{transform:translateX(4px);color:var(--accent)}
+.arcitem:hover .arcarrow{transform:translateX(4px);color:var(--t2)}
 
 /* MODAL */
 .bdrop{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0);backdrop-filter:blur(0px);display:none;align-items:flex-end;justify-content:center}
@@ -362,7 +366,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
   </div>
   <div class="nav-center">
     <button class="ntab on" id="tab-home">이번 주</button>
-    <button class="ntab" id="tab-archive">아카이브</button>
+    <button class="ntab" id="tab-archive">지난 기록</button>
     <button class="ntab" id="tab-rec">찬양 추천<span class="ndot" id="recDot"></span></button>
   </div>
   <button class="nav-admin" id="adminBtn">관리자</button>
@@ -414,7 +418,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
   <div class="pg" id="pg-archive">
     <div class="hero">
       <div class="hero-eyebrow" style="animation-delay:.05s"><div class="edot" style="background:var(--c1)"></div><span class="etxt" style="color:var(--c1)">지난 기록</span></div>
-      <h1 class="hero-title" style="animation-delay:.12s">아카이브</h1>
+      <h1 class="hero-title" style="animation-delay:.12s">지난 <span class="hl">기록</span></h1>
       <p class="hero-sub" style="animation-delay:.2s">함께했던 모든 예배의 기록 🙏</p>
     </div>
     <div class="sec"><div class="arclist" id="arcList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div></div>
@@ -431,7 +435,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       <div class="rec-form-card">
         <div class="rec-form-title">✦ 찬양 추천하기</div>
         <div class="rec-dup-warn" id="recDupWarn">⚠️ <span id="recDupMsg">비슷한 추천이 이미 있어요!</span></div>
-        <textarea class="rec-textarea" id="recInput" placeholder="추천할 찬양 제목이나 아티스트를 적어줘요 (예: 나의 피난처, 유기성 목사님 찬양 등)" maxlength="200"></textarea>
+        <textarea class="rec-textarea" id="recInput" placeholder="추천할 찬양 제목이나 아티스트를 적어줘요" maxlength="200"></textarea>
         <div class="rec-form-foot">
           <span class="rec-char" id="recChar">0 / 200</span>
           <button class="rec-submit" id="recSubmit" disabled>추천하기 ✦</button>
