@@ -332,6 +332,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-cmt-toggle{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;border:.5px solid var(--bg3);background:transparent;font-size:12px;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .2s}
 .rec-cmt-toggle:hover{border-color:rgba(0,113,227,.3);color:var(--accent)}
 .rec-admin-row{display:flex;gap:6px;margin-left:auto}
+.rec-edit-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(0,113,227,.25);background:var(--adim2);font-size:11px;font-weight:600;color:var(--accent);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-edit-btn:hover{background:var(--accent);color:#fff;border-color:transparent}
 .rec-adopt-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(94,92,230,.25);background:var(--c1d);font-size:11px;font-weight:600;color:var(--c1);cursor:pointer;font-family:inherit;transition:all .2s}
 .rec-adopt-btn:hover{background:var(--c1);color:#fff;border-color:transparent}
 .rec-adopt-btn.cancel{background:rgba(255,59,48,.08);border-color:rgba(255,59,48,.2);color:var(--red)}
@@ -741,15 +743,22 @@ function renderRecList(){
 function buildRecCard(r,liked){
   const isLiked=liked.has(r.id);
   const isAdopted=!!r.adopted;
-  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}" data-text="${escHtml(r.text)}">수정</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
-      <div class="rec-body"><span class="rec-body-text">${escHtml(r.text)}</span></div>
-      ${isAdopted?'<div class="rec-adopted-badge">✓ 콘티 반영됨</div>':''}
+      <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span></div>
+      ${isAdopted?'<div class="rec-adopted-badge">&#x2713; 콘티 반영됨</div>':''}
+    </div>
+    <div class="rec-edit-area" id="recEditArea_${r.id}" style="display:none;margin-top:10px">
+      <textarea class="rec-textarea" id="recEditInput_${r.id}" style="min-height:60px;margin-bottom:8px">${escHtml(r.text)}</textarea>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="rec-edit-cancel" data-id="${r.id}" style="padding:6px 14px;border-radius:9px;border:.5px solid var(--bg3);background:transparent;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .2s">취소</button>
+        <button class="rec-edit-save" data-id="${r.id}" style="padding:6px 14px;border-radius:9px;background:var(--accent);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s">저장</button>
+      </div>
     </div>
     <div class="rec-meta">
       <span class="rec-time">${timeAgo(r.ts)}</span>
-      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;️':'&#x1F90D;'} ${r.likes||0}</button>
+      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;&#xFE0F;':'&#x1F90D;'} ${r.likes||0}</button>
       <button class="rec-cmt-toggle" data-id="${r.id}">&#x1F4AC; ${r.commentCount||0}</button>
       ${adminBtns}
     </div>
@@ -794,6 +803,47 @@ function bindRecEvents(){
     };
   });
   if(isAdmin){
+    // 수정 버튼
+    document.querySelectorAll('.rec-edit-btn').forEach(btn=>{
+      btn.onclick=function(){
+        const id=this.dataset.id;
+        const editArea=document.getElementById('recEditArea_'+id);
+        const bodyText=document.getElementById('recText_'+id);
+        const isOpen=editArea.style.display==='none';
+        editArea.style.display=isOpen?'block':'none';
+        bodyText.style.display=isOpen?'none':'inline';
+        this.textContent=isOpen?'취소':'수정';
+        if(isOpen){
+          const inp=document.getElementById('recEditInput_'+id);
+          inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);
+        }
+      };
+    });
+    // 수정 취소
+    document.querySelectorAll('.rec-edit-cancel').forEach(btn=>{
+      btn.onclick=function(){
+        const id=this.dataset.id;
+        document.getElementById('recEditArea_'+id).style.display='none';
+        document.getElementById('recText_'+id).style.display='inline';
+        const editBtn=document.querySelector(`.rec-edit-btn[data-id="${id}"]`);
+        if(editBtn)editBtn.textContent='수정';
+      };
+    });
+    // 수정 저장
+    document.querySelectorAll('.rec-edit-save').forEach(btn=>{
+      btn.onclick=async function(){
+        const id=this.dataset.id;
+        const inp=document.getElementById('recEditInput_'+id);
+        const newText=inp.value.trim();
+        if(!newText||newText.length>200){toast('내용을 입력해주세요 (200자 이내)');return;}
+        this.disabled=true;this.textContent='저장 중...';
+        try{
+          await db.collection('recommendations').doc(id).update({text:newText});
+          toast('수정됐어요');
+        }catch(e){toast('수정 실패: '+e.message);}
+        this.disabled=false;this.textContent='저장';
+      };
+    });
     document.querySelectorAll('.rec-adopt-btn').forEach(btn=>{
       btn.onclick=async function(){
         const id=this.dataset.id,wasAdopted=this.dataset.adopted==='1';
