@@ -301,10 +301,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-card{background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:16px 18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:0;transform:translateY(10px);transition:opacity .4s var(--smooth),transform .4s var(--smooth),border-color .2s}
 .rec-card.visible{opacity:1;transform:translateY(0)}
 .rec-card:hover{border-color:rgba(94,92,230,.2)}
-.rec-card.adopted{border-color:rgba(94,92,230,.3);background:linear-gradient(135deg,var(--c1d),var(--surface))}
-.rec-card.adopted .rec-body-text{position:relative;display:inline}
-.rec-card.adopted .rec-body-text::after{content:'';position:absolute;left:0;right:0;top:52%;height:1.5px;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4));border-radius:2px;pointer-events:none}
-.rec-adopted-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;flex-shrink:0;margin-top:2px;white-space:nowrap}
+.rec-card.adopted{border-color:var(--bg3)}
+.rec-card.adopted .rec-body{color:var(--t4);opacity:.6}
+.rec-card.adopted .rec-body-text{text-decoration:line-through;text-decoration-color:var(--t3)}
+.rec-adopted-badge{display:inline-flex;align-items:center;gap:4px;background:var(--c4);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;flex-shrink:0;margin-top:2px;white-space:nowrap;letter-spacing:.02em}
 .rec-card-top{display:flex;align-items:flex-start;gap:10px}
 .rec-body{flex:1;min-width:0;font-size:14px;color:var(--t1);line-height:1.7;word-break:break-word}
 .rec-meta{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -378,7 +378,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
     </div>
     <div class="notice-wrap" id="noticeWrap" style="display:none">
       <div class="notice-pill">📢 <span id="noticeText"></span></div>
-      <button class="rec-shortcut" id="recShortcut">🎶 찬양 추천 →</button>
+      <button class="rec-shortcut" id="recShortcut">&#x1F3B6; 찬양 추천 &rarr;</button>
     </div>
     <div class="sec" style="margin-top:20px">
       <div class="sec-hd"><span class="sec-label">곡 순서</span></div>
@@ -444,12 +444,6 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
           <button class="rec-sort-btn" id="sortLike">좋아요순</button>
         </div>
       </div>
-      <div id="recAdoptedWrap" style="display:none">
-        <div class="rec-sec-label">콘티에 반영됨 ✓</div>
-        <div class="rec-list" id="recAdoptedList"></div>
-        <div style="margin-bottom:20px"></div>
-      </div>
-      <div class="rec-sec-label">전체 추천</div>
       <div class="rec-list" id="recNormalList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div>
     </div>
   </div>
@@ -487,7 +481,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
         </div>
         <p style="font-size:11px;color:var(--t4);margin-top:8px;text-align:center">Firebase Storage · 대용량 PDF 지원</p>
       </div>
-      <button class="btsave" id="saveBtn">이번 주 콘티 저장 →</button>
+      <button class="btsave" id="saveBtn">이번 주 콘티 저장 &rarr;</button>
       <button class="btout" id="logoutBtn">로그아웃</button>
     </div>
   </div>
@@ -678,19 +672,21 @@ function renderRecList(){
   const normal=recItems.filter(r=>!r.adopted);
   if(recSortMode==='like')normal.sort((a,b)=>(b.likes||0)-(a.likes||0)||(b.ts||0)-(a.ts||0));
   else normal.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  // 채택된 것들은 항상 최하단 (정렬 무관)
+  adopted.sort((a,b)=>(b.ts||0)-(a.ts||0));
   document.getElementById('recTotal').textContent=recItems.length;
-  const adoptedWrap=document.getElementById('recAdoptedWrap');
-  const adoptedList=document.getElementById('recAdoptedList');
-  if(adopted.length){
-    adoptedWrap.style.display='block';
-    adoptedList.innerHTML=adopted.map(r=>buildRecCard(r,liked)).join('');
-    adoptedList.querySelectorAll('.rec-card').forEach((el,i)=>{el.style.transitionDelay=`${i*0.04}s`;io.observe(el);});
-  }else{adoptedWrap.style.display='none';}
   const normalList=document.getElementById('recNormalList');
-  if(!normal.length){
+  const all=[...normal,...adopted];
+  if(!all.length){
     normalList.innerHTML='<div class="empty"><div class="ei">🎵</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해보세요!</p></div>';
   }else{
-    normalList.innerHTML=normal.map(r=>buildRecCard(r,liked)).join('');
+    // 채택 구분선
+    let html=normal.map(r=>buildRecCard(r,liked)).join('');
+    if(adopted.length){
+      html+=`<div class="rec-sec-label" style="margin-top:${normal.length?'20px':'0'}">콘티에 반영됨 ✓</div>`;
+      html+=adopted.map(r=>buildRecCard(r,liked)).join('');
+    }
+    normalList.innerHTML=html;
     normalList.querySelectorAll('.rec-card').forEach((el,i)=>{el.style.transitionDelay=`${i*0.04}s`;io.observe(el);});
   }
   bindRecEvents();
@@ -708,8 +704,8 @@ function buildRecCard(r,liked){
     </div>
     <div class="rec-meta">
       <span class="rec-time">${timeAgo(r.ts)}</span>
-      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'❤️':'🤍'} ${r.likes||0}</button>
-      <button class="rec-cmt-toggle" data-id="${r.id}">💬 ${r.commentCount||0}</button>
+      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;️':'&#x1F90D;'} ${r.likes||0}</button>
+      <button class="rec-cmt-toggle" data-id="${r.id}">&#x1F4AC; ${r.commentCount||0}</button>
       ${adminBtns}
     </div>
     <div class="rec-cmt-area" id="cmtArea_${r.id}">
@@ -801,7 +797,7 @@ function updateRecDot(){
   document.getElementById('recDot').classList.toggle('on',hasNew);
 }
 
-// 백그라운드 dot 체크 — 에러가 나도 메인에 절대 영향 없음
+// 백그라운드 dot 체크 - 에러가 나도 메인에 절대 영향 없음
 setTimeout(function(){
   try{
     db.collection('recommendations').orderBy('ts','desc').limit(5).get()
@@ -811,7 +807,7 @@ setTimeout(function(){
         if(hasNew)document.getElementById('recDot').classList.add('on');
       }).catch(function(){});
   }catch(e){}
-},1500); // 1.5초 후 실행 — 메인 렌더링 방해 안 함
+},1500); // 1.5초 후 실행, 메인 렌더링 방해 안 함
 
 // 카카오 공유
 document.getElementById('kakaoShareBtn').onclick=function(){
