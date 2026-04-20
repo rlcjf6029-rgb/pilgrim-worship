@@ -53,12 +53,14 @@ body{font-family:'Outfit','Noto Sans KR',-apple-system,sans-serif;background:var
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:300;height:calc(var(--nh) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);background:var(--glass);backdrop-filter:saturate(200%) blur(28px);-webkit-backdrop-filter:saturate(200%) blur(28px);border-bottom:.5px solid var(--gb);display:flex;align-items:center;justify-content:space-between;padding-left:24px;padding-right:24px;gap:16px;transition:background .4s}
 main{padding-top:calc(var(--nh) + env(safe-area-inset-top))}
-.nav-brand{display:flex;align-items:baseline;gap:7px;flex-shrink:0}
+.nav-brand{display:flex;align-items:baseline;gap:7px;flex-shrink:0;cursor:pointer}
 .nav-brand-main{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--t1)}
 .nav-brand-sub{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:.04em;text-transform:uppercase}
 .nav-center{display:flex;gap:2px;background:var(--bg3);padding:3px;border-radius:11px;flex-shrink:0}
-.ntab{height:28px;padding:0 12px;border-radius:8px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all .25s var(--ease);font-family:inherit;letter-spacing:-.1px;white-space:nowrap}
+.ntab{height:28px;padding:0 10px;border-radius:8px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all .25s var(--ease);font-family:inherit;letter-spacing:-.1px;white-space:nowrap;position:relative}
 .ntab.on{background:var(--bg2);color:var(--t1);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.ntab .ndot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--c1);display:none}
+.ntab .ndot.on{display:block}
 .nav-admin{height:32px;padding:0 12px;border-radius:20px;font-size:13px;font-weight:500;border:.5px solid var(--gb);background:var(--surface2);color:var(--t2);cursor:pointer;font-family:inherit;flex-shrink:0;transition:all .25s var(--ease);backdrop-filter:blur(8px);white-space:nowrap}
 @media(max-width:400px){.nav-brand-sub{display:none}.nav-brand-main{font-size:14px}.ntab{padding:0 10px;font-size:12px}.nav-admin{padding:0 10px;font-size:12px}}
 .nav-admin:hover{background:var(--t1);color:var(--bg);border-color:var(--t1)}
@@ -81,8 +83,10 @@ main{padding-top:var(--nh)}
 @keyframes revealUp{to{opacity:1;transform:translateY(0)}}
 
 /* NOTICE */
-.notice-wrap{max-width:760px;margin:0 auto 8px;padding:0 24px}
+.notice-wrap{max-width:760px;margin:0 auto 8px;padding:0 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .notice-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;background:var(--adim2);border:.5px solid rgba(0,113,227,.15);font-size:13px;color:var(--t2);backdrop-filter:blur(8px);animation:revealUp .4s var(--smooth) both}
+.rec-shortcut{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;background:var(--c1d);border:.5px solid rgba(94,92,230,.25);font-size:12px;font-weight:600;color:var(--c1);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit;transition:all .2s var(--ease);animation:revealUp .4s .08s var(--smooth) both}
+.rec-shortcut:hover{background:var(--c1);color:#fff;transform:translateY(-1px)}
 
 /* SECTION */
 .sec{max-width:760px;margin:0 auto;padding:0 24px 40px}
@@ -272,10 +276,71 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .empty{text-align:center;padding:64px 20px;color:var(--t4)}
 .empty .ei{font-size:40px;margin-bottom:12px}.empty p{font-size:14px}
 
+/* ===== 찬양 추천 ===== */
+.rec-wrap{max-width:760px;margin:0 auto;padding:0 24px 40px}
+.rec-form-card{background:var(--surface);border-radius:20px;border:.5px solid var(--gb);padding:20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);margin-bottom:20px;opacity:0;transform:translateY(14px);animation:revealUp .5s .1s var(--smooth) forwards}
+.rec-form-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c1);margin-bottom:12px}
+.rec-dup-warn{display:none;align-items:center;gap:8px;padding:9px 13px;background:rgba(255,159,10,.1);border:.5px solid rgba(255,159,10,.3);border-radius:10px;font-size:12px;color:var(--orange);margin-bottom:10px}
+.rec-dup-warn.on{display:flex}
+.rec-textarea{width:100%;padding:12px 14px;border:.5px solid var(--bg3);border-radius:12px;font-size:14px;font-family:inherit;color:var(--t1);background:var(--bg);resize:none;outline:none;line-height:1.65;transition:all .2s;min-height:76px}
+.rec-textarea:focus{border-color:var(--c1);background:var(--bg2);box-shadow:0 0 0 3px var(--c1d)}
+.rec-form-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:10px}
+.rec-char{font-size:11px;color:var(--t4)}
+.rec-char.warn{color:var(--orange)}.rec-char.over{color:var(--red)}
+.rec-submit{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--c1);color:#fff;font-size:13px;font-weight:600;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s var(--ease);flex-shrink:0}
+.rec-submit:hover{background:#4845c4;transform:translateY(-1px)}
+.rec-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.rec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.rec-count{display:inline-flex;align-items:center;gap:6px;background:var(--c1d);border:.5px solid rgba(94,92,230,.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--c1)}
+.rec-sort{display:flex;gap:3px;background:var(--bg3);padding:3px;border-radius:10px}
+.rec-sort-btn{height:26px;padding:0 12px;border-radius:7px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-sort-btn.on{background:var(--bg2);color:var(--t1);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.rec-sec-label{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t4);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.rec-sec-label::after{content:'';flex:1;height:.5px;background:var(--bg3)}
+.rec-list{display:flex;flex-direction:column;gap:10px}
+.rec-card{background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:16px 18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:0;transform:translateY(10px);transition:opacity .4s var(--smooth),transform .4s var(--smooth),border-color .2s}
+.rec-card.visible{opacity:1;transform:translateY(0)}
+.rec-card:hover{border-color:rgba(94,92,230,.2)}
+.rec-card.adopted{border-color:rgba(94,92,230,.3);background:linear-gradient(135deg,var(--c1d),var(--surface))}
+.rec-card.adopted .rec-body-text{position:relative;display:inline}
+.rec-card.adopted .rec-body-text::after{content:'';position:absolute;left:0;right:0;top:52%;height:1.5px;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4));border-radius:2px;pointer-events:none}
+.rec-adopted-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;flex-shrink:0;margin-top:2px;white-space:nowrap}
+.rec-card-top{display:flex;align-items:flex-start;gap:10px}
+.rec-body{flex:1;min-width:0;font-size:14px;color:var(--t1);line-height:1.7;word-break:break-word}
+.rec-meta{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rec-time{font-size:11px;color:var(--t4)}
+.rec-like-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;border:.5px solid var(--bg3);background:transparent;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-like-btn:hover{border-color:rgba(255,59,48,.3);color:var(--red)}
+.rec-like-btn.liked{background:rgba(255,59,48,.08);border-color:rgba(255,59,48,.25);color:var(--red)}
+.rec-cmt-toggle{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;border:.5px solid var(--bg3);background:transparent;font-size:12px;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-cmt-toggle:hover{border-color:rgba(0,113,227,.3);color:var(--accent)}
+.rec-admin-row{display:flex;gap:6px;margin-left:auto}
+.rec-adopt-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(94,92,230,.25);background:var(--c1d);font-size:11px;font-weight:600;color:var(--c1);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-adopt-btn:hover{background:var(--c1);color:#fff;border-color:transparent}
+.rec-adopt-btn.cancel{background:rgba(255,59,48,.08);border-color:rgba(255,59,48,.2);color:var(--red)}
+.rec-adopt-btn.cancel:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.rec-del-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(255,59,48,.2);background:transparent;font-size:11px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-del-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.rec-cmt-area{display:none;padding-top:12px;margin-top:12px;border-top:.5px solid var(--gb)}
+.rec-cmt-area.open{display:block}
+.rec-cmt-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.rec-cmt-item{background:var(--bg);border-radius:10px;padding:10px 12px}
+.rec-cmt-text{font-size:13px;color:var(--t2);line-height:1.6;word-break:break-word}
+.rec-cmt-meta{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.rec-cmt-time{font-size:10px;color:var(--t4)}
+.rec-cmt-del{font-size:11px;color:var(--t4);background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:color .15s;display:none}
+.rec-cmt-item:hover .rec-cmt-del{display:inline}
+.rec-cmt-del:hover{color:var(--red)}
+.rec-cmt-form{display:flex;gap:8px;align-items:flex-end}
+.rec-cmt-input{flex:1;padding:9px 12px;border:.5px solid var(--bg3);border-radius:10px;font-size:13px;font-family:inherit;color:var(--t1);background:var(--bg);outline:none;transition:all .2s;resize:none}
+.rec-cmt-input:focus{border-color:var(--accent);background:var(--bg2);box-shadow:0 0 0 2px var(--adim)}
+.rec-cmt-submit{padding:9px 14px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
+.rec-cmt-submit:hover{background:var(--accent2)}
+
 /* RESPONSIVE */
 @media(min-width:600px){
   nav{padding:0 32px}
-  .hero,.sec,.notice-wrap{padding-left:32px;padding-right:32px}
+  .hero,.sec,.notice-wrap,.rec-wrap{padding-left:32px;padding-right:32px}
   .ablock{margin:0 32px 12px}
   .btsave,.btout{width:calc(100% - 64px);margin-left:32px;margin-right:32px}
 }
@@ -291,13 +356,14 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 <body>
 
 <nav>
-  <div class="nav-brand">
+  <div class="nav-brand" id="navBrand">
     <span class="nav-brand-main">Pilgrim</span>
     <span class="nav-brand-sub">Vision Youth</span>
   </div>
   <div class="nav-center">
     <button class="ntab on" id="tab-home">이번 주</button>
     <button class="ntab" id="tab-archive">아카이브</button>
+    <button class="ntab" id="tab-rec">찬양 추천<span class="ndot" id="recDot"></span></button>
   </div>
   <button class="nav-admin" id="adminBtn">관리자</button>
 </nav>
@@ -312,6 +378,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
     </div>
     <div class="notice-wrap" id="noticeWrap" style="display:none">
       <div class="notice-pill">📢 <span id="noticeText"></span></div>
+      <button class="rec-shortcut" id="recShortcut">🎶 찬양 추천 →</button>
     </div>
     <div class="sec" style="margin-top:20px">
       <div class="sec-hd"><span class="sec-label">곡 순서</span></div>
@@ -351,6 +418,40 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       <p class="hero-sub" style="animation-delay:.2s">함께했던 모든 예배의 기록 🙏</p>
     </div>
     <div class="sec"><div class="arclist" id="arcList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div></div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="pg" id="pg-rec">
+    <div class="hero">
+      <div class="hero-eyebrow" style="animation-delay:.05s"><div class="edot" style="background:var(--c1)"></div><span class="etxt" style="color:var(--c1)">찬양 추천</span></div>
+      <h1 class="hero-title" style="animation-delay:.12s">찬양 <span class="hl">추천해요</span></h1>
+      <p class="hero-sub" style="animation-delay:.2s">다음 예배에서 부르고 싶은 찬양을 자유롭게 추천해줘요 🎵</p>
+    </div>
+    <div class="rec-wrap">
+      <div class="rec-form-card">
+        <div class="rec-form-title">✦ 찬양 추천하기</div>
+        <div class="rec-dup-warn" id="recDupWarn">⚠️ <span id="recDupMsg">비슷한 추천이 이미 있어요!</span></div>
+        <textarea class="rec-textarea" id="recInput" placeholder="추천할 찬양 제목이나 아티스트를 적어줘요 (예: 나의 피난처, 유기성 목사님 찬양 등)" maxlength="200"></textarea>
+        <div class="rec-form-foot">
+          <span class="rec-char" id="recChar">0 / 200</span>
+          <button class="rec-submit" id="recSubmit" disabled>추천하기 ✦</button>
+        </div>
+      </div>
+      <div class="rec-header">
+        <div class="rec-count">🎵 <span id="recTotal">0</span>개의 추천</div>
+        <div class="rec-sort">
+          <button class="rec-sort-btn on" id="sortNew">최신순</button>
+          <button class="rec-sort-btn" id="sortLike">좋아요순</button>
+        </div>
+      </div>
+      <div id="recAdoptedWrap" style="display:none">
+        <div class="rec-sec-label">콘티에 반영됨 ✓</div>
+        <div class="rec-list" id="recAdoptedList"></div>
+        <div style="margin-bottom:20px"></div>
+      </div>
+      <div class="rec-sec-label">전체 추천</div>
+      <div class="rec-list" id="recNormalList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div>
+    </div>
   </div>
 
   <!-- ADMIN -->
@@ -437,7 +538,11 @@ Kakao.init('4d7f67b7fcf8f168364861aec2fde03b');
 const PW='주현아 보고싶다';
 const NUMS=['SONG 01','SONG 02','SONG 03','SONG 04'];
 const COLS=['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+const SITE='https://rlcjf6029-rgb.github.io/pilgrim-worship';
 let isAdmin=false,pendingPdf=null,curData=null,arcAll=[];
+
+// 찬양 추천 상태
+let recItems=[],recSortMode='new',recUnsub=null;
 
 const io=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
@@ -456,18 +561,48 @@ function ytId(url){
 function bBars(){
   return [4,8,5,10,6,9,4].map((h,i)=>`<b style="height:${h}px;opacity:${i%2===0?1:.45}"></b>`).join('');
 }
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function timeAgo(ts){
+  if(!ts)return'';
+  const d=Date.now()-ts,m=Math.floor(d/60000);
+  if(m<1)return'방금 전';
+  if(m<60)return`${m}분 전`;
+  const h=Math.floor(m/60);
+  if(h<24)return`${h}시간 전`;
+  const day=Math.floor(h/24);
+  if(day<7)return`${day}일 전`;
+  return new Date(ts).toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
+}
+function getDeviceId(){
+  let id=localStorage.getItem('pilgrim_did');
+  if(!id){id='d_'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('pilgrim_did',id);}
+  return id;
+}
+const DID=getDeviceId();
+function getLiked(){try{return new Set(JSON.parse(localStorage.getItem('pilgrim_likes')||'[]'));}catch{return new Set();}}
+function saveLiked(s){localStorage.setItem('pilgrim_likes',JSON.stringify([...s]));}
+function getRecSeen(){return parseInt(localStorage.getItem('pilgrim_rec_seen')||'0',10);}
+function setRecSeen(ts){localStorage.setItem('pilgrim_rec_seen',String(ts));}
 
 function goPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('pg-'+id).classList.add('on');
+  const pg=document.getElementById('pg-'+id);
+  if(!pg)return;
+  pg.classList.add('on');
+  window.scrollTo(0,0);
   if(id==='home'){document.getElementById('tab-home').classList.add('on');renderHome();}
   if(id==='archive'){document.getElementById('tab-archive').classList.add('on');renderArchive();}
+  if(id==='rec'){document.getElementById('tab-rec').classList.add('on');openRec();}
   if(id==='admin')renderAdminForms();
 }
 
+document.getElementById('navBrand').onclick=()=>goPage('home');
 document.getElementById('tab-home').onclick=()=>goPage('home');
 document.getElementById('tab-archive').onclick=()=>goPage('archive');
+document.getElementById('tab-rec').onclick=()=>goPage('rec');
 document.getElementById('adminBtn').onclick=()=>isAdmin?goPage('admin'):goPage('login');
 document.getElementById('loginBtn').onclick=doLogin;
 document.getElementById('pwInput').onkeydown=e=>{if(e.key==='Enter')doLogin();};
@@ -477,6 +612,206 @@ document.getElementById('arcClose').onclick=closeModal;
 document.getElementById('arcDrop').onclick=e=>{if(e.target===e.currentTarget)closeModal();};
 document.getElementById('dropz').onclick=()=>document.getElementById('pdfInput').click();
 document.getElementById('pdfInput').onchange=function(){onPdfPick(this);};
+document.getElementById('recShortcut').onclick=()=>goPage('rec');
+
+document.getElementById('sortNew').onclick=function(){
+  recSortMode='new';this.classList.add('on');document.getElementById('sortLike').classList.remove('on');renderRecList();
+};
+document.getElementById('sortLike').onclick=function(){
+  recSortMode='like';this.classList.add('on');document.getElementById('sortNew').classList.remove('on');renderRecList();
+};
+
+document.getElementById('recInput').addEventListener('input',function(){
+  const len=this.value.length;
+  const el=document.getElementById('recChar');
+  el.textContent=`${len} / 200`;
+  el.className='rec-char'+(len>180?' warn':'')+(len>=200?' over':'');
+  document.getElementById('recSubmit').disabled=(len===0||len>200);
+  checkDup(this.value);
+});
+
+document.getElementById('recSubmit').onclick=async function(){
+  const text=document.getElementById('recInput').value.trim();
+  if(!text||text.length>200)return;
+  this.disabled=true;this.textContent='등록 중...';
+  try{
+    await db.collection('recommendations').add({text,likes:0,adopted:false,commentCount:0,ts:Date.now(),deviceId:DID});
+    document.getElementById('recInput').value='';
+    document.getElementById('recChar').textContent='0 / 200';
+    document.getElementById('recDupWarn').classList.remove('on');
+    toast('추천이 등록됐어요 🎵');
+  }catch(e){console.error(e);toast('등록 실패: '+e.message);}
+  this.disabled=false;this.textContent='추천하기 ✦';
+};
+
+function checkDup(val){
+  const warn=document.getElementById('recDupWarn');
+  if(!val.trim()||!recItems.length){warn.classList.remove('on');return;}
+  const norm=val.trim().toLowerCase().replace(/\s+/g,' ');
+  const dup=recItems.find(r=>{const t=r.text.trim().toLowerCase().replace(/\s+/g,' ');return t.includes(norm)||norm.includes(t);});
+  if(dup){document.getElementById('recDupMsg').textContent=`"${dup.text.slice(0,20)}${dup.text.length>20?'...':''}" 와 비슷한 추천이 이미 있어요!`;warn.classList.add('on');}
+  else warn.classList.remove('on');
+}
+
+function openRec(){
+  // dot 제거
+  const maxTs=recItems.length?Math.max(...recItems.map(r=>r.ts||0)):Date.now();
+  setRecSeen(maxTs);
+  document.getElementById('recDot').classList.remove('on');
+  if(recUnsub)return; // 리스너 이미 있으면 패스
+  document.getElementById('recNormalList').innerHTML='<div class="loading"><div class="spin"></div>불러오는 중...</div>';
+  try{
+    recUnsub=db.collection('recommendations').orderBy('ts','desc').onSnapshot(snap=>{
+      recItems=[];
+      snap.forEach(doc=>recItems.push({id:doc.id,...doc.data()}));
+      renderRecList();
+    },err=>{
+      console.error('rec error:',err);
+      document.getElementById('recNormalList').innerHTML='<div class="empty"><div class="ei">⚠️</div><p>불러오기 실패</p></div>';
+    });
+  }catch(e){console.error(e);}
+}
+
+function renderRecList(){
+  const liked=getLiked();
+  const adopted=recItems.filter(r=>r.adopted);
+  const normal=recItems.filter(r=>!r.adopted);
+  if(recSortMode==='like')normal.sort((a,b)=>(b.likes||0)-(a.likes||0)||(b.ts||0)-(a.ts||0));
+  else normal.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  document.getElementById('recTotal').textContent=recItems.length;
+  const adoptedWrap=document.getElementById('recAdoptedWrap');
+  const adoptedList=document.getElementById('recAdoptedList');
+  if(adopted.length){
+    adoptedWrap.style.display='block';
+    adoptedList.innerHTML=adopted.map(r=>buildRecCard(r,liked)).join('');
+    adoptedList.querySelectorAll('.rec-card').forEach((el,i)=>{el.style.transitionDelay=`${i*0.04}s`;io.observe(el);});
+  }else{adoptedWrap.style.display='none';}
+  const normalList=document.getElementById('recNormalList');
+  if(!normal.length){
+    normalList.innerHTML='<div class="empty"><div class="ei">🎵</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해보세요!</p></div>';
+  }else{
+    normalList.innerHTML=normal.map(r=>buildRecCard(r,liked)).join('');
+    normalList.querySelectorAll('.rec-card').forEach((el,i)=>{el.style.transitionDelay=`${i*0.04}s`;io.observe(el);});
+  }
+  bindRecEvents();
+  updateRecDot();
+}
+
+function buildRecCard(r,liked){
+  const isLiked=liked.has(r.id);
+  const isAdopted=!!r.adopted;
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
+    <div class="rec-card-top">
+      <div class="rec-body"><span class="rec-body-text">${escHtml(r.text)}</span></div>
+      ${isAdopted?'<div class="rec-adopted-badge">✓ 콘티 반영됨</div>':''}
+    </div>
+    <div class="rec-meta">
+      <span class="rec-time">${timeAgo(r.ts)}</span>
+      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'❤️':'🤍'} ${r.likes||0}</button>
+      <button class="rec-cmt-toggle" data-id="${r.id}">💬 ${r.commentCount||0}</button>
+      ${adminBtns}
+    </div>
+    <div class="rec-cmt-area" id="cmtArea_${r.id}">
+      <div class="rec-cmt-list" id="cmtList_${r.id}"></div>
+      <div class="rec-cmt-form">
+        <textarea class="rec-cmt-input" id="cmtInput_${r.id}" placeholder="댓글을 입력하세요..." rows="1"></textarea>
+        <button class="rec-cmt-submit" data-id="${r.id}">등록</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindRecEvents(){
+  document.querySelectorAll('.rec-like-btn').forEach(btn=>{
+    btn.onclick=async function(){
+      const id=this.dataset.id,liked=getLiked(),ref=db.collection('recommendations').doc(id);
+      try{
+        if(liked.has(id)){liked.delete(id);saveLiked(liked);await ref.update({likes:firebase.firestore.FieldValue.increment(-1)});}
+        else{liked.add(id);saveLiked(liked);await ref.update({likes:firebase.firestore.FieldValue.increment(1)});}
+      }catch(e){console.error(e);}
+    };
+  });
+  document.querySelectorAll('.rec-cmt-toggle').forEach(btn=>{
+    btn.onclick=async function(){
+      const id=this.dataset.id,area=document.getElementById('cmtArea_'+id);
+      const isOpen=area.classList.toggle('open');
+      if(isOpen)await loadComments(id);
+    };
+  });
+  document.querySelectorAll('.rec-cmt-submit').forEach(btn=>{
+    btn.onclick=async function(){
+      const id=this.dataset.id,inp=document.getElementById('cmtInput_'+id);
+      const text=inp.value.trim();if(!text||text.length>200)return;
+      this.disabled=true;
+      try{
+        await db.collection('recommendations').doc(id).collection('comments').add({text,ts:Date.now(),deviceId:DID});
+        await db.collection('recommendations').doc(id).update({commentCount:firebase.firestore.FieldValue.increment(1)});
+        inp.value='';await loadComments(id);
+      }catch(e){toast('댓글 등록 실패');}
+      this.disabled=false;
+    };
+  });
+  if(isAdmin){
+    document.querySelectorAll('.rec-adopt-btn').forEach(btn=>{
+      btn.onclick=async function(){
+        const id=this.dataset.id,wasAdopted=this.dataset.adopted==='1';
+        try{await db.collection('recommendations').doc(id).update({adopted:!wasAdopted});toast(wasAdopted?'채택이 취소됐어요':'콘티에 반영됐어요 🎉');}
+        catch(e){toast('오류: '+e.message);}
+      };
+    });
+    document.querySelectorAll('.rec-del-btn').forEach(btn=>{
+      btn.onclick=async function(){
+        if(!confirm('정말 삭제할까요?'))return;
+        try{await db.collection('recommendations').doc(this.dataset.id).delete();toast('삭제됐어요');}
+        catch(e){toast('삭제 실패');}
+      };
+    });
+  }
+}
+
+async function loadComments(recId){
+  const listEl=document.getElementById('cmtList_'+recId);if(!listEl)return;
+  try{
+    const snap=await db.collection('recommendations').doc(recId).collection('comments').orderBy('ts','asc').get();
+    const items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(!items.length){listEl.innerHTML='<div style="font-size:12px;color:var(--t4);padding:4px 0 8px">아직 댓글이 없어요</div>';return;}
+    listEl.innerHTML=items.map(c=>`<div class="rec-cmt-item">
+      <div class="rec-cmt-text">${escHtml(c.text)}</div>
+      <div class="rec-cmt-meta"><span class="rec-cmt-time">${timeAgo(c.ts)}</span>
+      ${isAdmin?`<button class="rec-cmt-del" data-rec="${recId}" data-cid="${c.id}">삭제</button>`:''}</div>
+    </div>`).join('');
+    if(isAdmin)listEl.querySelectorAll('.rec-cmt-del').forEach(btn=>{
+      btn.onclick=async function(){
+        if(!confirm('댓글을 삭제할까요?'))return;
+        try{
+          await db.collection('recommendations').doc(this.dataset.rec).collection('comments').doc(this.dataset.cid).delete();
+          await db.collection('recommendations').doc(this.dataset.rec).update({commentCount:firebase.firestore.FieldValue.increment(-1)});
+          await loadComments(this.dataset.rec);toast('댓글이 삭제됐어요');
+        }catch(e){toast('삭제 실패');}
+      };
+    });
+  }catch(e){listEl.innerHTML='<div style="font-size:12px;color:var(--red)">불러오기 실패</div>';}
+}
+
+function updateRecDot(){
+  if(document.getElementById('pg-rec').classList.contains('on'))return;
+  const seen=getRecSeen();
+  const hasNew=recItems.some(r=>(r.ts||0)>seen);
+  document.getElementById('recDot').classList.toggle('on',hasNew);
+}
+
+// 백그라운드 dot 체크 — 에러가 나도 메인에 절대 영향 없음
+setTimeout(function(){
+  try{
+    db.collection('recommendations').orderBy('ts','desc').limit(5).get()
+      .then(snap=>{
+        const seen=getRecSeen();let hasNew=false;
+        snap.forEach(doc=>{const d=doc.data();if((d.ts||0)>seen)hasNew=true;});
+        if(hasNew)document.getElementById('recDot').classList.add('on');
+      }).catch(function(){});
+  }catch(e){}
+},1500); // 1.5초 후 실행 — 메인 렌더링 방해 안 함
 
 // 카카오 공유
 document.getElementById('kakaoShareBtn').onclick=function(){
@@ -488,19 +823,19 @@ document.getElementById('kakaoShareBtn').onclick=function(){
       title:`🎵 ${d.week||'이번 주'} 필그림 찬양팀 콘티`,
       description:songs,
       imageUrl:`https://img.youtube.com/vi/${ytId(d.songs?.[0]?.url)||'default'}/mqdefault.jpg`,
-      link:{mobileWebUrl:'https://pilgrim-worship.netlify.app',webUrl:'https://pilgrim-worship.netlify.app'}
+      link:{mobileWebUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship',webUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship'}
     },
-    buttons:[{title:'콘티 확인하기',link:{mobileWebUrl:'https://pilgrim-worship.netlify.app',webUrl:'https://pilgrim-worship.netlify.app'}}]
+    buttons:[{title:'콘티 확인하기',link:{mobileWebUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship',webUrl:'https://rlcjf6029-rgb.github.io/pilgrim-worship'}}]
   });
 };
 
 // 링크 복사
 document.getElementById('copyLinkBtn').onclick=function(){
-  navigator.clipboard.writeText('https://pilgrim-worship.netlify.app')
+  navigator.clipboard.writeText('https://rlcjf6029-rgb.github.io/pilgrim-worship')
     .then(()=>toast('링크가 복사됐어요 🔗'))
     .catch(()=>{
       const el=document.createElement('input');
-      el.value='https://pilgrim-worship.netlify.app';
+      el.value='https://rlcjf6029-rgb.github.io/pilgrim-worship';
       document.body.appendChild(el);el.select();
       document.execCommand('copy');document.body.removeChild(el);
       toast('링크가 복사됐어요 🔗');
@@ -650,7 +985,7 @@ async function renderHome(){
   if(!d){document.getElementById('songsList').innerHTML=`<div class="empty"><div class="ei">🎵</div><p>아직 등록된 콘티가 없어요</p></div>`;return;}
   document.getElementById('heroWeekLabel').textContent=d.week||'이번 주 콘티';
   document.getElementById('heroDate').textContent=d.savedAt?d.savedAt+' 업데이트':'';
-  if(d.notice){document.getElementById('noticeText').textContent=d.notice;document.getElementById('noticeWrap').style.display='block';}
+  if(d.notice){document.getElementById('noticeText').textContent=d.notice;document.getElementById('noticeWrap').style.display='flex';}
   else{document.getElementById('noticeWrap').style.display='none';}
 
   // playlist banner
