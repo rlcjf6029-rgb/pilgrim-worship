@@ -369,6 +369,15 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 /* 내 추천 dot */
 .rec-mine-dot{width:5px;height:5px;border-radius:50%;background:var(--c1);display:inline-block;margin-left:6px;vertical-align:middle;flex-shrink:0}
 
+/* 지난기록 풀뷰 페이지 */
+.pg-arc-detail{display:none;min-height:calc(100vh - var(--nh))}
+.pg-arc-detail.on{display:block}
+.arc-back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--surface);border:.5px solid var(--gb);border-radius:20px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;font-family:inherit;transition:all .2s var(--ease);backdrop-filter:blur(12px);margin-bottom:20px}
+.arc-back-btn:hover{background:var(--t1);color:var(--bg);border-color:var(--t1)}
+/* 모달 전체보기 버튼 */
+.mfull-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--adim2);border:.5px solid rgba(0,113,227,.2);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:inherit;transition:all .2s var(--ease);flex-shrink:0;white-space:nowrap}
+.mfull-btn:hover{background:var(--accent);color:#fff;border-color:transparent}
+
 /* 위로가기 버튼 */
 .scroll-top{position:fixed;bottom:32px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--surface);border:.5px solid var(--gb);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;opacity:0;transform:translateY(12px) scale(.85);transition:all .35s var(--spring);pointer-events:none}
 .scroll-top.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
@@ -555,6 +564,18 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       </div>
     </div>
   </div>
+  <!-- 지난기록 풀뷰 -->
+  <div class="pg-arc-detail" id="pg-arc-detail">
+    <div class="hero" style="padding-bottom:16px">
+      <button class="arc-back-btn" id="arcDetailBack">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+        지난 기록으로
+      </button>
+      <div class="hero-eyebrow"><div class="edot" style="background:var(--c1)"></div><span class="etxt" id="arcDetailLabel" style="color:var(--c1)"></span></div>
+      <h1 class="hero-title" id="arcDetailTitle" style="font-size:clamp(28px,5vw,44px)"></h1>
+    </div>
+    <div class="sec" id="arcDetailBody" style="padding-top:0"></div>
+  </div>
 </main>
 
 <div class="bdrop" id="arcDrop">
@@ -562,6 +583,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
     <div class="mhandle"></div>
     <div class="mhd">
       <div class="mtitle" id="arcTitle"></div>
+      <button class="mfull-btn" id="arcFullBtn">전체 보기</button>
       <button class="mclose" id="arcClose">✕</button>
     </div>
     <div class="mbody" id="arcBody"></div>
@@ -667,6 +689,15 @@ document.getElementById('saveBtn').onclick=saveConti;
 document.getElementById('logoutBtn').onclick=doLogout;
 document.getElementById('arcClose').onclick=closeModal;
 document.getElementById('arcDrop').onclick=e=>{if(e.target===e.currentTarget)closeModal();};
+document.getElementById('arcFullBtn').onclick=function(){
+  const idx=+document.getElementById('arcModal').dataset.arcIdx;
+  closeModal();
+  openArcDetail(idx);
+};
+document.getElementById('arcDetailBack').onclick=function(){
+  document.getElementById('pg-arc-detail').classList.remove('on');
+  goPage('archive');
+};
 document.getElementById('scrollTop').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 window.addEventListener('scroll',function(){
   document.getElementById('scrollTop').classList.toggle('on',window.scrollY>300);
@@ -746,8 +777,10 @@ function openRec(){
 function renderRecList(query){
   const q=(query!==undefined?query:(document.getElementById('recSearch')?.value||'')).trim().toLowerCase();
   const liked=getLiked();
-  // 최근 콘티 곡 제목 목록
-  const recentSongs=new Set((curData?.songs||[]).filter(s=>s.title).map(s=>s.title.toLowerCase()));
+  // 최근 8주 콘티 곡 제목 목록
+  const recentSongs=new Set(
+    arcAll.slice(0,8).flatMap(c=>(c.songs||[]).filter(s=>s.title).map(s=>s.title.toLowerCase()))
+  );
   const adopted=recItems.filter(r=>r.adopted);
   let normal=recItems.filter(r=>!r.adopted);
   // 검색 필터
@@ -1299,6 +1332,7 @@ document.getElementById('arcSearchClear').onclick=function(){
 
 function openModal(i){
   const c=arcAll[i];if(!c)return;
+  document.getElementById('arcModal').dataset.arcIdx=i;
   document.getElementById('arcTitle').textContent=c.week||'주차 미설정';
   let body='';
 
@@ -1340,7 +1374,8 @@ function openModal(i){
           <a href="${s.url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.35);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;text-decoration:none">▶ YouTube에서 듣기</a>
         </div>`:''}
       </div>`:''}
-      <div style="padding:9px 0 14px;text-align:center;font-size:11px;color:var(--t4);border-top:.5px solid var(--gb)">디테일 보기 &#8964;</div>
+      <div style="padding:9px 0 14px;text-align:center;font-size:11px;color:var(--t4);border-top:.5px solid var(--gb);cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.style.color=this.nextElementSibling.style.display==='block'?'var(--accent)':'var(--t4)'">디테일 보기 &#8964;</div>
+      <div style="display:none;padding:14px 18px 16px;border-top:.5px solid var(--gb);font-size:13px;color:var(--t2);line-height:1.8;white-space:pre-wrap">${s.detail||'<span style="color:var(--t4);font-style:italic">등록된 디테일이 없어요</span>'}</div>
     </div>`;
   });
   body+=`</div>`;
@@ -1361,6 +1396,109 @@ function openModal(i){
   document.getElementById('arcBody').innerHTML=body;
   document.getElementById('arcDrop').classList.add('on');
 }
+function openArcDetail(i){
+  const c=arcAll[i];if(!c)return;
+  document.getElementById('arcDetailLabel').textContent=c.week||'지난 기록';
+  document.getElementById('arcDetailTitle').textContent=c.week||'주차 미설정';
+
+  const ALLCOLS=['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+  const ALLNUMS=['SONG 01','SONG 02','SONG 03','SONG 04'];
+  while(ALLCOLS.length<(c.songs?.length||0))ALLCOLS.push('var(--t3)');
+  while(ALLNUMS.length<(c.songs?.length||0))ALLNUMS.push(`SONG 0${ALLNUMS.length+1}`);
+
+  let html='';
+
+  // 공지
+  if(c.notice)html+=`<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.12);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--t2);margin-bottom:16px">&#128226; ${c.notice}</div>`;
+
+  // 재생목록
+  if(c.playlist)html+=`<div style="background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#ff0000,#cc0000);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+      </div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--t1)">재생목록</div><div style="font-size:12px;color:var(--t3)">YouTube Playlist</div></div>
+    </div>
+    <a href="${c.playlist}" target="_blank" style="background:#ff0000;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:12px;text-decoration:none;flex-shrink:0">&#9654; 재생하기</a>
+  </div>`;
+
+  // 곡 카드 &#8212; buildCard 스타일 그대로
+  const songs=(c.songs||[]).filter(s=>s.title||s.url);
+  if(songs.length){
+    html+=`<div class="songs" id="arcDetailSongs">`;
+    songs.forEach((s,idx)=>{
+      if(!s.title&&!s.url)return;
+      const vid=ytId(s.url);
+      const thumb=vid?`https://img.youtube.com/vi/${vid}/maxresdefault.jpg`:null;
+      const thumbHtml=thumb?`
+        <div class="sthumb">
+          <img src="${thumb}" alt="" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${vid}/mqdefault.jpg'">
+          <div class="sthumb-ov">${s.url?`<a class="yt-play" href="${s.url}" target="_blank">&#9654; YouTube에서 듣기</a>`:''}</div>
+        </div>`
+        :(s.url?`<div style="padding:0 20px 14px"><a href="${s.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#ff0000;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:12px;text-decoration:none">&#9654; YouTube</a></div>`:'');
+      html+=`<div class="scard" data-i="${idx%4}">
+        <div class="scard-glow"></div>
+        <div class="scard-inner">
+          <div class="scard-hdr">
+            <div class="scard-left">
+              <div class="snum">${ALLNUMS[idx]||`SONG 0${idx+1}`}<div class="snum-dash"></div></div>
+              <div class="stitle">${s.title||'제목 없음'}</div>
+              <div class="sbadges">${s.key?`<span class="badge badge-key">&#9834; ${s.key}</span>`:''}</div>
+            </div>
+            <div class="scard-right">${s.bpm?`<div class="bpm"><div class="bpm-bars">${bBars()}</div>${s.bpm} BPM</div>`:''}</div>
+          </div>
+        </div>
+        ${thumbHtml}
+        <div class="sehint"><span>디테일 보기</span><svg class="echev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="sdet"><div class="sdet-in">
+          <div class="dtag">&#10022; 디테일</div>
+          ${s.detail?`<div class="dbody">${s.detail}</div>`:`<div class="dempty">등록된 디테일이 없어요</div>`}
+        </div></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // 악보
+  if(c.pdfUrl)html+=`<div style="margin-top:20px;background:var(--surface);border-radius:16px;border:.5px solid var(--gb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#ff3b30,#ff6b6b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--t1)">${c.pdfName||'악보.pdf'}</div><div style="font-size:12px;color:var(--t3)">악보 · PDF</div></div>
+    </div>
+    <a href="${c.pdfUrl}" target="_blank" class="dl-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>다운로드
+    </a>
+  </div>`;
+
+  document.getElementById('arcDetailBody').innerHTML=html;
+
+  // 카드 클릭 토글 이벤트
+  const songsList=document.getElementById('arcDetailSongs');
+  if(songsList){
+    songsList.querySelectorAll('.scard').forEach((c,i)=>{
+      c.style.transition=`opacity .45s ${.06+i*.08}s var(--smooth),transform .45s ${.06+i*.08}s var(--smooth),box-shadow .35s var(--ease),border-color .25s var(--ease)`;
+      io.observe(c);
+    });
+    songsList.addEventListener('click',function(e){
+      const card=e.target.closest('.scard');if(!card)return;
+      if(e.target.closest('a'))return;
+      const det=card.querySelector('.sdet');
+      const open=card.classList.toggle('open');
+      det.style.maxHeight=open?det.scrollHeight+'px':'0';
+      det.classList.toggle('open',open);
+    });
+  }
+
+  // 페이지 전환
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-archive').classList.add('on');
+  document.getElementById('pg-arc-detail').classList.add('on');
+  window.scrollTo(0,0);
+}
+
 function closeModal(){
   document.getElementById('arcDrop').classList.remove('on');
 }
