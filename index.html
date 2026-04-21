@@ -356,6 +356,19 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-cmt-submit{padding:9px 14px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
 .rec-cmt-submit:hover{background:var(--accent2)}
 
+/* 찬양 추천 검색 */
+.rec-search-wrap{margin-bottom:16px}
+.rec-search-box{display:flex;align-items:center;gap:10px;background:var(--surface);border:.5px solid var(--gb);border-radius:12px;padding:10px 14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:border-color .2s,box-shadow .2s}
+.rec-search-box:focus-within{border-color:var(--c1);box-shadow:0 0 0 3px var(--c1d)}
+.rec-search-input{flex:1;border:none;background:transparent;font-size:14px;font-family:inherit;color:var(--t1);outline:none}
+.rec-search-input::placeholder{color:var(--t4)}
+.rec-search-clear{background:none;border:none;cursor:pointer;font-size:12px;color:var(--t4);padding:2px 4px;border-radius:4px;transition:color .15s;font-family:inherit}
+.rec-search-clear:hover{color:var(--t2)}
+/* 최근 선곡됨 뱃지 */
+.rec-recent-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(255,159,10,.12);border:.5px solid rgba(255,159,10,.3);border-radius:8px;font-size:10px;font-weight:700;color:var(--orange);margin-left:6px;vertical-align:middle;flex-shrink:0}
+/* 내 추천 dot */
+.rec-mine-dot{width:5px;height:5px;border-radius:50%;background:var(--c1);display:inline-block;margin-left:6px;vertical-align:middle;flex-shrink:0}
+
 /* 위로가기 버튼 */
 .scroll-top{position:fixed;bottom:32px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--surface);border:.5px solid var(--gb);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;opacity:0;transform:translateY(12px) scale(.85);transition:all .35s var(--spring);pointer-events:none}
 .scroll-top.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
@@ -473,10 +486,17 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
         </div>
       </div>
       <div class="rec-header">
-        <div class="rec-count">🎵 <span id="recTotal">0</span>개의 추천</div>
+        <div class="rec-count">&#x1F3B5; <span id="recTotal">0</span>개의 추천</div>
         <div class="rec-sort">
           <button class="rec-sort-btn on" id="sortNew">최신순</button>
           <button class="rec-sort-btn" id="sortLike">좋아요순</button>
+        </div>
+      </div>
+      <div class="rec-search-wrap">
+        <div class="rec-search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;color:var(--t4)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" class="rec-search-input" id="recSearch" placeholder="추천된 찬양 검색...">
+          <button class="rec-search-clear" id="recSearchClear" style="display:none">✕</button>
         </div>
       </div>
       <div class="rec-list" id="recNormalList"><div class="loading"><div class="spin"></div>불러오는 중...</div></div>
@@ -661,6 +681,16 @@ document.getElementById('sortNew').onclick=function(){
 document.getElementById('sortLike').onclick=function(){
   recSortMode='like';this.classList.add('on');document.getElementById('sortNew').classList.remove('on');renderRecList();
 };
+document.getElementById('recSearch').addEventListener('input',function(){
+  const q=this.value;
+  document.getElementById('recSearchClear').style.display=q?'inline':'none';
+  renderRecList(q);
+});
+document.getElementById('recSearchClear').onclick=function(){
+  document.getElementById('recSearch').value='';
+  this.style.display='none';
+  renderRecList('');
+};
 
 document.getElementById('recInput').addEventListener('input',function(){
   const len=this.value.length;
@@ -713,40 +743,54 @@ function openRec(){
   }catch(e){console.error(e);}
 }
 
-function renderRecList(){
+function renderRecList(query){
+  const q=(query!==undefined?query:(document.getElementById('recSearch')?.value||'')).trim().toLowerCase();
   const liked=getLiked();
+  // 최근 콘티 곡 제목 목록
+  const recentSongs=new Set((curData?.songs||[]).filter(s=>s.title).map(s=>s.title.toLowerCase()));
   const adopted=recItems.filter(r=>r.adopted);
-  const normal=recItems.filter(r=>!r.adopted);
+  let normal=recItems.filter(r=>!r.adopted);
+  // 검색 필터
+  if(q)normal=normal.filter(r=>r.text.toLowerCase().includes(q));
   if(recSortMode==='like')normal.sort((a,b)=>(b.likes||0)-(a.likes||0)||(b.ts||0)-(a.ts||0));
   else normal.sort((a,b)=>(b.ts||0)-(a.ts||0));
-  // 채택된 것들은 항상 최하단 (정렬 무관)
   adopted.sort((a,b)=>(b.ts||0)-(a.ts||0));
   document.getElementById('recTotal').textContent=recItems.length;
   const normalList=document.getElementById('recNormalList');
-  const all=[...normal,...adopted];
-  if(!all.length){
-    normalList.innerHTML='<div class="empty"><div class="ei">🎵</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해보세요!</p></div>';
-  }else{
-    // 채택 구분선
-    let html=normal.map(r=>buildRecCard(r,liked)).join('');
-    if(adopted.length){
-      html+=`<div class="rec-sec-label" style="margin-top:${normal.length?'20px':'0'}">콘티에 반영됨 ✓</div>`;
-      html+=adopted.map(r=>buildRecCard(r,liked)).join('');
-    }
-    normalList.innerHTML=html;
-    normalList.querySelectorAll('.rec-card').forEach((el,i)=>{el.style.transitionDelay=`${i*0.04}s`;io.observe(el);});
+  if(!q&&!normal.length&&!adopted.length){
+    normalList.innerHTML='<div class="empty"><div class="ei">&#x1F3B5;</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해보세요!</p></div>';
+    bindRecEvents();updateRecDot();return;
   }
+  if(q&&!normal.length&&!adopted.length){
+    normalList.innerHTML=`<div class="empty"><div class="ei">&#x1F50D;</div><p>"${escHtml(q)}" 검색 결과가 없어요</p></div>`;
+    bindRecEvents();updateRecDot();return;
+  }
+  let html=normal.map(r=>buildRecCard(r,liked,recentSongs)).join('');
+  if(!q&&adopted.length){
+    html+=`<div class="rec-sec-label" style="margin-top:${normal.length?'20px':'0'}">콘티에 반영됨 &#x2713;</div>`;
+    html+=adopted.map(r=>buildRecCard(r,liked,recentSongs)).join('');
+  }
+  normalList.innerHTML=html;
+  normalList.querySelectorAll('.rec-card').forEach((el,i)=>{
+    el.style.transitionDelay=`${i*0.04}s`;
+    if(!q)io.observe(el); else el.classList.add('visible');
+  });
   bindRecEvents();
   updateRecDot();
 }
 
-function buildRecCard(r,liked){
+function buildRecCard(r,liked,recentSongs){
   const isLiked=liked.has(r.id);
   const isAdopted=!!r.adopted;
-  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}" data-text="${escHtml(r.text)}">수정</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  const isMine=(r.deviceId===DID);
+  // 최근 선곡됨 체크 &#8212; 추천 텍스트에 최근 콘티 곡명이 포함되는지
+  const isRecent=recentSongs&&[...recentSongs].some(t=>r.text.toLowerCase().includes(t));
+  const recentBadge=isRecent&&!isAdopted?'<span class="rec-recent-badge">&#x1F3B5; 최근 선곡됨</span>':'';
+  const mineDot=isMine?'<span class="rec-mine-dot" title="내가 쓴 추천"></span>':'';
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
-      <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span></div>
+      <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
       ${isAdopted?'<div class="rec-adopted-badge">&#x2713; 콘티 반영됨</div>':''}
     </div>
     <div class="rec-edit-area" id="recEditArea_${r.id}" style="display:none;margin-top:10px">
