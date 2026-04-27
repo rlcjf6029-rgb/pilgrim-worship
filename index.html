@@ -184,28 +184,62 @@ main{padding-top:var(--nh)}
 .dbody{font-size:14px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
 .dempty{font-size:13px;color:var(--t4);font-style:italic}
 
-/* DETAIL SYSTEM */
-.det-conductor{background:var(--adim2);border:.5px solid rgba(0,113,227,.15);border-radius:14px;padding:14px 16px;margin-bottom:16px}
-.det-conductor-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.det-conductor-label::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent)}
-.det-conductor-body{font-size:14px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
+/* ===== DETAIL SYSTEM ===== */
+.det-edit-trigger{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0;backdrop-filter:blur(8px)}
+.det-edit-trigger:hover{color:var(--t2);border-color:var(--t3)}
+.det-edit-trigger.active{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 2px 10px var(--adim)}
+.det-conductor{background:linear-gradient(135deg,var(--adim2),rgba(94,92,230,.06));border:.5px solid rgba(41,151,255,.2);border-radius:16px;padding:15px 17px;margin-bottom:14px;position:relative;overflow:hidden}
+.det-conductor::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--accent),var(--c1));border-radius:16px 16px 0 0}
+.det-conductor-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.det-conductor-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:ripple 2.5s 1s infinite;flex-shrink:0}
+.det-conductor-body{font-size:13.5px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
 .det-conductor-empty{font-size:13px;color:var(--t4);font-style:italic}
-.det-part-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
-.det-part-tabs::-webkit-scrollbar{display:none}
-.det-ptab{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t3);cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s var(--ease);flex-shrink:0}
-.det-ptab:hover{color:var(--t1);background:var(--bg3)}
-.det-ptab.on{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 2px 8px var(--adim)}
-.det-part-body{font-size:14px;line-height:1.85;color:var(--t2);white-space:pre-wrap;min-height:24px}
+.det-conductor-ta{width:100%;margin-top:11px;padding:10px 13px;border:.5px solid rgba(41,151,255,.3);border-radius:10px;font-size:13px;font-family:inherit;color:var(--t1);background:rgba(41,151,255,.05);resize:vertical;min-height:80px;line-height:1.65;outline:none;transition:all .2s;display:none}
+.det-conductor-ta:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--adim)}
+.det-conductor-ta.show{display:block}
+.det-conductor-savebtn{display:none;margin-top:8px;padding:7px 16px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s}
+.det-conductor-savebtn:hover{background:var(--accent2)}
+.det-conductor-savebtn.show{display:inline-flex;align-items:center}
+.det-parts{display:flex;flex-direction:column;gap:6px}
+.det-part-item{border-radius:13px;overflow:hidden;border:.5px solid var(--gb);transition:border-color .25s var(--ease)}
+.det-part-item.has-content{border-color:var(--part-color,var(--gb))}
+.det-part-hdr{display:flex;align-items:center;gap:10px;padding:11px 15px;cursor:pointer;transition:background .2s var(--ease);position:relative;user-select:none;background:var(--surface2)}
+.det-part-hdr:hover{background:var(--surface)}
+.det-part-bar{width:3px;height:16px;border-radius:3px;background:var(--part-color,var(--bg3));flex-shrink:0;transition:all .3s var(--spring);box-shadow:0 0 0 0 var(--part-color,transparent)}
+.det-part-item.has-content .det-part-bar{box-shadow:0 0 8px var(--part-color,transparent)}
+.det-part-name{font-size:13px;font-weight:600;color:var(--t2);flex:1;transition:color .2s}
+.det-part-item.has-content .det-part-name{color:var(--t1)}
+.det-part-item.open .det-part-name{color:var(--part-color,var(--t1))}
+.det-part-status{font-size:10px;font-weight:600;color:var(--part-color,var(--t4));opacity:0;transform:translateX(-4px);transition:all .25s var(--ease)}
+.det-part-item.has-content .det-part-status{opacity:1;transform:translateX(0)}
+.det-part-chevron{width:15px;height:15px;flex-shrink:0;transition:transform .38s var(--spring);stroke:var(--t4)}
+.det-part-item.open .det-part-chevron{transform:rotate(180deg);stroke:var(--part-color,var(--t2))}
+.det-part-body{max-height:0;overflow:hidden;transition:max-height .42s var(--smooth)}
+.det-part-body.open{max-height:600px}
+.det-part-inner{padding:13px 16px 15px;border-top:.5px solid var(--gb)}
+.det-part-text{font-size:13.5px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
 .det-part-empty{font-size:13px;color:var(--t4);font-style:italic}
-/* 디테일 편집 모드 */
-.det-edit-bar{display:none;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:.5px solid var(--gb);gap:8px}
-.det-edit-bar.on{display:flex}
-.det-edit-textarea{width:100%;padding:10px 13px;border:.5px solid var(--bg3);border-radius:10px;font-size:13px;font-family:inherit;color:var(--t1);background:var(--bg);resize:vertical;min-height:80px;line-height:1.65;outline:none;transition:all .2s}
-.det-edit-textarea:focus{border-color:var(--accent);background:var(--bg2);box-shadow:0 0 0 3px var(--adim)}
-.det-save-btn{padding:7px 15px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
-.det-save-btn:hover{background:var(--accent2)}
-.det-edit-btn{padding:6px 12px;background:var(--bg3);color:var(--t3);font-size:11px;font-weight:600;border:none;border-radius:20px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:4px}
-.det-edit-btn:hover{color:var(--t1);background:var(--bg2)}
+.det-part-ta{width:100%;margin-top:11px;padding:10px 13px;border:.5px solid var(--bg3);border-radius:10px;font-size:13px;font-family:inherit;color:var(--t1);background:var(--bg);resize:vertical;min-height:72px;line-height:1.65;outline:none;transition:all .2s;display:none}
+.det-part-ta.show{display:block}
+.det-part-savebtn{display:none;margin-top:8px;padding:6px 14px;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;color:#fff}
+.det-part-savebtn:hover{opacity:.85;transform:translateY(-1px)}
+.det-part-savebtn.show{display:inline-flex;align-items:center}
+.det-pw-backdrop{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0);transition:background .35s var(--ease);pointer-events:none}
+.det-pw-backdrop.on{background:rgba(0,0,0,.6);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);pointer-events:auto}
+.det-pw-card{background:var(--surface);border:.5px solid var(--gb);border-radius:28px;padding:36px 32px 32px;width:100%;max-width:340px;box-shadow:0 32px 80px rgba(0,0,0,.25),0 0 0 .5px rgba(255,255,255,.06);opacity:0;transform:translateY(20px) scale(.94);transition:all .45s var(--spring);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px)}
+.det-pw-backdrop.on .det-pw-card{opacity:1;transform:translateY(0) scale(1)}
+.det-pw-ico{width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,var(--adim),var(--c1d));border:.5px solid rgba(41,151,255,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:26px;box-shadow:0 8px 24px var(--adim)}
+.det-pw-title{font-size:22px;font-weight:800;letter-spacing:-.5px;text-align:center;margin-bottom:5px}
+.det-pw-sub{font-size:13px;color:var(--t3);text-align:center;margin-bottom:24px;line-height:1.5}
+.det-pw-input{width:100%;padding:13px 16px;border:.5px solid var(--bg3);border-radius:13px;font-size:15px;font-family:inherit;color:var(--t1);background:var(--bg2);outline:none;transition:all .25s;text-align:center;letter-spacing:.1em}
+.det-pw-input:focus{border-color:var(--accent);background:var(--bg);box-shadow:0 0 0 3px var(--adim)}
+.det-pw-err{font-size:12px;color:var(--red);text-align:center;margin-top:8px;height:16px;transition:opacity .2s;opacity:0}
+.det-pw-err.on{opacity:1}
+.det-pw-btn{width:100%;margin-top:18px;padding:14px;background:linear-gradient(135deg,var(--accent),var(--c1));color:#fff;font-size:15px;font-weight:700;border:none;border-radius:13px;cursor:pointer;font-family:inherit;transition:all .25s var(--ease);box-shadow:0 4px 20px var(--adim)}
+.det-pw-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--adim)}
+.det-pw-btn:active{transform:scale(.97)}
+.det-pw-cancel{width:100%;margin-top:10px;padding:11px;background:transparent;color:var(--t3);font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;transition:color .2s;border-radius:10px}
+.det-pw-cancel:hover{color:var(--t1)}
 
 /* SHARE BTN */
 .share-row{display:flex;justify-content:center;padding:8px 0 20px;gap:10px}
@@ -618,6 +652,19 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 </button>
 
 <div class="toast" id="toast"></div>
+
+<!-- 디테일 편집 비번 모달 -->
+<div class="det-pw-backdrop" id="detPwBackdrop">
+  <div class="det-pw-card">
+    <div class="det-pw-ico">&#128274;</div>
+    <div class="det-pw-title">디테일 편집</div>
+    <div class="det-pw-sub">필그림 찬양팀 팀장만 편집할 수 있어요</div>
+    <input class="det-pw-input" type="password" id="detPwInput" placeholder="비밀번호" autocomplete="off">
+    <div class="det-pw-err" id="detPwErr">비밀번호가 맞지 않아요</div>
+    <button class="det-pw-btn" id="detPwConfirm">확인</button>
+    <button class="det-pw-cancel" id="detPwCancel">취소</button>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1099,15 +1146,15 @@ function renderSongForms(d){
         <div class="frow" style="margin-bottom:0"><label>Key</label><input type="text" id="s${i}k" placeholder="G, A, Bb" value="${s.key||''}"></div>
         <div class="frow" style="margin-bottom:0"><label>BPM</label><input type="number" id="s${i}b" placeholder="120" value="${s.bpm||''}" min="1" max="300"></div>
       </div>
-      <div style="margin-top:11px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t4);margin-bottom:10px">&#9998; 디테일</div>
-        <div class="frow"><label>&#127908; 인도자 노트</label><textarea id="s${i}d_conductor" placeholder="전체 곡 흐름, 다이나믹, 전환 포인트 등...">${(typeof s.detail==='object'?s.detail?.conductor:i===0?s.detail:'')||''}</textarea></div>
+      <div style="margin-top:14px;background:var(--bg);border-radius:10px;border:.5px solid var(--bg3);padding:14px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t4);margin-bottom:12px">&#9998; 디테일</div>
+        <div class="frow"><label>&#128309; 인도자 노트</label><textarea id="s${i}d_conductor" placeholder="전체 흐름, 마디 구성, 섹션 코멘트...">${(typeof s.detail==='object'?s.detail?.conductor:(i===0?s.detail:''))||''}</textarea></div>
         <div class="frow"><label>&#127929; 메인건반</label><textarea id="s${i}d_main" placeholder="메인건반 카피 포인트...">${(typeof s.detail==='object'?s.detail?.main:'')||''}</textarea></div>
         <div class="frow"><label>&#127929; 세컨건반</label><textarea id="s${i}d_second" placeholder="세컨건반 카피 포인트...">${(typeof s.detail==='object'?s.detail?.second:'')||''}</textarea></div>
         <div class="frow"><label>&#127928; 베이스</label><textarea id="s${i}d_bass" placeholder="베이스 카피 포인트...">${(typeof s.detail==='object'?s.detail?.bass:'')||''}</textarea></div>
         <div class="frow"><label>&#129345; 드럼</label><textarea id="s${i}d_drum" placeholder="드럼 카피 포인트...">${(typeof s.detail==='object'?s.detail?.drum:'')||''}</textarea></div>
         <div class="frow"><label>&#127928; 일렉</label><textarea id="s${i}d_electric" placeholder="일렉 카피 포인트...">${(typeof s.detail==='object'?s.detail?.electric:'')||''}</textarea></div>
-        <div class="frow"><label>&#127908; 싱어</label><textarea id="s${i}d_singer" placeholder="강조 포인트, 하모니, 가사 관련 특이사항...">${(typeof s.detail==='object'?s.detail?.singer:'')||''}</textarea></div>
+        <div class="frow"><label>&#127908; 싱어</label><textarea id="s${i}d_singer" placeholder="강조 포인트, 하모니, 가사 특이사항...">${(typeof s.detail==='object'?s.detail?.singer:'')||''}</textarea></div>
         <div class="frow" style="margin-bottom:0"><label>&#128131; 찬무</label><textarea id="s${i}d_chamu" placeholder="찬무 영상 링크 또는 공지사항...">${(typeof s.detail==='object'?s.detail?.chamu:'')||''}</textarea></div>
       </div>
     </div>`;
@@ -1194,91 +1241,131 @@ async function saveConti(){
   }
 }
 
-const PART_LABELS=[
-  {key:'conductor',label:'인도자',emoji:'&#127908;'},
-  {key:'main',label:'메인건반',emoji:'&#127929;'},
-  {key:'second',label:'세컨건반',emoji:'&#127929;'},
-  {key:'bass',label:'베이스',emoji:'&#127928;'},
-  {key:'drum',label:'드럼',emoji:'&#129345;'},
-  {key:'electric',label:'일렉',emoji:'&#127928;'},
-  {key:'singer',label:'싱어',emoji:'&#127908;'},
-  {key:'chamu',label:'찬무',emoji:'&#128131;'}
+/* ===== DETAIL FUNCTIONS ===== */
+const PART_DEFS=[
+  {key:'main',   label:'메인건반', color:'var(--accent)', colorRaw:'rgba(41,151,255,.9)'},
+  {key:'second', label:'세컨건반', color:'var(--c1)',     colorRaw:'rgba(125,122,255,.9)'},
+  {key:'bass',   label:'베이스',   color:'var(--c2)',     colorRaw:'rgba(100,210,255,.9)'},
+  {key:'drum',   label:'드럼',     color:'var(--c3)',     colorRaw:'rgba(255,140,90,.9)'},
+  {key:'electric',label:'일렉',   color:'var(--c4)',     colorRaw:'rgba(48,209,88,.9)'},
+  {key:'singer', label:'싱어',     color:'#ff6b9d',      colorRaw:'rgba(255,107,157,.9)'},
+  {key:'chamu',  label:'찬무',     color:'#ffd60a',      colorRaw:'rgba(255,214,10,.9)'},
 ];
 
-let detailMode=false; // 전역 디테일 편집 모드
+let detailUnlocked=false;
+let detPwCallback=null;
 
 function getDetailObj(s){
-  // 구버전 호환: detail이 string이면 conductor에 넣기
   if(!s.detail)return{conductor:'',main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:''};
   if(typeof s.detail==='string')return{conductor:s.detail,main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:''};
   return{conductor:'',main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:'',...s.detail};
 }
 
+function openDetPwModal(cb){
+  detPwCallback=cb;
+  const bd=document.getElementById('detPwBackdrop');
+  const inp=document.getElementById('detPwInput');
+  const err=document.getElementById('detPwErr');
+  bd.classList.add('on');
+  err.classList.remove('on');
+  inp.value='';
+  setTimeout(()=>inp.focus(),400);
+}
+function closeDetPwModal(){
+  document.getElementById('detPwBackdrop').classList.remove('on');
+  detPwCallback=null;
+}
+function confirmDetPw(){
+  const inp=document.getElementById('detPwInput');
+  const err=document.getElementById('detPwErr');
+  if(inp.value==='귀찮다'){
+    detailUnlocked=true;
+    closeDetPwModal();
+    if(detPwCallback)detPwCallback();
+  }else{
+    err.classList.add('on');
+    inp.value='';
+    inp.focus();
+    const card=document.querySelector('.det-pw-card');
+    if(card){card.style.transform='translateX(-8px)';setTimeout(()=>{card.style.transform='';},150);}
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('detPwConfirm').onclick=confirmDetPw;
+  document.getElementById('detPwCancel').onclick=closeDetPwModal;
+  document.getElementById('detPwInput').onkeydown=e=>{if(e.key==='Enter')confirmDetPw();};
+  document.getElementById('detPwBackdrop').onclick=e=>{if(e.target===e.currentTarget)closeDetPwModal();};
+});
+
 function buildDetailBlock(s, cardIdx, isArc){
   const d=getDetailObj(s);
-  const uid=`det_${isArc?'arc':'home'}_${cardIdx}`;
-  const parts=PART_LABELS.filter(p=>p.key!=='conductor');
-  const firstPart=parts[0].key;
+  const uid=`det_${isArc?'arc':'h'}_${cardIdx}`;
 
-  let partTabsHtml=parts.map(p=>`<button class="det-ptab${p.key===firstPart?' on':''}" onclick="switchDetTab('${uid}','${p.key}',this)">${p.label}</button>`).join('');
+  // 인도자 노트
+  const conductorHtml=`
+    <div class="det-conductor" id="${uid}_cond">
+      <div class="det-conductor-label"><div class="det-conductor-dot"></div>인도자 노트</div>
+      <div class="det-conductor-body" id="${uid}_cbody">${d.conductor||'<span class="det-conductor-empty">등록된 인도자 노트가 없어요</span>'}</div>
+      ${!isArc?`<textarea class="det-conductor-ta" id="${uid}_cta" placeholder="전체 곡 흐름, 마디 구성, 섹션 코멘트...">${d.conductor||''}</textarea>
+      <button class="det-conductor-savebtn" id="${uid}_csave" onclick="saveDetPart('${uid}','conductor',${cardIdx})">저장</button>`:''}
+    </div>`;
 
-  let partBodiesHtml=parts.map(p=>`
-    <div class="det-part-pane" id="${uid}_pane_${p.key}" style="display:${p.key===firstPart?'block':'none'}">
-      <div class="det-part-body" id="${uid}_body_${p.key}">${d[p.key]||`<span class="det-part-empty">등록된 디테일이 없어요</span>`}</div>
-      ${!isArc?`<div class="det-edit-bar" id="${uid}_editbar_${p.key}">
-        <textarea class="det-edit-textarea" id="${uid}_ta_${p.key}" placeholder="${PART_LABELS.find(x=>x.key===p.key).label} 디테일을 입력하세요...">${d[p.key]||''}</textarea>
-        <button class="det-save-btn" onclick="savePartDetail('${uid}','${p.key}',${cardIdx})">저장</button>
-      </div>`:''}
-    </div>`).join('');
+  // 파트 아코디언
+  const partsHtml=PART_DEFS.map(p=>{
+    const val=d[p.key]||'';
+    const hasContent=val.trim()!=='';
+    return `<div class="det-part-item${hasContent?' has-content':''}" id="${uid}_item_${p.key}" style="--part-color:${p.color}">
+      <div class="det-part-hdr" onclick="toggleDetPart('${uid}','${p.key}',event)">
+        <div class="det-part-bar"></div>
+        <div class="det-part-name">${p.label}</div>
+        ${hasContent?`<div class="det-part-status">작성됨</div>`:''}
+        <svg class="det-part-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="det-part-body" id="${uid}_body_${p.key}">
+        <div class="det-part-inner">
+          <div class="det-part-text" id="${uid}_text_${p.key}">${val||'<span class="det-part-empty">등록된 디테일이 없어요</span>'}</div>
+          ${!isArc?`<textarea class="det-part-ta" id="${uid}_ta_${p.key}" placeholder="${p.label} 카피 포인트...">${val}</textarea>
+          <button class="det-part-savebtn" id="${uid}_save_${p.key}" style="background:${p.color}" onclick="saveDetPart('${uid}','${p.key}',${cardIdx})">${p.label} 저장</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 
-  return `
-    <div class="det-conductor" id="${uid}_conductor">
-      <div class="det-conductor-label">인도자 노트</div>
-      <div class="det-conductor-body" id="${uid}_cbody">${d.conductor||`<span class="det-conductor-empty">등록된 인도자 노트가 없어요</span>`}</div>
-      ${!isArc?`<div class="det-edit-bar" id="${uid}_editbar_conductor">
-        <textarea class="det-edit-textarea" id="${uid}_ta_conductor" placeholder="전체 곡 흐름, 다이나믹, 전환 포인트 등...">${d.conductor||''}</textarea>
-        <button class="det-save-btn" onclick="savePartDetail('${uid}','conductor',${cardIdx})">저장</button>
-      </div>`:''}
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
-      <div class="det-part-tabs" id="${uid}_tabs">${partTabsHtml}</div>
-      ${!isArc?`<button class="det-edit-btn" id="${uid}_editbtn" onclick="toggleDetailEdit('${uid}')" style="flex-shrink:0">&#9998; 편집</button>`:''}
-    </div>
-    <div id="${uid}_panes">${partBodiesHtml}</div>`;
+  return conductorHtml+`<div class="det-parts">${partsHtml}</div>`;
 }
 
-function switchDetTab(uid, partKey, btn){
-  const tabsEl=document.getElementById(uid+'_tabs');
-  if(tabsEl)tabsEl.querySelectorAll('.det-ptab').forEach(t=>t.classList.remove('on'));
-  if(btn)btn.classList.add('on');
-  const panesEl=document.getElementById(uid+'_panes');
-  if(panesEl)panesEl.querySelectorAll('.det-part-pane').forEach(p=>p.style.display='none');
-  const pane=document.getElementById(uid+'_pane_'+partKey);
-  if(pane)pane.style.display='block';
+function toggleDetPart(uid, partKey, e){
+  e.stopPropagation();
+  const body=document.getElementById(uid+'_body_'+partKey);
+  const item=document.getElementById(uid+'_item_'+partKey);
+  if(!body||!item)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  item.classList.toggle('open',!isOpen);
 }
 
-function toggleDetailEdit(uid){
-  const btn=document.getElementById(uid+'_editbtn');
-  const isOn=btn&&btn.classList.toggle('on');
-  // conductor editbar
-  const cbar=document.getElementById(uid+'_editbar_conductor');
-  if(cbar)cbar.classList.toggle('on',isOn||false);
-  // part editbars &#8212; 현재 보이는 pane만
-  const panesEl=document.getElementById(uid+'_panes');
-  if(panesEl)panesEl.querySelectorAll('.det-part-pane').forEach(p=>{
-    const bar=p.querySelector('.det-edit-bar');
-    if(bar)bar.classList.toggle('on',isOn||false);
+function activateDetEdit(uid, cardIdx){
+  // 인도자 textarea + 저장버튼 표시
+  const cta=document.getElementById(uid+'_cta');
+  const csave=document.getElementById(uid+'_csave');
+  if(cta)cta.classList.add('show');
+  if(csave)csave.classList.add('show');
+  // 파트 textarea + 저장버튼 표시 + 모든 아코디언 열기
+  PART_DEFS.forEach(p=>{
+    const ta=document.getElementById(uid+'_ta_'+p.key);
+    const save=document.getElementById(uid+'_save_'+p.key);
+    const body=document.getElementById(uid+'_body_'+p.key);
+    const item=document.getElementById(uid+'_item_'+p.key);
+    if(ta)ta.classList.add('show');
+    if(save)save.classList.add('show');
+    if(body)body.classList.add('open');
+    if(item)item.classList.add('open');
   });
-  if(btn)btn.textContent=isOn?'&#10005; 닫기':'&#9998; 편집';
 }
 
-async function savePartDetail(uid, partKey, cardIdx){
-  if(!detailMode){
-    const pw=prompt('디테일 편집 비밀번호를 입력하세요');
-    if(pw!=='귀찮다'){alert('비밀번호가 틀렸어요');return;}
-    detailMode=true;
-  }
-  const ta=document.getElementById(uid+'_ta_'+partKey);
+async function saveDetPart(uid, partKey, cardIdx){
+  const taId=partKey==='conductor'?uid+'_cta':uid+'_ta_'+partKey;
+  const ta=document.getElementById(taId);
   if(!ta)return;
   const val=ta.value.trim();
   try{
@@ -1293,14 +1380,17 @@ async function savePartDetail(uid, partKey, cardIdx){
     await db.collection('conti').doc('current').update({songs});
     curData={...data,songs};
     // 화면 업데이트
-    const bodyEl=document.getElementById(uid+'_cbody');
-    const partBodyEl=document.getElementById(uid+'_body_'+partKey);
-    if(partKey==='conductor'&&bodyEl){
-      bodyEl.innerHTML=val||'<span class="det-conductor-empty">등록된 인도자 노트가 없어요</span>';
-    }else if(partBodyEl){
-      partBodyEl.innerHTML=val||'<span class="det-part-empty">등록된 디테일이 없어요</span>';
+    if(partKey==='conductor'){
+      const el=document.getElementById(uid+'_cbody');
+      if(el)el.innerHTML=val||'<span class="det-conductor-empty">등록된 인도자 노트가 없어요</span>';
+    }else{
+      const el=document.getElementById(uid+'_text_'+partKey);
+      if(el)el.innerHTML=val||'<span class="det-part-empty">등록된 디테일이 없어요</span>';
+      const item=document.getElementById(uid+'_item_'+partKey);
+      if(item){item.classList.toggle('has-content',val!=='');}
     }
-    toast('저장됐어요 ✓');
+    const partLabel=partKey==='conductor'?'인도자 노트':PART_DEFS.find(p=>p.key===partKey)?.label||partKey;
+    toast(partLabel+' 디테일이 저장됐어요 ✓');
   }catch(e){console.error(e);toast('저장 실패: '+e.message);}
 }
 
@@ -1311,9 +1401,9 @@ function buildCard(s,i){
   const thumbHtml=thumb?`
     <div class="sthumb">
       <img src="${thumb}" alt="" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${id}/mqdefault.jpg'">
-      <div class="sthumb-ov">${s.url?`<a class="yt-play" href="${s.url}" target="_blank">▶ YouTube에서 듣기</a>`:''}</div>
+      <div class="sthumb-ov">${s.url?`<a class="yt-play" href="${s.url}" target="_blank">&#9654; YouTube에서 듣기</a>`:''}</div>
     </div>`
-    :(s.url?`<div style="padding:0 20px 14px"><a href="${s.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#ff0000;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:12px;text-decoration:none">▶ YouTube</a></div>`:'');
+    :(s.url?`<div style="padding:0 20px 14px"><a href="${s.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#ff0000;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:12px;text-decoration:none">&#9654; YouTube</a></div>`:'');
   return `<div class="scard" data-i="${i}">
     <div class="scard-glow"></div>
     <div class="scard-inner">
@@ -1321,9 +1411,7 @@ function buildCard(s,i){
         <div class="scard-left">
           <div class="snum">${NUMS[i]}<div class="snum-dash"></div></div>
           <div class="stitle">${s.title||'제목 없음'}</div>
-          <div class="sbadges">
-            ${s.key?`<span class="badge badge-key">♪ ${s.key}</span>`:''}
-          </div>
+          <div class="sbadges">${s.key?`<span class="badge badge-key">&#9834; ${s.key}</span>`:''}</div>
         </div>
         <div class="scard-right">
           ${s.bpm?`<div class="bpm"><div class="bpm-bars">${bBars()}</div>${s.bpm} BPM</div>`:''}
@@ -1337,11 +1425,42 @@ function buildCard(s,i){
     </div>
     <div class="sdet">
       <div class="sdet-in">
-        <div class="dtag">&#10022; 디테일</div>
-        ${buildDetailBlock(s, i, false)}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="dtag" style="margin-bottom:0">&#10022; 디테일</div>
+          <button class="det-edit-trigger" id="det_h_${i}_editbtn" onclick="onDetEditClick('det_h_${i}',${i},event)">&#9998; 편집</button>
+        </div>
+        ${buildDetailBlock(s,i,false)}
       </div>
     </div>
   </div>`;
+}
+
+function onDetEditClick(uid, cardIdx, e){
+  e.stopPropagation();
+  const btn=document.getElementById(uid+'_editbtn');
+  if(detailUnlocked){
+    const isActive=btn&&btn.classList.toggle('active');
+    if(isActive)activateDetEdit(uid,cardIdx);
+    else deactivateDetEdit(uid);
+  }else{
+    openDetPwModal(()=>{
+      if(btn)btn.classList.add('active');
+      activateDetEdit(uid,cardIdx);
+    });
+  }
+}
+
+function deactivateDetEdit(uid){
+  const cta=document.getElementById(uid+'_cta');
+  const csave=document.getElementById(uid+'_csave');
+  if(cta)cta.classList.remove('show');
+  if(csave)csave.classList.remove('show');
+  PART_DEFS.forEach(p=>{
+    const ta=document.getElementById(uid+'_ta_'+p.key);
+    const save=document.getElementById(uid+'_save_'+p.key);
+    if(ta)ta.classList.remove('show');
+    if(save)save.classList.remove('show');
+  });
 }
 
 async function renderHome(){
