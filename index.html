@@ -1156,9 +1156,9 @@ function renderSongForms(d){
         <div class="frow"><label>&#128309; 인도자 노트</label><textarea id="s${i}d_conductor" placeholder="전체 흐름, 마디 구성, 섹션 코멘트...">${(typeof s.detail==='object'?s.detail?.conductor:(i===0?s.detail:''))||''}</textarea></div>
         <div class="frow"><label>&#127929; 메인건반</label><textarea id="s${i}d_main" placeholder="메인건반 카피 포인트...">${(typeof s.detail==='object'?s.detail?.main:'')||''}</textarea></div>
         <div class="frow"><label>&#127929; 세컨건반</label><textarea id="s${i}d_second" placeholder="세컨건반 카피 포인트...">${(typeof s.detail==='object'?s.detail?.second:'')||''}</textarea></div>
+        <div class="frow"><label>&#127928; 일렉</label><textarea id="s${i}d_electric" placeholder="일렉 카피 포인트...">${(typeof s.detail==='object'?s.detail?.electric:'')||''}</textarea></div>
         <div class="frow"><label>&#127928; 베이스</label><textarea id="s${i}d_bass" placeholder="베이스 카피 포인트...">${(typeof s.detail==='object'?s.detail?.bass:'')||''}</textarea></div>
         <div class="frow"><label>&#129345; 드럼</label><textarea id="s${i}d_drum" placeholder="드럼 카피 포인트...">${(typeof s.detail==='object'?s.detail?.drum:'')||''}</textarea></div>
-        <div class="frow"><label>&#127928; 일렉</label><textarea id="s${i}d_electric" placeholder="일렉 카피 포인트...">${(typeof s.detail==='object'?s.detail?.electric:'')||''}</textarea></div>
         <div class="frow"><label>&#127908; 싱어</label><textarea id="s${i}d_singer" placeholder="강조 포인트, 하모니, 가사 특이사항...">${(typeof s.detail==='object'?s.detail?.singer:'')||''}</textarea></div>
         <div class="frow" style="margin-bottom:0"><label>&#128131; 찬무</label><textarea id="s${i}d_chamu" placeholder="찬무 영상 링크 또는 공지사항...">${(typeof s.detail==='object'?s.detail?.chamu:'')||''}</textarea></div>
       </div>
@@ -1248,13 +1248,13 @@ async function saveConti(){
 
 /* ===== DETAIL FUNCTIONS ===== */
 const PART_DEFS=[
-  {key:'main',   label:'메인건반', color:'var(--accent)', colorRaw:'rgba(41,151,255,.9)'},
-  {key:'second', label:'세컨건반', color:'var(--c1)',     colorRaw:'rgba(125,122,255,.9)'},
-  {key:'bass',   label:'베이스',   color:'var(--c2)',     colorRaw:'rgba(100,210,255,.9)'},
-  {key:'drum',   label:'드럼',     color:'var(--c3)',     colorRaw:'rgba(255,140,90,.9)'},
-  {key:'electric',label:'일렉',   color:'var(--c4)',     colorRaw:'rgba(48,209,88,.9)'},
-  {key:'singer', label:'싱어',     color:'#ff6b9d',      colorRaw:'rgba(255,107,157,.9)'},
-  {key:'chamu',  label:'찬무',     color:'#ffd60a',      colorRaw:'rgba(255,214,10,.9)'},
+  {key:'main',    label:'메인건반', color:'var(--accent)', colorRaw:'rgba(41,151,255,.9)'},
+  {key:'second',  label:'세컨건반', color:'var(--c1)',     colorRaw:'rgba(125,122,255,.9)'},
+  {key:'electric',label:'일렉',    color:'var(--c4)',     colorRaw:'rgba(48,209,88,.9)'},
+  {key:'bass',    label:'베이스',   color:'var(--c2)',     colorRaw:'rgba(100,210,255,.9)'},
+  {key:'drum',    label:'드럼',     color:'var(--c3)',     colorRaw:'rgba(255,140,90,.9)'},
+  {key:'singer',  label:'싱어',     color:'#ff6b9d',      colorRaw:'rgba(255,107,157,.9)'},
+  {key:'chamu',   label:'찬무',     color:'#ffd60a',      colorRaw:'rgba(255,214,10,.9)'},
 ];
 
 let detailUnlocked=false;
