@@ -184,6 +184,29 @@ main{padding-top:var(--nh)}
 .dbody{font-size:14px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
 .dempty{font-size:13px;color:var(--t4);font-style:italic}
 
+/* DETAIL SYSTEM */
+.det-conductor{background:var(--adim2);border:.5px solid rgba(0,113,227,.15);border-radius:14px;padding:14px 16px;margin-bottom:16px}
+.det-conductor-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.det-conductor-label::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.det-conductor-body{font-size:14px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
+.det-conductor-empty{font-size:13px;color:var(--t4);font-style:italic}
+.det-part-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+.det-part-tabs::-webkit-scrollbar{display:none}
+.det-ptab{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t3);cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s var(--ease);flex-shrink:0}
+.det-ptab:hover{color:var(--t1);background:var(--bg3)}
+.det-ptab.on{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 2px 8px var(--adim)}
+.det-part-body{font-size:14px;line-height:1.85;color:var(--t2);white-space:pre-wrap;min-height:24px}
+.det-part-empty{font-size:13px;color:var(--t4);font-style:italic}
+/* 디테일 편집 모드 */
+.det-edit-bar{display:none;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:.5px solid var(--gb);gap:8px}
+.det-edit-bar.on{display:flex}
+.det-edit-textarea{width:100%;padding:10px 13px;border:.5px solid var(--bg3);border-radius:10px;font-size:13px;font-family:inherit;color:var(--t1);background:var(--bg);resize:vertical;min-height:80px;line-height:1.65;outline:none;transition:all .2s}
+.det-edit-textarea:focus{border-color:var(--accent);background:var(--bg2);box-shadow:0 0 0 3px var(--adim)}
+.det-save-btn{padding:7px 15px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;flex-shrink:0}
+.det-save-btn:hover{background:var(--accent2)}
+.det-edit-btn{padding:6px 12px;background:var(--bg3);color:var(--t3);font-size:11px;font-weight:600;border:none;border-radius:20px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:4px}
+.det-edit-btn:hover{color:var(--t1);background:var(--bg2)}
+
 /* SHARE BTN */
 .share-row{display:flex;justify-content:center;padding:8px 0 20px;gap:10px}
 .share-btn{
@@ -614,7 +637,7 @@ const st=firebase.storage();
 // Kakao init
 Kakao.init('4d7f67b7fcf8f168364861aec2fde03b');
 
-const PW='주현아 보고싶다';
+const PW='연애금지';
 const NUMS=['SONG 01','SONG 02','SONG 03','SONG 04'];
 const COLS=['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
 const SITE='https://rlcjf6029-rgb.github.io/pilgrim-worship';
@@ -1076,7 +1099,17 @@ function renderSongForms(d){
         <div class="frow" style="margin-bottom:0"><label>Key</label><input type="text" id="s${i}k" placeholder="G, A, Bb" value="${s.key||''}"></div>
         <div class="frow" style="margin-bottom:0"><label>BPM</label><input type="number" id="s${i}b" placeholder="120" value="${s.bpm||''}" min="1" max="300"></div>
       </div>
-      <div class="frow" style="margin-top:11px;margin-bottom:0"><label>디테일</label><textarea id="s${i}d" placeholder="섹션 구성, 브레이크 느낌, 편곡 포인트 등">${s.detail||''}</textarea></div>
+      <div style="margin-top:11px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t4);margin-bottom:10px">&#9998; 디테일</div>
+        <div class="frow"><label>&#127908; 인도자 노트</label><textarea id="s${i}d_conductor" placeholder="전체 곡 흐름, 다이나믹, 전환 포인트 등...">${(typeof s.detail==='object'?s.detail?.conductor:i===0?s.detail:'')||''}</textarea></div>
+        <div class="frow"><label>&#127929; 메인건반</label><textarea id="s${i}d_main" placeholder="메인건반 카피 포인트...">${(typeof s.detail==='object'?s.detail?.main:'')||''}</textarea></div>
+        <div class="frow"><label>&#127929; 세컨건반</label><textarea id="s${i}d_second" placeholder="세컨건반 카피 포인트...">${(typeof s.detail==='object'?s.detail?.second:'')||''}</textarea></div>
+        <div class="frow"><label>&#127928; 베이스</label><textarea id="s${i}d_bass" placeholder="베이스 카피 포인트...">${(typeof s.detail==='object'?s.detail?.bass:'')||''}</textarea></div>
+        <div class="frow"><label>&#129345; 드럼</label><textarea id="s${i}d_drum" placeholder="드럼 카피 포인트...">${(typeof s.detail==='object'?s.detail?.drum:'')||''}</textarea></div>
+        <div class="frow"><label>&#127928; 일렉</label><textarea id="s${i}d_electric" placeholder="일렉 카피 포인트...">${(typeof s.detail==='object'?s.detail?.electric:'')||''}</textarea></div>
+        <div class="frow"><label>&#127908; 싱어</label><textarea id="s${i}d_singer" placeholder="강조 포인트, 하모니, 가사 관련 특이사항...">${(typeof s.detail==='object'?s.detail?.singer:'')||''}</textarea></div>
+        <div class="frow" style="margin-bottom:0"><label>&#128131; 찬무</label><textarea id="s${i}d_chamu" placeholder="찬무 영상 링크 또는 공지사항...">${(typeof s.detail==='object'?s.detail?.chamu:'')||''}</textarea></div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1096,7 +1129,16 @@ function removeSong(i){
     title:document.getElementById(`s${j}t`)?.value||'',
     key:document.getElementById(`s${j}k`)?.value||'',
     bpm:document.getElementById(`s${j}b`)?.value||'',
-    detail:document.getElementById(`s${j}d`)?.value||'',
+    detail:{
+      conductor:document.getElementById(`s${j}d_conductor`)?.value||'',
+      main:document.getElementById(`s${j}d_main`)?.value||'',
+      second:document.getElementById(`s${j}d_second`)?.value||'',
+      bass:document.getElementById(`s${j}d_bass`)?.value||'',
+      drum:document.getElementById(`s${j}d_drum`)?.value||'',
+      electric:document.getElementById(`s${j}d_electric`)?.value||'',
+      singer:document.getElementById(`s${j}d_singer`)?.value||'',
+      chamu:document.getElementById(`s${j}d_chamu`)?.value||'',
+    },
   }));
   tempSongs.splice(i,1);
   extraSongs--;
@@ -1115,7 +1157,16 @@ async function saveConti(){
       title:document.getElementById(`s${i}t`)?.value.trim()||'',
       key:document.getElementById(`s${i}k`)?.value.trim()||'',
       bpm:document.getElementById(`s${i}b`)?.value.trim()||'',
-      detail:document.getElementById(`s${i}d`)?.value.trim()||'',
+      detail:{
+        conductor:document.getElementById(`s${i}d_conductor`)?.value.trim()||'',
+        main:document.getElementById(`s${i}d_main`)?.value.trim()||'',
+        second:document.getElementById(`s${i}d_second`)?.value.trim()||'',
+        bass:document.getElementById(`s${i}d_bass`)?.value.trim()||'',
+        drum:document.getElementById(`s${i}d_drum`)?.value.trim()||'',
+        electric:document.getElementById(`s${i}d_electric`)?.value.trim()||'',
+        singer:document.getElementById(`s${i}d_singer`)?.value.trim()||'',
+        chamu:document.getElementById(`s${i}d_chamu`)?.value.trim()||'',
+      },
     }));
     let pdfUrl=curData?.pdfUrl||null,pdfName=curData?.pdfName||null;
     if(pendingPdf){
@@ -1141,6 +1192,116 @@ async function saveConti(){
     console.error(err);toast('저장 실패: '+err.message);
     btn.textContent='이번 주 콘티 저장 →';btn.disabled=false;
   }
+}
+
+const PART_LABELS=[
+  {key:'conductor',label:'인도자',emoji:'&#127908;'},
+  {key:'main',label:'메인건반',emoji:'&#127929;'},
+  {key:'second',label:'세컨건반',emoji:'&#127929;'},
+  {key:'bass',label:'베이스',emoji:'&#127928;'},
+  {key:'drum',label:'드럼',emoji:'&#129345;'},
+  {key:'electric',label:'일렉',emoji:'&#127928;'},
+  {key:'singer',label:'싱어',emoji:'&#127908;'},
+  {key:'chamu',label:'찬무',emoji:'&#128131;'}
+];
+
+let detailMode=false; // 전역 디테일 편집 모드
+
+function getDetailObj(s){
+  // 구버전 호환: detail이 string이면 conductor에 넣기
+  if(!s.detail)return{conductor:'',main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:''};
+  if(typeof s.detail==='string')return{conductor:s.detail,main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:''};
+  return{conductor:'',main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:'',...s.detail};
+}
+
+function buildDetailBlock(s, cardIdx, isArc){
+  const d=getDetailObj(s);
+  const uid=`det_${isArc?'arc':'home'}_${cardIdx}`;
+  const parts=PART_LABELS.filter(p=>p.key!=='conductor');
+  const firstPart=parts[0].key;
+
+  let partTabsHtml=parts.map(p=>`<button class="det-ptab${p.key===firstPart?' on':''}" onclick="switchDetTab('${uid}','${p.key}',this)">${p.label}</button>`).join('');
+
+  let partBodiesHtml=parts.map(p=>`
+    <div class="det-part-pane" id="${uid}_pane_${p.key}" style="display:${p.key===firstPart?'block':'none'}">
+      <div class="det-part-body" id="${uid}_body_${p.key}">${d[p.key]||`<span class="det-part-empty">등록된 디테일이 없어요</span>`}</div>
+      ${!isArc?`<div class="det-edit-bar" id="${uid}_editbar_${p.key}">
+        <textarea class="det-edit-textarea" id="${uid}_ta_${p.key}" placeholder="${PART_LABELS.find(x=>x.key===p.key).label} 디테일을 입력하세요...">${d[p.key]||''}</textarea>
+        <button class="det-save-btn" onclick="savePartDetail('${uid}','${p.key}',${cardIdx})">저장</button>
+      </div>`:''}
+    </div>`).join('');
+
+  return `
+    <div class="det-conductor" id="${uid}_conductor">
+      <div class="det-conductor-label">인도자 노트</div>
+      <div class="det-conductor-body" id="${uid}_cbody">${d.conductor||`<span class="det-conductor-empty">등록된 인도자 노트가 없어요</span>`}</div>
+      ${!isArc?`<div class="det-edit-bar" id="${uid}_editbar_conductor">
+        <textarea class="det-edit-textarea" id="${uid}_ta_conductor" placeholder="전체 곡 흐름, 다이나믹, 전환 포인트 등...">${d.conductor||''}</textarea>
+        <button class="det-save-btn" onclick="savePartDetail('${uid}','conductor',${cardIdx})">저장</button>
+      </div>`:''}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
+      <div class="det-part-tabs" id="${uid}_tabs">${partTabsHtml}</div>
+      ${!isArc?`<button class="det-edit-btn" id="${uid}_editbtn" onclick="toggleDetailEdit('${uid}')" style="flex-shrink:0">&#9998; 편집</button>`:''}
+    </div>
+    <div id="${uid}_panes">${partBodiesHtml}</div>`;
+}
+
+function switchDetTab(uid, partKey, btn){
+  const tabsEl=document.getElementById(uid+'_tabs');
+  if(tabsEl)tabsEl.querySelectorAll('.det-ptab').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  const panesEl=document.getElementById(uid+'_panes');
+  if(panesEl)panesEl.querySelectorAll('.det-part-pane').forEach(p=>p.style.display='none');
+  const pane=document.getElementById(uid+'_pane_'+partKey);
+  if(pane)pane.style.display='block';
+}
+
+function toggleDetailEdit(uid){
+  const btn=document.getElementById(uid+'_editbtn');
+  const isOn=btn&&btn.classList.toggle('on');
+  // conductor editbar
+  const cbar=document.getElementById(uid+'_editbar_conductor');
+  if(cbar)cbar.classList.toggle('on',isOn||false);
+  // part editbars &#8212; 현재 보이는 pane만
+  const panesEl=document.getElementById(uid+'_panes');
+  if(panesEl)panesEl.querySelectorAll('.det-part-pane').forEach(p=>{
+    const bar=p.querySelector('.det-edit-bar');
+    if(bar)bar.classList.toggle('on',isOn||false);
+  });
+  if(btn)btn.textContent=isOn?'&#10005; 닫기':'&#9998; 편집';
+}
+
+async function savePartDetail(uid, partKey, cardIdx){
+  if(!detailMode){
+    const pw=prompt('디테일 편집 비밀번호를 입력하세요');
+    if(pw!=='귀찮다'){alert('비밀번호가 틀렸어요');return;}
+    detailMode=true;
+  }
+  const ta=document.getElementById(uid+'_ta_'+partKey);
+  if(!ta)return;
+  const val=ta.value.trim();
+  try{
+    const snap=await db.collection('conti').doc('current').get();
+    if(!snap.exists){toast('콘티 데이터를 찾을 수 없어요');return;}
+    const data=snap.data();
+    const songs=[...(data.songs||[])];
+    if(!songs[cardIdx])return;
+    const det=getDetailObj(songs[cardIdx]);
+    det[partKey]=val;
+    songs[cardIdx]={...songs[cardIdx],detail:det};
+    await db.collection('conti').doc('current').update({songs});
+    curData={...data,songs};
+    // 화면 업데이트
+    const bodyEl=document.getElementById(uid+'_cbody');
+    const partBodyEl=document.getElementById(uid+'_body_'+partKey);
+    if(partKey==='conductor'&&bodyEl){
+      bodyEl.innerHTML=val||'<span class="det-conductor-empty">등록된 인도자 노트가 없어요</span>';
+    }else if(partBodyEl){
+      partBodyEl.innerHTML=val||'<span class="det-part-empty">등록된 디테일이 없어요</span>';
+    }
+    toast('저장됐어요 ✓');
+  }catch(e){console.error(e);toast('저장 실패: '+e.message);}
 }
 
 function buildCard(s,i){
@@ -1176,8 +1337,8 @@ function buildCard(s,i){
     </div>
     <div class="sdet">
       <div class="sdet-in">
-        <div class="dtag">✦ 디테일</div>
-        ${s.detail?`<div class="dbody">${s.detail}</div>`:`<div class="dempty">등록된 디테일이 없어요</div>`}
+        <div class="dtag">&#10022; 디테일</div>
+        ${buildDetailBlock(s, i, false)}
       </div>
     </div>
   </div>`;
@@ -1375,7 +1536,7 @@ function openModal(i){
         </div>`:''}
       </div>`:''}
       <div style="padding:9px 0 14px;text-align:center;font-size:11px;color:var(--t4);border-top:.5px solid var(--gb);cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.style.color=this.nextElementSibling.style.display==='block'?'var(--accent)':'var(--t4)'">디테일 보기 &#8964;</div>
-      <div style="display:none;padding:14px 18px 16px;border-top:.5px solid var(--gb);font-size:13px;color:var(--t2);line-height:1.8;white-space:pre-wrap">${s.detail||'<span style="color:var(--t4);font-style:italic">등록된 디테일이 없어요</span>'}</div>
+      <div style="display:none;padding:14px 18px 16px;border-top:.5px solid var(--gb)">${buildDetailBlock(s,idx,true)}</div>
     </div>`;
   });
   body+=`</div>`;
@@ -1452,7 +1613,7 @@ function openArcDetail(i){
         <div class="sehint"><span>디테일 보기</span><svg class="echev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></div>
         <div class="sdet"><div class="sdet-in">
           <div class="dtag">&#10022; 디테일</div>
-          ${s.detail?`<div class="dbody">${s.detail}</div>`:`<div class="dempty">등록된 디테일이 없어요</div>`}
+          ${buildDetailBlock(s,idx,true)}
         </div></div>
       </div>`;
     });
