@@ -249,8 +249,9 @@ main{padding-top:var(--nh)}
 .mypart-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0;user-select:none;-webkit-user-select:none}
 .mypart-btn:hover{color:var(--t2);border-color:var(--t3)}
 .mypart-btn.active{background:linear-gradient(135deg,var(--c1d),var(--adim2));color:var(--c1);border-color:rgba(125,122,255,.4);box-shadow:0 2px 10px rgba(125,122,255,.2)}
-.mypart-cfg{width:26px;height:26px;border-radius:50%;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);display:none;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-.mypart-cfg:hover{color:var(--t2);border-color:var(--t3);transform:rotate(45deg)}
+.mypart-cfg{width:26px;height:26px;border-radius:50%;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);display:none;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;padding:8px;box-sizing:content-box;margin:-8px -4px -8px 0}
+.mypart-cfg:hover{color:var(--t2);border-color:var(--t3);transform:rotate(60deg)}
+.mypart-cfg:active{transform:rotate(90deg);background:var(--bg3)}
 .mypart-wrap.has-parts .mypart-cfg{display:flex}
 .mypart-tag{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:6px;background:rgba(125,122,255,.15);font-size:10px;font-weight:700;color:var(--c1);margin-left:2px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* 내 파트 선택 모달 */
@@ -1159,6 +1160,18 @@ document.getElementById('songsList').addEventListener('click',function(e){
   if(e.target.closest('a'))return;
   if(e.target.closest('.sdet'))return;
   if(e.target.closest('.det-edit-trigger'))return;
+  const isOpen=card.classList.contains('open');
+  // 열려있는 카드 닫을 때 + 편집모드면 미저장 경고
+  if(isOpen&&_unsavedDirty){
+    checkUnsaved(()=>{
+      clearDirty();
+      const det=card.querySelector('.sdet');
+      card.classList.remove('open');
+      det.style.maxHeight='0';
+      det.classList.remove('open');
+    });
+    return;
+  }
   const det=card.querySelector('.sdet');
   const open=card.classList.toggle('open');
   det.style.maxHeight=open?det.scrollHeight+'px':'0';
@@ -1357,6 +1370,7 @@ let detailUnlocked=false;
 let detPwCallback=null;
 let unsavedCallback=null;
 let _unsavedDirty=false;
+let _dirtyCards=new Set();
 
 /* ===== 비번 세션 24시간 ===== */
 (function(){
@@ -1370,8 +1384,19 @@ let _unsavedDirty=false;
 })();
 
 /* ===== 미저장 감지 ===== */
-function markDirty(){_unsavedDirty=true;}
-function clearDirty(){_unsavedDirty=false;}
+function markDirty(cardIdx){
+  _unsavedDirty=true;
+  if(cardIdx!==undefined)_dirtyCards.add(cardIdx);
+}
+function clearDirty(cardIdx){
+  if(cardIdx!==undefined){
+    _dirtyCards.delete(cardIdx);
+    if(_dirtyCards.size===0)_unsavedDirty=false;
+  }else{
+    _unsavedDirty=false;
+    _dirtyCards.clear();
+  }
+}
 function checkUnsaved(cb){
   if(_unsavedDirty){unsavedCallback=cb;document.getElementById('unsavedBackdrop').classList.add('on');}
   else cb();
@@ -1431,14 +1456,23 @@ function confirmMyParts(){
   if(myParts.length>0)myPartActive=true;
   syncAllMyPartViews();
   toast('내 파트가 설정됐어요 ✓');
+  // 첫 설정 시 길게 누르기 힌트
+  const hintShown=localStorage.getItem('mypart_hint_shown');
+  if(!hintShown){
+    setTimeout(()=>toast('&#128161; 버튼 길게 누르면 파트 재설정할 수 있어요'),2000);
+    try{localStorage.setItem('mypart_hint_shown','1');}catch(e){}
+  }
 }
 
 /* ===== 내 파트 뷰 전역 관리 ===== */
 let _longPressTimer=null;
+let _longPressed=false;
 
 function startLongPress(uid,e){
   if(e.button!==undefined&&e.button!==0)return;
+  _longPressed=false;
   _longPressTimer=setTimeout(()=>{
+    _longPressed=true;
     _longPressTimer=null;
     openMpsModal();
   },500);
@@ -1448,11 +1482,13 @@ function cancelLongPress(){
 }
 function onMyPartClick(uid,e){
   e.stopPropagation();
-  if(_longPressTimer===null)return; // 길게 누른 경우는 이미 처리됨
   cancelLongPress();
+  if(_longPressed){_longPressed=false;return;} // 길게 누른 경우 스킵
   if(myParts.length===0){openMpsModal();return;}
   myPartActive=!myPartActive;
   syncAllMyPartViews();
+  // 토스트 피드백
+  toast(myPartActive?'내 파트 보기 켜짐':'전체 보기로 돌아왔어요');
 }
 function onMyPartLongPress(uid,e){
   e.preventDefault();
@@ -1698,7 +1734,7 @@ async function saveDetPart(uid, partKey, cardIdx){
       if(item){item.classList.toggle('has-content',val!=='');}
     }
     const partLabel=partKey==='conductor'?'인도자 노트':PART_DEFS.find(p=>p.key===partKey)?.label||partKey;
-    clearDirty();
+    clearDirty(cardIdx);
     toast(partLabel+' 디테일이 저장됐어요 ✓');
   }catch(e){console.error(e);toast('저장 실패: '+e.message);}
 }
