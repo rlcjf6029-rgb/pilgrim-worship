@@ -244,6 +244,45 @@ main{padding-top:var(--nh)}
 .det-pw-cancel{width:100%;margin-top:10px;padding:11px;background:transparent;color:var(--t3);font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;transition:color .2s;border-radius:10px}
 .det-pw-cancel:hover{color:var(--t1)}
 
+/* 내 파트 버튼 */
+.mypart-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0}
+.mypart-btn:hover{color:var(--t2);border-color:var(--t3)}
+.mypart-btn.active{background:linear-gradient(135deg,var(--c1d),var(--adim2));color:var(--c1);border-color:rgba(125,122,255,.4);box-shadow:0 2px 10px rgba(125,122,255,.2)}
+.mypart-tag{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:6px;background:rgba(125,122,255,.15);font-size:10px;font-weight:700;color:var(--c1);margin-left:2px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 내 파트 선택 모달 */
+.mps-backdrop{position:fixed;inset:0;z-index:650;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);transition:background .35s var(--ease);pointer-events:none}
+.mps-backdrop.on{background:rgba(0,0,0,.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);pointer-events:auto}
+.mps-card{background:var(--surface);border:.5px solid var(--gb);border-radius:28px 28px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;box-shadow:0 -20px 60px rgba(0,0,0,.3);opacity:0;transform:translateY(100%);transition:all .45s var(--spring)}
+.mps-backdrop.on .mps-card{opacity:1;transform:translateY(0)}
+.mps-handle{width:36px;height:4px;border-radius:2px;background:var(--bg3);margin:0 auto 22px}
+.mps-title{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:5px}
+.mps-sub{font-size:13px;color:var(--t3);margin-bottom:20px;line-height:1.5}
+.mps-parts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
+.mps-part-btn{padding:13px 8px;border-radius:14px;border:.5px solid var(--gb);background:var(--surface2);color:var(--t2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .25s var(--spring);text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;--part-color:var(--t3)}
+.mps-part-btn:hover{border-color:var(--part-color);background:color-mix(in srgb,var(--part-color) 10%,var(--surface2));transform:translateY(-2px)}
+.mps-part-btn.on{border-color:var(--part-color);background:color-mix(in srgb,var(--part-color) 18%,var(--surface2));color:var(--part-color);box-shadow:0 4px 16px color-mix(in srgb,var(--part-color) 25%,transparent)}
+.mps-part-dot{width:8px;height:8px;border-radius:50%;background:var(--part-color);opacity:.4;transition:opacity .2s}
+.mps-part-btn.on .mps-part-dot{opacity:1;box-shadow:0 0 8px var(--part-color)}
+.mps-confirm{width:100%;padding:14px;background:linear-gradient(135deg,var(--c1),var(--accent));color:#fff;font-size:15px;font-weight:700;border:none;border-radius:13px;cursor:pointer;font-family:inherit;transition:all .25s;box-shadow:0 4px 20px rgba(125,122,255,.3)}
+.mps-confirm:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(125,122,255,.4)}
+.mps-confirm:disabled{opacity:.4;cursor:default;transform:none}
+.mps-skip{width:100%;margin-top:10px;padding:10px;background:transparent;color:var(--t4);font-size:13px;border:none;cursor:pointer;font-family:inherit;transition:color .2s}
+.mps-skip:hover{color:var(--t2)}
+/* 플로팅 안내 */
+.mps-float{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);z-index:500;background:linear-gradient(135deg,rgba(125,122,255,.95),rgba(41,151,255,.95));color:#fff;font-size:13px;font-weight:600;padding:11px 20px;border-radius:20px;box-shadow:0 8px 32px rgba(125,122,255,.4);opacity:0;transition:all .5s var(--spring);pointer-events:none;white-space:nowrap;backdrop-filter:blur(12px)}
+.mps-float.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;cursor:pointer}
+/* 미저장 경고 모달 */
+.unsaved-backdrop{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0);transition:background .3s;pointer-events:none}
+.unsaved-backdrop.on{background:rgba(0,0,0,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);pointer-events:auto}
+.unsaved-card{background:var(--surface);border:.5px solid var(--gb);border-radius:24px;padding:32px 28px 28px;width:100%;max-width:320px;text-align:center;opacity:0;transform:scale(.9);transition:all .4s var(--spring)}
+.unsaved-backdrop.on .unsaved-card{opacity:1;transform:scale(1)}
+.unsaved-ico{font-size:36px;margin-bottom:14px}
+.unsaved-title{font-size:18px;font-weight:800;margin-bottom:7px}
+.unsaved-sub{font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:22px}
+.unsaved-btns{display:flex;flex-direction:column;gap:8px}
+.unsaved-leave{padding:13px;background:var(--red,#ff453a);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.unsaved-stay{padding:13px;background:var(--bg3);color:var(--t2);font-size:14px;font-weight:600;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+
 /* SHARE BTN */
 .share-row{display:flex;justify-content:center;padding:8px 0 20px;gap:10px}
 .share-btn{
@@ -656,6 +695,32 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 
 <div class="toast" id="toast"></div>
 
+<!-- 내 파트 선택 모달 -->
+<div class="mps-backdrop" id="mpsBackdrop">
+  <div class="mps-card">
+    <div class="mps-handle"></div>
+    <div class="mps-title">&#127989; 내 파트 설정</div>
+    <div class="mps-sub">본인의 파트를 선택하세요.<br>선택한 파트와 인도자 노트만 집중해서 볼 수 있어요.</div>
+    <div class="mps-parts" id="mpsPartGrid"></div>
+    <button class="mps-confirm" id="mpsConfirm" disabled onclick="confirmMyParts()">설정 완료</button>
+    <button class="mps-skip" onclick="closeMpsModal()">나중에 설정할게요</button>
+  </div>
+</div>
+<!-- 플로팅 안내 -->
+<div class="mps-float" id="mpsFloat" onclick="openMpsModal()">&#127989; 내 파트를 설정해보세요</div>
+<!-- 미저장 경고 모달 -->
+<div class="unsaved-backdrop" id="unsavedBackdrop">
+  <div class="unsaved-card">
+    <div class="unsaved-ico">&#9888;&#65039;</div>
+    <div class="unsaved-title">저장하지 않은 내용이 있어요</div>
+    <div class="unsaved-sub">지금 나가면 작성 중인 디테일이 사라져요.<br>저장 후 이동하는 걸 추천해요.</div>
+    <div class="unsaved-btns">
+      <button class="unsaved-stay" onclick="closeUnsavedModal()">돌아가서 저장할게요</button>
+      <button class="unsaved-leave" onclick="forceLeave()">그냥 나갈게요</button>
+    </div>
+  </div>
+</div>
+
 <!-- 디테일 편집 비번 모달 -->
 <div class="det-pw-backdrop" id="detPwBackdrop">
   <div class="det-pw-card">
@@ -751,11 +816,12 @@ function goPage(id){
   if(id==='admin')renderAdminForms();
 }
 
-document.getElementById('navBrand').onclick=()=>goPage('home');
-document.getElementById('tab-home').onclick=()=>goPage('home');
-document.getElementById('tab-archive').onclick=()=>goPage('archive');
-document.getElementById('tab-rec').onclick=()=>goPage('rec');
-document.getElementById('adminBtn').onclick=()=>isAdmin?goPage('admin'):goPage('login');
+document.getElementById('navBrand').onclick=()=>checkUnsaved(()=>goPage('home'));
+document.getElementById('tab-home').onclick=()=>checkUnsaved(()=>goPage('home'));
+document.getElementById('tab-archive').onclick=()=>checkUnsaved(()=>goPage('archive'));
+document.getElementById('tab-rec').onclick=()=>checkUnsaved(()=>goPage('rec'));
+document.getElementById('adminBtn').onclick=()=>checkUnsaved(()=>isAdmin?goPage('admin'):goPage('login'));
+document.getElementById('mpsBackdrop').onclick=e=>{if(e.target===e.currentTarget)closeMpsModal();};
 document.getElementById('loginBtn').onclick=doLogin;
 document.getElementById('pwInput').onkeydown=e=>{if(e.key==='Enter')doLogin();};
 document.getElementById('saveBtn').onclick=saveConti;
@@ -1259,6 +1325,119 @@ const PART_DEFS=[
 
 let detailUnlocked=false;
 let detPwCallback=null;
+let unsavedCallback=null;
+let _unsavedDirty=false;
+
+/* ===== 비번 세션 24시간 ===== */
+(function(){
+  try{
+    const saved=localStorage.getItem('det_session');
+    if(saved){
+      const {ts}=JSON.parse(saved);
+      if(Date.now()-ts<86400000)detailUnlocked=true;
+    }
+  }catch(e){}
+})();
+
+/* ===== 미저장 감지 ===== */
+function markDirty(){_unsavedDirty=true;}
+function clearDirty(){_unsavedDirty=false;}
+function checkUnsaved(cb){
+  if(_unsavedDirty){unsavedCallback=cb;document.getElementById('unsavedBackdrop').classList.add('on');}
+  else cb();
+}
+function closeUnsavedModal(){document.getElementById('unsavedBackdrop').classList.remove('on');}
+function forceLeave(){clearDirty();closeUnsavedModal();if(unsavedCallback){unsavedCallback();unsavedCallback=null;}}
+
+/* ===== 내 파트 ===== */
+let myParts=[];
+let myPartActive=false;
+
+(function(){
+  try{
+    const saved=localStorage.getItem('pilgrim_myparts');
+    if(saved)myParts=JSON.parse(saved);
+  }catch(e){}
+  // 플로팅 안내: 내 파트 미설정 && 모바일이면 3초 후 표시
+  if(myParts.length===0){
+    setTimeout(()=>{
+      const f=document.getElementById('mpsFloat');
+      if(f)f.classList.add('on');
+      setTimeout(()=>{if(f)f.classList.remove('on');},5000);
+    },3000);
+  }
+})();
+
+function openMpsModal(){
+  const f=document.getElementById('mpsFloat');
+  if(f)f.classList.remove('on');
+  const grid=document.getElementById('mpsPartGrid');
+  if(!grid)return;
+  grid.innerHTML=PART_DEFS.map(p=>`
+    <button class="mps-part-btn${myParts.includes(p.key)?' on':''}" style="--part-color:${p.color}" onclick="toggleMpsPart('${p.key}',this)">
+      <div class="mps-part-dot"></div>
+      ${p.label}
+    </button>`).join('');
+  updateMpsConfirm();
+  document.getElementById('mpsBackdrop').classList.add('on');
+}
+function closeMpsModal(){document.getElementById('mpsBackdrop').classList.remove('on');}
+function toggleMpsPart(key,btn){
+  btn.classList.toggle('on');
+  updateMpsConfirm();
+}
+function updateMpsConfirm(){
+  const selected=document.querySelectorAll('.mps-part-btn.on').length;
+  const btn=document.getElementById('mpsConfirm');
+  if(btn){btn.disabled=selected===0;btn.textContent=selected>0?`${selected}개 파트 설정 완료`:'파트를 선택해주세요';}
+}
+function confirmMyParts(){
+  myParts=[...document.querySelectorAll('.mps-part-btn.on')].map(b=>{
+    const label=b.textContent.trim();
+    return PART_DEFS.find(p=>p.label===label)?.key;
+  }).filter(Boolean);
+  try{localStorage.setItem('pilgrim_myparts',JSON.stringify(myParts));}catch(e){}
+  closeMpsModal();
+  // 모든 열려있는 카드에 내 파트 뷰 적용
+  document.querySelectorAll('[id$="_mypartbtn"]').forEach(btn=>{
+    const uid=btn.id.replace('_mypartbtn','');
+    if(myPartActive)applyMyPartView(uid);
+  });
+}
+
+function toggleMyPartView(uid,e){
+  e.stopPropagation();
+  if(myParts.length===0){openMpsModal();return;}
+  myPartActive=!myPartActive;
+  applyMyPartView(uid);
+  // 같은 페이지 다른 카드들도 동기화
+  document.querySelectorAll('[id$="_mypartbtn"]').forEach(btn=>{
+    const bid=btn.id.replace('_mypartbtn','');
+    if(bid!==uid)applyMyPartView(bid);
+  });
+}
+
+function applyMyPartView(uid){
+  const btn=document.getElementById(uid+'_mypartbtn');
+  if(!btn)return;
+  if(myPartActive){
+    // 활성: 내 파트 표시명
+    const names=myParts.map(k=>PART_DEFS.find(p=>p.key===k)?.label||k).join(', ');
+    btn.innerHTML=`&#127989; ${names} <span style="opacity:.5;margin-left:2px">&#10005;</span>`;
+    btn.classList.add('active');
+    PART_DEFS.forEach(p=>{
+      const item=document.getElementById(uid+'_item_'+p.key);
+      if(item)item.style.display=myParts.includes(p.key)?'':'none';
+    });
+  }else{
+    btn.innerHTML='&#127989; 내 파트';
+    btn.classList.remove('active');
+    PART_DEFS.forEach(p=>{
+      const item=document.getElementById(uid+'_item_'+p.key);
+      if(item)item.style.display='';
+    });
+  }
+}
 
 function getDetailObj(s){
   if(!s.detail)return{conductor:'',main:'',second:'',bass:'',drum:'',electric:'',singer:'',chamu:''};
@@ -1285,6 +1464,7 @@ function confirmDetPw(){
   const err=document.getElementById('detPwErr');
   if(inp.value==='귀찮다'){
     detailUnlocked=true;
+    try{localStorage.setItem('det_session',JSON.stringify({ts:Date.now()}));}catch(e){}
     closeDetPwModal();
     if(detPwCallback)detPwCallback();
   }else{
@@ -1336,7 +1516,14 @@ function buildDetailBlock(s, cardIdx, isArc){
     </div>`;
   }).join('');
 
-  return conductorHtml+`<div class="det-parts">${partsHtml}</div>`;
+  const myPartBtnHtml=!isArc?`<button class="mypart-btn" id="${uid}_mypartbtn" onclick="toggleMyPartView('${uid}',event)">&#127989; 내 파트</button>`:'';
+
+  return conductorHtml+`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t4)">파트별 디테일</div>
+      ${myPartBtnHtml}
+    </div>
+    <div class="det-parts" id="${uid}_parts">${partsHtml}</div>`;
 }
 
 function toggleDetPart(uid, partKey, e){
@@ -1345,8 +1532,41 @@ function toggleDetPart(uid, partKey, e){
   const item=document.getElementById(uid+'_item_'+partKey);
   if(!body||!item)return;
   const isOpen=body.classList.contains('open');
-  body.classList.toggle('open',!isOpen);
-  item.classList.toggle('open',!isOpen);
+  const willOpen=!isOpen;
+  body.classList.toggle('open',willOpen);
+  item.classList.toggle('open',willOpen);
+  // 편집모드면 열릴 때 textarea 표시
+  const partsEl=document.getElementById(uid+'_parts');
+  if(willOpen&&partsEl&&partsEl.dataset.editMode==='1'){
+    const ta=document.getElementById(uid+'_ta_'+partKey);
+    const save=document.getElementById(uid+'_save_'+partKey);
+    if(ta){ta.classList.add('show');autoResizeTa(ta);}
+    if(save)save.classList.add('show');
+  }
+  if(!willOpen){
+    const ta=document.getElementById(uid+'_ta_'+partKey);
+    const save=document.getElementById(uid+'_save_'+partKey);
+    if(ta)ta.classList.remove('show');
+    if(save)save.classList.remove('show');
+  }
+}
+
+function autoResizeTa(ta){
+  if(!ta)return;
+  ta.style.height='auto';
+  ta.style.height=ta.scrollHeight+'px';
+  ta.oninput=function(){
+    this.style.height='auto';
+    this.style.height=this.scrollHeight+'px';
+    markDirty();
+  };
+}
+
+function initAllTaResize(){
+  document.querySelectorAll('.det-conductor-ta,.det-part-ta').forEach(ta=>{
+    autoResizeTa(ta);
+    ta.addEventListener('input',markDirty,{once:false});
+  });
 }
 
 function activateDetEdit(uid, cardIdx){
@@ -1355,17 +1575,20 @@ function activateDetEdit(uid, cardIdx){
   const csave=document.getElementById(uid+'_csave');
   if(cta)cta.classList.add('show');
   if(csave)csave.classList.add('show');
-  // 파트 textarea + 저장버튼 표시 + 모든 아코디언 열기
+  // 파트: 이미 열려있는 것만 textarea 표시, 자동으로 열지 않음
   PART_DEFS.forEach(p=>{
-    const ta=document.getElementById(uid+'_ta_'+p.key);
-    const save=document.getElementById(uid+'_save_'+p.key);
     const body=document.getElementById(uid+'_body_'+p.key);
-    const item=document.getElementById(uid+'_item_'+p.key);
-    if(ta)ta.classList.add('show');
-    if(save)save.classList.add('show');
-    if(body)body.classList.add('open');
-    if(item)item.classList.add('open');
+    const isOpen=body&&body.classList.contains('open');
+    if(isOpen){
+      const ta=document.getElementById(uid+'_ta_'+p.key);
+      const save=document.getElementById(uid+'_save_'+p.key);
+      if(ta)ta.classList.add('show');
+      if(save)save.classList.add('show');
+    }
   });
+  // 파트 펼칠 때도 textarea 보이도록 플래그 설정
+  const partsEl=document.getElementById(uid+'_parts');
+  if(partsEl)partsEl.dataset.editMode='1';
 }
 
 async function saveDetPart(uid, partKey, cardIdx){
@@ -1395,6 +1618,7 @@ async function saveDetPart(uid, partKey, cardIdx){
       if(item){item.classList.toggle('has-content',val!=='');}
     }
     const partLabel=partKey==='conductor'?'인도자 노트':PART_DEFS.find(p=>p.key===partKey)?.label||partKey;
+    clearDirty();
     toast(partLabel+' 디테일이 저장됐어요 ✓');
   }catch(e){console.error(e);toast('저장 실패: '+e.message);}
 }
