@@ -245,9 +245,13 @@ main{padding-top:var(--nh)}
 .det-pw-cancel:hover{color:var(--t1)}
 
 /* 내 파트 버튼 */
-.mypart-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0}
+.mypart-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.mypart-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0;user-select:none;-webkit-user-select:none}
 .mypart-btn:hover{color:var(--t2);border-color:var(--t3)}
 .mypart-btn.active{background:linear-gradient(135deg,var(--c1d),var(--adim2));color:var(--c1);border-color:rgba(125,122,255,.4);box-shadow:0 2px 10px rgba(125,122,255,.2)}
+.mypart-cfg{width:26px;height:26px;border-radius:50%;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);display:none;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.mypart-cfg:hover{color:var(--t2);border-color:var(--t3);transform:rotate(45deg)}
+.mypart-wrap.has-parts .mypart-cfg{display:flex}
 .mypart-tag{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:6px;background:rgba(125,122,255,.15);font-size:10px;font-weight:700;color:var(--c1);margin-left:2px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* 내 파트 선택 모달 */
 .mps-backdrop{position:fixed;inset:0;z-index:650;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);transition:background .35s var(--ease);pointer-events:none}
@@ -1159,6 +1163,32 @@ document.getElementById('songsList').addEventListener('click',function(e){
   const open=card.classList.toggle('open');
   det.style.maxHeight=open?det.scrollHeight+'px':'0';
   det.classList.toggle('open',open);
+  // PC 2열: 같은 행 짝꿍 카드도 동시 오픈 (닫을 땐 각자)
+  if(open&&window.innerWidth>=640){
+    const cards=[...document.querySelectorAll('#songsList .scard')];
+    const idx=cards.indexOf(card);
+    const pairIdx=idx%2===0?idx+1:idx-1;
+    const pair=cards[pairIdx];
+    if(pair){
+      const pdet=pair.querySelector('.sdet');
+      if(pdet&&!pair.classList.contains('open')){
+        pair.classList.add('open');
+        pdet.style.maxHeight=pdet.scrollHeight+'px';
+        pdet.classList.add('open');
+        // 내 파트 뷰도 적용
+        if(myPartActive){
+          const puid='det_h_'+pairIdx;
+          applyMyPartView(puid);
+        }
+      }
+    }
+  }
+  // 열릴 때 내 파트 뷰 적용
+  if(open&&myPartActive){
+    const cards=[...document.querySelectorAll('#songsList .scard')];
+    const idx=cards.indexOf(card);
+    applyMyPartView('det_h_'+idx);
+  }
 });
 
 function doLogin(){
@@ -1398,32 +1428,54 @@ function confirmMyParts(){
   }).filter(Boolean);
   try{localStorage.setItem('pilgrim_myparts',JSON.stringify(myParts));}catch(e){}
   closeMpsModal();
-  // 모든 열려있는 카드에 내 파트 뷰 적용
-  document.querySelectorAll('[id$="_mypartbtn"]').forEach(btn=>{
-    const uid=btn.id.replace('_mypartbtn','');
-    if(myPartActive)applyMyPartView(uid);
-  });
+  if(myParts.length>0)myPartActive=true;
+  syncAllMyPartViews();
+  toast('내 파트가 설정됐어요 ✓');
 }
 
-function toggleMyPartView(uid,e){
+/* ===== 내 파트 뷰 전역 관리 ===== */
+let _longPressTimer=null;
+
+function startLongPress(uid,e){
+  if(e.button!==undefined&&e.button!==0)return;
+  _longPressTimer=setTimeout(()=>{
+    _longPressTimer=null;
+    openMpsModal();
+  },500);
+}
+function cancelLongPress(){
+  if(_longPressTimer){clearTimeout(_longPressTimer);_longPressTimer=null;}
+}
+function onMyPartClick(uid,e){
   e.stopPropagation();
+  if(_longPressTimer===null)return; // 길게 누른 경우는 이미 처리됨
+  cancelLongPress();
   if(myParts.length===0){openMpsModal();return;}
   myPartActive=!myPartActive;
-  applyMyPartView(uid);
-  // 같은 페이지 다른 카드들도 동기화
+  syncAllMyPartViews();
+}
+function onMyPartLongPress(uid,e){
+  e.preventDefault();
+  cancelLongPress();
+  openMpsModal();
+}
+
+function syncAllMyPartViews(){
   document.querySelectorAll('[id$="_mypartbtn"]').forEach(btn=>{
-    const bid=btn.id.replace('_mypartbtn','');
-    if(bid!==uid)applyMyPartView(bid);
+    const uid=btn.id.replace('_mypartbtn','');
+    applyMyPartView(uid);
   });
 }
 
 function applyMyPartView(uid){
   const btn=document.getElementById(uid+'_mypartbtn');
+  const wrap=document.getElementById(uid+'_mywrap');
   if(!btn)return;
-  if(myPartActive){
-    // 활성: 내 파트 표시명
+  // wrap has-parts 클래스 동기화
+  if(wrap){wrap.classList.toggle('has-parts',myParts.length>0);}
+  if(myPartActive&&myParts.length>0){
     const names=myParts.map(k=>PART_DEFS.find(p=>p.key===k)?.label||k).join(', ');
-    btn.innerHTML=`&#127989; ${names} <span style="opacity:.5;margin-left:2px">&#10005;</span>`;
+    btn.innerHTML=`&#127989; ${names}`;
     btn.classList.add('active');
     PART_DEFS.forEach(p=>{
       const item=document.getElementById(uid+'_item_'+p.key);
@@ -1436,6 +1488,25 @@ function applyMyPartView(uid){
       const item=document.getElementById(uid+'_item_'+p.key);
       if(item)item.style.display='';
     });
+  }
+}
+
+/* ===== PC 2열 동시 오픈 ===== */
+function getPairCardIdx(idx){
+  // PC 2열: 짝수 → 다음 카드, 홀수 → 이전 카드
+  const isDesktop=window.innerWidth>=640;
+  if(!isDesktop)return null;
+  return idx%2===0?idx+1:idx-1;
+}
+
+function openCardDet(card){
+  const det=card.querySelector('.sdet');
+  if(!det)return;
+  const open=card.classList.contains('open');
+  if(!open){
+    card.classList.add('open');
+    det.style.maxHeight=det.scrollHeight+'px';
+    det.classList.add('open');
   }
 }
 
@@ -1516,7 +1587,16 @@ function buildDetailBlock(s, cardIdx, isArc){
     </div>`;
   }).join('');
 
-  const myPartBtnHtml=!isArc?`<button class="mypart-btn" id="${uid}_mypartbtn" onclick="toggleMyPartView('${uid}',event)">&#127989; 내 파트</button>`:'';
+  const myPartBtnHtml=!isArc?`
+    <div class="mypart-wrap${myParts.length>0?' has-parts':''}" id="${uid}_mywrap">
+      <button class="mypart-btn${myPartActive?' active':''}" id="${uid}_mypartbtn"
+        onclick="onMyPartClick('${uid}',event)"
+        oncontextmenu="onMyPartLongPress('${uid}',event)"
+        onpointerdown="startLongPress('${uid}',event)"
+        onpointerup="cancelLongPress()"
+        onpointerleave="cancelLongPress()">&#127989; ${myPartActive&&myParts.length>0?myParts.map(k=>PART_DEFS.find(p=>p.key===k)?.label||k).join(', '):'내 파트'}</button>
+      <button class="mypart-cfg" title="파트 재설정" onclick="openMpsModal()">&#9881;</button>
+    </div>`:'';
 
   return conductorHtml+`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
