@@ -188,6 +188,40 @@ main{padding-top:var(--nh)}
 .det-edit-trigger{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0;backdrop-filter:blur(8px)}
 .det-edit-trigger:hover{color:var(--t2);border-color:var(--t3)}
 .det-edit-trigger.active{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 2px 10px var(--adim)}
+.det-filter-banner{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;margin-bottom:14px;
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(125,122,255,.12),rgba(41,151,255,.08));
+  border:.5px solid rgba(125,122,255,.25);
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .45s var(--spring),opacity .35s var(--ease),margin .35s var(--ease),padding .35s var(--ease);
+  pointer-events:none;
+}
+.det-filter-banner.on{
+  max-height:60px;opacity:1;pointer-events:auto;
+}
+.det-filter-banner-dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  background:var(--c1);
+  box-shadow:0 0 8px var(--c1);
+  animation:ripple 2s infinite;
+}
+.det-filter-banner-text{
+  font-size:12px;font-weight:600;color:var(--c1);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.det-filter-banner-close{
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(125,122,255,.15);border:none;
+  color:var(--c1);font-size:11px;
+  cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s var(--ease);flex-shrink:0;
+  padding:0;
+}
+.det-filter-banner-close:hover{background:rgba(125,122,255,.3);transform:scale(1.15);}
+.det-filter-banner-close:active{transform:scale(.9);}
 .det-conductor{background:linear-gradient(135deg,var(--adim2),rgba(94,92,230,.06));border:.5px solid rgba(41,151,255,.2);border-radius:16px;padding:15px 17px;margin-bottom:14px;position:relative;overflow:hidden}
 .det-conductor::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--accent),var(--c1));border-radius:16px 16px 0 0}
 .det-conductor-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:9px;display:flex;align-items:center;gap:7px}
@@ -1506,23 +1540,43 @@ function syncAllMyPartViews(){
 function applyMyPartView(uid){
   const btn=document.getElementById(uid+'_mypartbtn');
   const wrap=document.getElementById(uid+'_mywrap');
+  const banner=document.getElementById(uid+'_filterbanner');
+  const bannerText=document.getElementById(uid+'_filtertext');
   if(!btn)return;
-  // wrap has-parts 클래스 동기화
   if(wrap){wrap.classList.toggle('has-parts',myParts.length>0);}
   if(myPartActive&&myParts.length>0){
     const names=myParts.map(k=>PART_DEFS.find(p=>p.key===k)?.label||k).join(', ');
-    btn.innerHTML=`&#127989; ${names}`;
+    const bannerNames=myParts.map(k=>PART_DEFS.find(p=>p.key===k)?.label||k).join(' · ');
+    btn.innerHTML='&#127989; '+names;
     btn.classList.add('active');
+    if(banner){
+      if(bannerText)bannerText.textContent=bannerNames+' 파트만 보는 중';
+      requestAnimationFrame(()=>banner.classList.add('on'));
+    }
     PART_DEFS.forEach(p=>{
       const item=document.getElementById(uid+'_item_'+p.key);
-      if(item)item.style.display=myParts.includes(p.key)?'':'none';
+      if(!item)return;
+      const show=myParts.includes(p.key);
+      if(show){
+        item.style.display='block';
+        requestAnimationFrame(()=>{item.style.transition='opacity .3s var(--ease)';item.style.opacity='1';});
+      }else{
+        item.style.transition='opacity .25s var(--ease)';
+        item.style.opacity='0';
+        setTimeout(()=>{if(!myParts.includes(p.key))item.style.display='none';},260);
+      }
     });
   }else{
     btn.innerHTML='&#127989; 내 파트';
     btn.classList.remove('active');
+    if(banner)banner.classList.remove('on');
     PART_DEFS.forEach(p=>{
       const item=document.getElementById(uid+'_item_'+p.key);
-      if(item)item.style.display='';
+      if(!item)return;
+      item.style.display='block';
+      item.style.opacity='0';
+      item.style.transition='opacity .35s var(--ease)';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{item.style.opacity='';}));
     });
   }
 }
@@ -1634,7 +1688,14 @@ function buildDetailBlock(s, cardIdx, isArc){
       <button class="mypart-cfg" title="파트 재설정" onclick="openMpsModal()">&#9881;</button>
     </div>`:'';
 
-  return conductorHtml+`
+  const filterBannerHtml=!isArc?`
+    <div class="det-filter-banner${myPartActive&&myParts.length>0?' on':''}" id="${uid}_filterbanner">
+      <div class="det-filter-banner-dot"></div>
+      <div class="det-filter-banner-text" id="${uid}_filtertext">${myPartActive&&myParts.length>0?myParts.map(k=>PART_DEFS.find(p=>p.key===k)?.label||k).join(' · ')+' 파트만 보는 중':''}&#8203;</div>
+      <button class="det-filter-banner-close" onclick="onMyPartClick('${uid}',event)" title="전체 보기">&#10005;</button>
+    </div>`:'';
+
+  return filterBannerHtml+conductorHtml+`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t4)">파트별 디테일</div>
       ${myPartBtnHtml}
