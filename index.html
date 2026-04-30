@@ -252,7 +252,7 @@ main{padding-top:var(--nh)}
 .det-part-chevron{width:15px;height:15px;flex-shrink:0;transition:transform .38s var(--spring);stroke:var(--t4);transition:transform .38s var(--spring),stroke .3s}
 .det-part-item.open .det-part-chevron{transform:rotate(180deg);stroke:var(--part-color,var(--t2))}
 .det-part-body{max-height:0;overflow:hidden;transition:max-height .45s var(--smooth)}
-.det-part-body.open{max-height:600px}
+.det-part-body.open{max-height:none}
 .det-part-inner{padding:14px 16px 16px;border-top:.5px solid color-mix(in srgb,var(--part-color,var(--gb)) 30%,var(--gb))}
 .det-part-text{font-size:13.5px;line-height:1.85;color:var(--t2);white-space:pre-wrap}
 .det-part-empty{font-size:13px;color:var(--t4);font-style:italic}
@@ -1725,6 +1725,17 @@ function toggleDetPart(uid, partKey, e){
     const save=document.getElementById(uid+'_save_'+partKey);
     if(ta)ta.classList.remove('show');
     if(save)save.classList.remove('show');
+  }
+  // sdet 컨테이너 maxHeight 재계산 (파트 열릴 때 잘리는 문제 방지)
+  const cardIdx=uid.replace('det_h_','').replace('det_arc_','');
+  const cards=[...document.querySelectorAll('#songsList .scard, #arcDetailPage .scard')];
+  const card=cards[parseInt(cardIdx)];
+  if(card){
+    const sdet=card.querySelector('.sdet');
+    if(sdet&&sdet.classList.contains('open')){
+      // 애니메이션 끝난 후 재계산
+      setTimeout(()=>{sdet.style.maxHeight=sdet.scrollHeight+'px';},460);
+    }
   }
 }
 
