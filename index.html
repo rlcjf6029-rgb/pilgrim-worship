@@ -539,6 +539,15 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-dday{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;background:rgba(174,174,178,.12);border:.5px solid rgba(174,174,178,.25);color:var(--t3);margin-left:6px;vertical-align:middle;flex-shrink:0;letter-spacing:.01em}
 .rec-dday.warn{background:rgba(255,159,10,.12);border-color:rgba(255,159,10,.3);color:var(--orange)}
 .rec-dday.danger{background:rgba(255,59,48,.12);border-color:rgba(255,59,48,.3);color:var(--red)}
+/* 예배 날짜 피커 */
+.date-picker-wrap{position:relative}
+.date-picked-display{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg);border:.5px solid var(--bg3);border-radius:10px;font-size:14px;color:var(--t1);cursor:pointer;transition:all .2s;user-select:none}
+.date-picked-display:hover{border-color:var(--accent);background:var(--bg2)}
+.date-picked-display .dpd-icon{font-size:16px;flex-shrink:0}
+.date-picked-display .dpd-text{flex:1}
+.date-picked-display .dpd-clear{font-size:12px;color:var(--t4);padding:2px 4px;border-radius:4px;transition:color .15s;border:none;background:none;cursor:pointer;font-family:inherit}
+.date-picked-display .dpd-clear:hover{color:var(--red)}
+input[type="date"]#adminContiDate{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
 /* 포맷 안내 모달 */
 .fmt-backdrop{position:fixed;inset:0;z-index:600;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
 .fmt-backdrop.on{opacity:1;pointer-events:all}
@@ -738,6 +747,17 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       <div class="ablock">
         <div class="abtitle">주차 설정</div>
         <div class="frow"><label>주차 이름</label><input type="text" id="adminWeek" placeholder="예: 2026년 4월 4주"></div>
+        <div class="frow" style="margin-top:10px">
+          <label>예배 날짜 <span style="font-size:11px;color:var(--t4)">(D-day 기준)</span></label>
+          <div class="date-picker-wrap">
+            <input type="date" id="adminContiDate">
+            <div class="date-picked-display" onclick="openDatePicker()">
+              <span class="dpd-icon">&#x1F4C5;</span>
+              <span class="dpd-text" id="datePickedText" style="color:var(--t4)">날짜를 선택해주세요</span>
+              <button class="dpd-clear" id="datePickedClear" style="display:none" onclick="clearContiDate(event)">&#x2715;</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="ablock">
         <div class="abtitle">재생목록 (선택)</div>
@@ -1001,6 +1021,38 @@ document.getElementById('sortNew').onclick=function(){
 document.getElementById('sortLike').onclick=function(){
   recSortMode='like';this.classList.add('on');document.getElementById('sortNew').classList.remove('on');renderRecList();
 };
+// 예배 날짜 선택기
+function openDatePicker(){
+  const input=document.getElementById('adminContiDate');
+  if(!input)return;
+  input.showPicker?input.showPicker():input.click();
+}
+function updateDateDisplay(val){
+  const text=document.getElementById('datePickedText');
+  const clear=document.getElementById('datePickedClear');
+  if(!text||!clear)return;
+  if(val){
+    const d=new Date(val);
+    const wd=['일','월','화','수','목','금','토'][d.getDay()];
+    text.textContent=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${wd})`;
+    text.style.color='var(--t1)';
+    clear.style.display='inline';
+  }else{
+    text.textContent='날짜를 선택해주세요';
+    text.style.color='var(--t4)';
+    clear.style.display='none';
+  }
+}
+function clearContiDate(e){
+  e.stopPropagation();
+  const input=document.getElementById('adminContiDate');
+  if(input)input.value='';
+  updateDateDisplay('');
+}
+// date input change 이벤트
+document.getElementById('adminContiDate').addEventListener('change',function(){
+  updateDateDisplay(this.value);
+});
 function toggleAdoptedFilter(){
   recFilterAdopted=!recFilterAdopted;
   const btn=document.getElementById('filterAdoptedBtn');
@@ -1176,7 +1228,8 @@ function checkDup(val){
   // 2개월 이내 채택됨 곡도 중복 감지 대상에 포함
   const targets=recItems.filter(r=>{
     if(!r.adopted)return true; // 일반 추천
-    if(r.adoptedAt&&(Date.now()-r.adoptedAt)<TWO_MONTHS_MS)return true; // 2개월 이내 채택
+    const _baseTs=r.contiDate?new Date(r.contiDate).getTime():(r.adoptedAt||0);
+    if(_baseTs&&(Date.now()-_baseTs)<TWO_MONTHS_MS)return true; // 2개월 이내 채택
     return false;
   });
   const dup=targets.find(r=>{const t=r.text.trim().toLowerCase().replace(/\s+/g,' ');return t.includes(norm)||norm.includes(t);});
@@ -1216,7 +1269,8 @@ function renderRecList(query){
   const TWO_MONTHS=60*24*60*60*1000;
   const now=Date.now();
   // 2개월 지난 채택은 자동 해제 (렌더링에서만, DB는 건드리지 않음)
-  const isEffectivelyAdopted=r=>r.adopted&&r.adoptedAt&&(now-r.adoptedAt)<TWO_MONTHS;
+  const getBaseTs=r=>r.contiDate?new Date(r.contiDate).getTime():(r.adoptedAt||0);
+  const isEffectivelyAdopted=r=>r.adopted&&(r.adoptedAt||r.contiDate)&&(now-getBaseTs(r))<TWO_MONTHS;
   const adopted=recItems.filter(r=>isEffectivelyAdopted(r));
   let normal=recItems.filter(r=>!isEffectivelyAdopted(r));
   // 콘티 반영됨 필터 모드
@@ -1276,12 +1330,20 @@ function buildRecCard(r,liked,recentSongs){
   const isRecent=recentSongs&&[...recentSongs].some(t=>r.text.toLowerCase().includes(t));
   const recentBadge=isRecent&&!isAdopted?'<span class="rec-recent-badge">&#x1F3B5; 최근 선곡됨</span>':'';
   const mineDot=isMine?'<span class="rec-mine-dot" title="내가 쓴 추천"></span>':'';
-  // D-day 뱃지 (채택된 곡에만)
-  let ddayBadge='';
-  if(isAdopted&&r.adoptedAt){
-    const daysLeft=Math.ceil((r.adoptedAt+TWO_MONTHS_MS-Date.now())/(1000*60*60*24));
+  // D-day 뱃지 (채택된 곡에만) - contiDate 있으면 그 기준, 없으면 adoptedAt 기준
+  let ddayBadge='',contiDateLabel='';
+  if(isAdopted){
+    const baseTs=r.contiDate
+      ?new Date(r.contiDate).getTime()
+      :(r.adoptedAt||Date.now());
+    const expireTs=baseTs+TWO_MONTHS_MS;
+    const daysLeft=Math.ceil((expireTs-Date.now())/(1000*60*60*24));
     const cls=daysLeft<=3?'danger':daysLeft<=7?'warn':'';
     ddayBadge=`<span class="rec-dday${cls?' '+cls:''}">D-${daysLeft}</span>`;
+    if(r.contiDate){
+      const cd=new Date(r.contiDate);
+      contiDateLabel=`${cd.getMonth()+1}&#xC6D4; ${cd.getDate()}&#xC77C; &#xcf58;&#xd2f0;&#xc5d0; &#xbc18;&#xc601;&#xb428;`;
+    }
   }
   const bonusLikes=r.bonusLikes||0;
   const bonusBadge=bonusLikes>0?`<span class="rec-admin-bonus">+${bonusLikes} 관리자</span>`:'';
@@ -1291,7 +1353,7 @@ function buildRecCard(r,liked,recentSongs){
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
       <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
-      ${isAdopted?`<div class="rec-card-badges"><div class="rec-adopted-badge">&#x2713; 콘티 반영됨</div>${ddayBadge}</div>`:'' }
+      ${isAdopted?`<div class="rec-card-badges"><div class="rec-adopted-badge">&#x2713; ${contiDateLabel||'&#xcf58;&#xd2f0; &#xbc18;&#xc601;&#xb428;'}</div>${ddayBadge}</div>`:'' }
     </div>
     <div class="rec-edit-area" id="recEditArea_${r.id}" style="display:none;margin-top:10px">
       <textarea class="rec-textarea" id="recEditInput_${r.id}" style="min-height:60px;margin-bottom:8px">${escHtml(r.text)}</textarea>
@@ -1398,7 +1460,7 @@ function bindRecEvents(){
             toast('채택이 취소됐어요');
           }else{
             // 신규 채택 or 재채택: adoptedAt 갱신 + likes 리셋
-            await db.collection('recommendations').doc(id).update({adopted:true,adoptedAt:Date.now(),likes:0});
+            await db.collection('recommendations').doc(id).update({adopted:true,adoptedAt:Date.now(),contiDate:curData?.contiDate||'',likes:0});
             toast('콘티에 반영됐어요 🎉');
           }
         }catch(e){toast('오류: '+e.message);}
@@ -1566,6 +1628,13 @@ function renderAdminForms(){
   document.getElementById('adminWeek').value=d?.week||'';
   document.getElementById('adminNotice').value=d?.notice||'';
   document.getElementById('adminPlaylist').value=d?.playlist||'';
+  // 예배 날짜 복원
+  const savedDate=d?.contiDate||'';
+  const dateInput=document.getElementById('adminContiDate');
+  if(dateInput){
+    dateInput.value=savedDate;
+    updateDateDisplay(savedDate);
+  }
   // 기존 곡 수 or 기본 4곡
   const songCount=Math.max(4,d?.songs?.length||0);
   extraSongs=songCount-4;
@@ -1672,9 +1741,11 @@ async function saveConti(){
     if(curData?.week&&curData.week!==week){
       await db.collection('archives').doc(curData.week).set(curData);
     }
+    const contiDateVal=document.getElementById('adminContiDate')?.value||'';
     const nd={week,songs,pdfUrl,pdfName,
       notice:document.getElementById('adminNotice').value.trim(),
       playlist:document.getElementById('adminPlaylist').value.trim(),
+      contiDate:contiDateVal,
       savedAt:new Date().toLocaleDateString('ko-KR'),ts:Date.now()};
     await db.collection('conti').doc('current').set(nd);
     curData=nd;
@@ -1712,7 +1783,7 @@ async function saveConti(){
             const artist=parts!==-1?s.title.slice(parts+3).trim():'';
             const text=artist?`${song} - ${artist}`:song;
             const ref=db.collection('recommendations').doc();
-            batch2.set(ref,{text,likes:0,adopted:true,adoptedAt:Date.now(),autoCreated:true,commentCount:0,ts:Date.now(),deviceId:'system'});
+            batch2.set(ref,{text,likes:0,adopted:true,adoptedAt:Date.now(),contiDate:contiDateVal||'',autoCreated:true,commentCount:0,ts:Date.now(),deviceId:'system'});
           });
           await batch2.commit();
         }catch(e){console.error('autoCreate 실패:',e);}
@@ -1815,7 +1886,8 @@ async function confirmMatches(){
     const batch=db.batch();
     selected.forEach(idx=>{
       const rec=_matchCandidates[idx].rec;
-      batch.update(db.collection('recommendations').doc(rec.id),{adopted:true,adoptedAt:Date.now(),likes:0});
+      const cDate=curData?.contiDate||'';
+      batch.update(db.collection('recommendations').doc(rec.id),{adopted:true,adoptedAt:Date.now(),contiDate:cDate,likes:0});
     });
     await batch.commit();
     closeMatchModal();
