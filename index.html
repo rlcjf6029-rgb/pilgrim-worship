@@ -563,6 +563,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .dupchk-group-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--orange);text-transform:uppercase;margin-bottom:8px}
 .dupchk-item{font-size:13px;color:var(--t2);padding:6px 0;border-bottom:.5px solid var(--bg3);line-height:1.5}
 .dupchk-item:last-child{border-bottom:none;padding-bottom:0}
+.dupchk-merge-btn{width:100%;margin-top:10px;padding:9px;border-radius:10px;border:.5px solid rgba(255,59,48,.25);background:transparent;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.dupchk-merge-btn:hover{background:var(--red);color:#fff;border-color:transparent}
+/* 관리자 표 추가 */
+.rec-admin-likes{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:10px;border:.5px solid rgba(255,159,10,.25);background:transparent;font-size:12px;font-weight:600;color:var(--orange);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-admin-likes:hover{background:rgba(255,159,10,.1)}
+.rec-admin-bonus{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:7px;background:rgba(255,159,10,.12);border:.5px solid rgba(255,159,10,.25);font-size:10px;font-weight:700;color:var(--orange);margin-left:4px;vertical-align:middle}
 .dupchk-item-meta{font-size:11px;color:var(--t4);margin-top:2px}
 .dupchk-empty{text-align:center;padding:32px 0;color:var(--t3);font-size:14px}
 /* 중복 감지 버튼 */
@@ -805,12 +811,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 <!-- 포맷 안내 모달 -->
 <div class="fmt-backdrop" id="fmtBackdrop">
   <div class="fmt-card">
-    <div class="fmt-title">&#x270E; 추천 형식 안내</div>
-    <div class="fmt-sub">이렇게 바꿔서 저장할까요?<br>곡명 뒤에 아티스트를 함께 적으면 나중에 찾기 편해요 &#x1F3B5;</div>
+    <div class="fmt-title">&#x270E; 형식을 바꿔드릴까요?</div>
+    <div class="fmt-sub">곡명과 아티스트 사이에 띄어쓰기를 넣으면 더 보기 좋아요 &#x1F3B5;</div>
     <div class="fmt-preview" id="fmtPreview"></div>
     <div class="fmt-btns">
       <button class="fmt-no" onclick="submitRecFmt(false)">원문 그대로</button>
-      <button class="fmt-yes" onclick="submitRecFmt(true)">바꿔서 저장</button>
+      <button class="fmt-yes" onclick="submitRecFmt(true)">이렇게 저장</button>
     </div>
   </div>
 </div>
@@ -1013,7 +1019,6 @@ function openDupCheck(){
   const body=document.getElementById('dupchkBody');
   body.innerHTML='<div class="dupchk-empty">&#x1F50D; 분석 중...</div>';
   document.getElementById('dupchkBackdrop').classList.add('on');
-  // 분석: 완전 일치 + 포함 관계 그루핑
   const items=recItems.filter(r=>!r.autoCreated);
   const groups=[];
   const used=new Set();
@@ -1023,7 +1028,6 @@ function openDupCheck(){
     const similar=items.filter((b,j)=>{
       if(i===j||used.has(b.id))return false;
       const nb=normTitle(b.text);
-      // 완전 동일 or 포함 관계
       return na===nb||na.includes(nb)||nb.includes(na);
     });
     if(similar.length){
@@ -1037,13 +1041,46 @@ function openDupCheck(){
     return;
   }
   body.innerHTML=groups.map((grp,gi)=>{
-    const items=grp.map(r=>{
-      const adopted=r.adopted&&r.adoptedAt&&(Date.now()-r.adoptedAt)<60*24*60*60*1000;
+    const TWO_MONTHS_MS=60*24*60*60*1000;
+    const itemsHtml=grp.map(r=>{
+      const adopted=r.adopted&&r.adoptedAt&&(Date.now()-r.adoptedAt)<TWO_MONTHS_MS;
       const badge=adopted?'<span style="font-size:10px;color:var(--c4);font-weight:700"> &#x2713;반영됨</span>':'';
       return `<div class="dupchk-item">${escHtml(r.text)}${badge}<div class="dupchk-item-meta">&#x2764; ${r.likes||0} &nbsp;&#x1F4AC; ${r.commentCount||0} &nbsp;${timeAgo(r.ts)}</div></div>`;
     }).join('');
-    return `<div class="dupchk-group"><div class="dupchk-group-label">&#x26A0; 유사 그룹 ${gi+1} (${grp.length}개)</div>${items}</div>`;
+    // 관리자만: 병합 버튼 (ids를 data 속성에 저장)
+    const ids=grp.map(r=>r.id).join(',');
+    const totalLikes=grp.reduce((s,r)=>s+(r.likes||0),0);
+    const mergeBtn=isAdmin?`<button class="dupchk-merge-btn" onclick="mergeGroup('${ids}',${totalLikes})">&#x2702; 중복 항목 병합 (좋아요 ${totalLikes}개 합산)</button>`:'';
+    return `<div class="dupchk-group"><div class="dupchk-group-label">&#x26A0; 유사 그룹 ${gi+1} (${grp.length}개)</div>${itemsHtml}${mergeBtn}</div>`;
   }).join('');
+}
+// 관리자 전용: 표 추가
+async function addAdminLike(e,id,currentBonus){
+  e.stopPropagation();
+  const newBonus=currentBonus+1;
+  try{
+    await db.collection('recommendations').doc(id).update({
+      bonusLikes:newBonus,
+      likes:firebase.firestore.FieldValue.increment(1)
+    });
+    toast(`&#x2B50; 관리자 표 추가 (총 +${newBonus}표)`);
+  }catch(err){toast('오류: '+err.message);}
+}
+// 관리자 전용: 그룹 병합 (첫 번째 항목에 좋아요 합산, 나머지 삭제)
+async function mergeGroup(idsStr,totalLikes){
+  const ids=idsStr.split(',');
+  if(ids.length<2)return;
+  if(!confirm(`${ids.length}개 항목을 병합할까요?\n좋아요 ${totalLikes}개가 첫 번째 항목으로 합산돼요.`))return;
+  try{
+    const batch=db.batch();
+    // 첫 번째 항목에 합산 좋아요 세팅
+    batch.update(db.collection('recommendations').doc(ids[0]),{likes:totalLikes});
+    // 나머지 삭제
+    ids.slice(1).forEach(id=>batch.delete(db.collection('recommendations').doc(id)));
+    await batch.commit();
+    toast('병합 완료! &#x2702;');
+    closeDupCheck();
+  }catch(e){toast('병합 실패: '+e.message);}
 }
 function closeDupCheck(){
   document.getElementById('dupchkBackdrop').classList.remove('on');
@@ -1075,34 +1112,34 @@ document.getElementById('recInput').addEventListener('input',function(){
 });
 
 // 포맷 안내 모달 관련
-let _pendingRecText='';
-function parseRecFormat(text){
-  // 마지막 ' - ' 기준으로 분리
-  const idx=text.lastIndexOf(' - ');
-  if(idx===-1)return null;
-  const song=text.slice(0,idx).trim();
-  const artist=text.slice(idx+3).trim();
+let _pendingRecText='',_pendingRecFormatted='';
+function suggestFormat(text){
+  // ' - ' (공백포함) 없으면 포맷 제안 필요
+  if(text.includes(' - '))return null;
+  // '-' 기준으로 분리 후 앞뒤 공백 추가
+  const dashIdx=text.lastIndexOf('-');
+  if(dashIdx===-1)return null;
+  const song=text.slice(0,dashIdx).trim();
+  const artist=text.slice(dashIdx+1).trim();
   if(!song||!artist)return null;
-  return{song,artist,formatted:`${song} - ${artist}`};
+  return`${song} - ${artist}`;
 }
 document.getElementById('recSubmit').onclick=function(){
   const text=document.getElementById('recInput').value.trim();
   if(!text||text.length>200)return;
-  const parsed=parseRecFormat(text);
-  // ' - ' 없으면 포맷 안내
-  if(!parsed){
+  const suggested=suggestFormat(text);
+  if(suggested){
     _pendingRecText=text;
-    // 예시: 원문을 파싱 시도해서 미리보기 제안
-    document.getElementById('fmtPreview').textContent=text+' - 아티스트명';
+    _pendingRecFormatted=suggested;
+    document.getElementById('fmtPreview').textContent=suggested;
     document.getElementById('fmtBackdrop').classList.add('on');
     return;
   }
-  // 이미 올바른 포맷이면 바로 제출
   doSubmitRec(text);
 };
 async function submitRecFmt(doFormat){
   document.getElementById('fmtBackdrop').classList.remove('on');
-  const text=_pendingRecText;
+  const text=doFormat?_pendingRecFormatted:_pendingRecText;
   if(!text)return;
   doSubmitRec(text);
 }
@@ -1234,7 +1271,9 @@ function buildRecCard(r,liked,recentSongs){
     const cls=daysLeft<=3?'danger':daysLeft<=7?'warn':'';
     ddayBadge=`<span class="rec-dday${cls?' '+cls:''}">D-${daysLeft}</span>`;
   }
-  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  const bonusLikes=r.bonusLikes||0;
+  const bonusBadge=bonusLikes>0?`<span class="rec-admin-bonus">+${bonusLikes} 관리자</span>`:'';
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-admin-likes" data-id="${r.id}" data-bonus="${bonusLikes}" onclick="addAdminLike(event,'${r.id}',${bonusLikes})">+1표</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
       <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
@@ -1249,7 +1288,7 @@ function buildRecCard(r,liked,recentSongs){
     </div>
     <div class="rec-meta">
       <span class="rec-time">${timeAgo(r.ts)}</span>
-      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;&#xFE0F;':'&#x1F90D;'} ${r.likes||0}</button>
+      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;&#xFE0F;':'&#x1F90D;'} ${r.likes||0}</button>${bonusBadge}
       <button class="rec-cmt-toggle" data-id="${r.id}">&#x1F4AC; ${r.commentCount||0}</button>
       ${adminBtns}
     </div>
