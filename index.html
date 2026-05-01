@@ -496,6 +496,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-admin-row{display:flex;gap:6px;margin-left:auto}
 .rec-edit-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(0,113,227,.25);background:var(--adim2);font-size:11px;font-weight:600;color:var(--accent);cursor:pointer;font-family:inherit;transition:all .2s}
 .rec-edit-btn:hover{background:var(--accent);color:#fff;border-color:transparent}
+.rec-adopt-date-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(100,210,255,.3);background:var(--c2d);font-size:11px;font-weight:600;color:var(--c2);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-adopt-date-btn:hover{background:var(--c2);color:#fff;border-color:transparent}
 .rec-adopt-btn{padding:4px 9px;border-radius:8px;border:.5px solid rgba(94,92,230,.25);background:var(--c1d);font-size:11px;font-weight:600;color:var(--c1);cursor:pointer;font-family:inherit;transition:all .2s}
 .rec-adopt-btn:hover{background:var(--c1);color:#fff;border-color:transparent}
 .rec-adopt-btn.cancel{background:rgba(255,59,48,.08);border-color:rgba(255,59,48,.2);color:var(--red)}
@@ -941,7 +943,7 @@ const io=new IntersectionObserver(entries=>{
 
 function toast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('on');
+  t.innerHTML=msg;t.classList.add('on');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600);
 }
 function ytId(url){
@@ -1111,28 +1113,44 @@ function openDupCheck(){
   }).join('');
 }
 // 관리자 전용: 표 추가
+async function openAdoptDateEdit(e,id,currentDate){
+  e.stopPropagation();
+  const val=prompt('예배 날짜를 입력해주세요 (YYYY-MM-DD)',currentDate||new Date().toISOString().slice(0,10));
+  if(val===null)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(val)){toast('날짜 형식이 맞지 않아요 (예: 2026-05-04)');return;}
+  try{
+    await db.collection('recommendations').doc(id).update({contiDate:val});
+    const d=new Date(val);
+    const wd=['일','월','화','수','목','금','토'][d.getDay()];
+    toast((d.getMonth()+1)+'월 '+d.getDate()+'일 ('+wd+') 로 날짜 저장됐어요 &#128197;');
+  }catch(err){toast('오류: '+err.message);}
+}
 async function addAdminLike(e,id,currentBonus){
   e.stopPropagation();
   if(currentBonus>0){
-    // 이미 표가 있으면 전체 취소
-    if(!confirm('관리자 추가 표를 전부 취소할까요? ('+currentBonus+'표 제거)'))return;
-    try{
-      await db.collection('recommendations').doc(id).update({
-        bonusLikes:0,
-        likes:firebase.firestore.FieldValue.increment(-currentBonus)
-      });
-      toast('관리자 표 취소됐어요');
-    }catch(err){toast('오류: '+err.message);}
-  }else{
-    // 표 추가
-    try{
-      await db.collection('recommendations').doc(id).update({
-        bonusLikes:1,
-        likes:firebase.firestore.FieldValue.increment(1)
-      });
-      toast('&#x2B50; 관리자 표 추가됐어요');
-    }catch(err){toast('오류: '+err.message);}
+    // 이미 표 있으면 취소 or 재설정
+    const action=confirm('관리자 추가 표를 취소할까요?\n확인=취소, 취소=표 수 변경');
+    if(action){
+      try{
+        await db.collection('recommendations').doc(id).update({bonusLikes:0,likes:firebase.firestore.FieldValue.increment(-currentBonus)});
+        toast('관리자 표 취소됐어요');
+      }catch(err){toast('오류: '+err.message);}
+      return;
+    }
   }
+  // 표 수 입력
+  const input=prompt('추가할 표 수를 입력하세요 (현재 +'+currentBonus+'표)','');
+  if(input===null)return;
+  const n=parseInt(input);
+  if(isNaN(n)||n<1){toast('1 이상의 숫자를 입력해주세요');return;}
+  const diff=n-currentBonus;
+  try{
+    await db.collection('recommendations').doc(id).update({
+      bonusLikes:n,
+      likes:firebase.firestore.FieldValue.increment(diff)
+    });
+    toast(''&#11088; 관리자#x2B50; 관리자 +'+n+'표 설정됐어요');
+  }catch(err){toast('오류: '+err.message);}
 }
 // 관리자 전용: 그룹 병합 (첫 번째 항목에 좋아요 합산, 나머지 삭제)
 async function mergeGroup(idsStr,totalLikes){
@@ -1199,7 +1217,7 @@ document.getElementById('recSubmit').onclick=function(){
   _pendingRecFormatted=r.fmt||'';
   if(r.c===2){
     document.getElementById('fmtTitle').textContent='\u270e 형식을 바꿔드릴까요?';
-    document.getElementById('fmtSub').textContent='공백 하이픈을 넣으면 더 보기 좋아요 &#x1F3B5;';
+    document.getElementById('fmtSub').textContent='공백 하이픈을 넣으면 더 보기 좋아요 🎵';
     document.getElementById('fmtPreview').textContent=r.fmt;
     document.getElementById('fmtNoBtn').textContent='원문 그대로';
     document.getElementById('fmtYesBtn').textContent='이렇게 저장';
@@ -1366,7 +1384,8 @@ function buildRecCard(r,liked,recentSongs){
   const bonusBadge=bonusLikes>0?`<span class="rec-admin-bonus">+${bonusLikes} 관리자</span>`:'';
   const adminLikeLabel=bonusLikes>0?`+${bonusLikes}표 취소`:'+1표';
   const adminLikeStyle=bonusLikes>0?'style="border-color:rgba(255,59,48,.3);color:var(--red)"':'';
-  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-admin-likes" data-id="${r.id}" ${adminLikeStyle} onclick="addAdminLike(event,'${r.id}',${bonusLikes})">${adminLikeLabel}</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  const adoptDateBtn=isAdopted?`<button class="rec-adopt-date-btn" onclick="openAdoptDateEdit(event,'${r.id}','${r.contiDate||''}')">날짜</button>`:'';
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-admin-likes" data-id="${r.id}" ${adminLikeStyle} onclick="addAdminLike(event,'${r.id}',${bonusLikes})">${adminLikeLabel}</button>${adoptDateBtn}<button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
       <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
