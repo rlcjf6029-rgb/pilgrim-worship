@@ -579,10 +579,6 @@ input[type="date"]#adminContiDate{position:absolute;opacity:0;pointer-events:non
 .dupchk-item:last-child{border-bottom:none;padding-bottom:0}
 .dupchk-merge-btn{width:100%;margin-top:10px;padding:9px;border-radius:10px;border:.5px solid rgba(255,59,48,.25);background:transparent;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
 .dupchk-merge-btn:hover{background:var(--red);color:#fff;border-color:transparent}
-/* 관리자 표 추가 */
-.rec-admin-likes{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:10px;border:.5px solid rgba(255,159,10,.25);background:transparent;font-size:12px;font-weight:600;color:var(--orange);cursor:pointer;font-family:inherit;transition:all .2s}
-.rec-admin-likes:hover{background:rgba(255,159,10,.1)}
-.rec-admin-bonus{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:7px;background:rgba(255,159,10,.12);border:.5px solid rgba(255,159,10,.25);font-size:10px;font-weight:700;color:var(--orange);margin-left:4px;vertical-align:middle}
 .dupchk-item-meta{font-size:11px;color:var(--t4);margin-top:2px}
 .dupchk-empty{text-align:center;padding:32px 0;color:var(--t3);font-size:14px}
 /* 중복 감지 버튼 */
@@ -1125,33 +1121,6 @@ async function openAdoptDateEdit(e,id,currentDate){
     toast((d.getMonth()+1)+'월 '+d.getDate()+'일 ('+wd+') 로 날짜 저장됐어요 &#128197;');
   }catch(err){toast('오류: '+err.message);}
 }
-async function addAdminLike(e,id,currentBonus){
-  e.stopPropagation();
-  if(currentBonus>0){
-    // 이미 표 있으면 취소 or 재설정
-    const action=confirm('관리자 추가 표를 취소할까요?\n확인=취소, 취소=표 수 변경');
-    if(action){
-      try{
-        await db.collection('recommendations').doc(id).update({bonusLikes:0,likes:firebase.firestore.FieldValue.increment(-currentBonus)});
-        toast('관리자 표 취소됐어요');
-      }catch(err){toast('오류: '+err.message);}
-      return;
-    }
-  }
-  // 표 수 입력
-  const input=prompt('추가할 표 수를 입력하세요 (현재 +'+currentBonus+'표)','');
-  if(input===null)return;
-  const n=parseInt(input);
-  if(isNaN(n)||n<1){toast('1 이상의 숫자를 입력해주세요');return;}
-  const diff=n-currentBonus;
-  try{
-    await db.collection('recommendations').doc(id).update({
-      bonusLikes:n,
-      likes:firebase.firestore.FieldValue.increment(diff)
-    });
-    toast('&#x2B50; 관리자 +'+n+'표 설정됐어요');
-  }catch(err){toast('오류: '+err.message);}
-}
 // 관리자 전용: 그룹 병합 (첫 번째 항목에 좋아요 합산, 나머지 삭제)
 async function mergeGroup(idsStr,totalLikes){
   const ids=idsStr.split(',');
@@ -1380,12 +1349,8 @@ function buildRecCard(r,liked,recentSongs){
       contiDateLabel=`${cd.getMonth()+1}&#xC6D4; ${cd.getDate()}&#xC77C; &#xcf58;&#xd2f0;&#xc5d0; &#xbc18;&#xc601;&#xb428;`;
     }
   }
-  const bonusLikes=r.bonusLikes||0;
-  const bonusBadge=bonusLikes>0?`<span class="rec-admin-bonus">+${bonusLikes} 관리자</span>`:'';
-  const adminLikeLabel=bonusLikes>0?`+${bonusLikes}표 취소`:'+1표';
-  const adminLikeStyle=bonusLikes>0?'style="border-color:rgba(255,59,48,.3);color:var(--red)"':'';
   const adoptDateBtn=isAdopted?`<button class="rec-adopt-date-btn" onclick="openAdoptDateEdit(event,'${r.id}','${r.contiDate||''}')">날짜</button>`:'';
-  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-admin-likes" data-id="${r.id}" ${adminLikeStyle} onclick="addAdminLike(event,'${r.id}',${bonusLikes})">${adminLikeLabel}</button>${adoptDateBtn}<button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button>${adoptDateBtn}<button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
       <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
@@ -1400,7 +1365,7 @@ function buildRecCard(r,liked,recentSongs){
     </div>
     <div class="rec-meta">
       <span class="rec-time">${timeAgo(r.ts)}</span>
-      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;&#xFE0F;':'&#x1F90D;'} ${r.likes||0}</button>${bonusBadge}
+      <button class="rec-like-btn${isLiked?' liked':''}" data-id="${r.id}">${isLiked?'&#x2764;&#xFE0F;':'&#x1F90D;'} ${r.likes||0}</button>
       <button class="rec-cmt-toggle" data-id="${r.id}">&#x1F4AC; ${r.commentCount||0}</button>
       ${adminBtns}
     </div>
@@ -2620,7 +2585,10 @@ function openModal(i){
           <a href="${s.url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.35);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;text-decoration:none">▶ YouTube에서 듣기</a>
         </div>`:''}
       </div>`:''}
-      <div style="padding:9px 0 14px;text-align:center;font-size:11px;color:var(--t4);border-top:.5px solid var(--gb);cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.style.color=this.nextElementSibling.style.display==='block'?'var(--accent)':'var(--t4)'">디테일 보기 &#8964;</div>
+      <div style="padding:9px 0 14px;text-align:center;font-size:11px;color:var(--t4);border-top:.5px solid var(--gb);display:flex;align-items:center;justify-content:center;gap:8px">
+        <span style="cursor:pointer" onclick="this.parentElement.nextElementSibling.style.display=this.parentElement.nextElementSibling.style.display==='none'?'block':'none';this.style.color=this.parentElement.nextElementSibling.style.display==='block'?'var(--accent)':'var(--t4)'">디테일 보기 &#8964;</span>
+        ${isAdmin&&s.title?`<button onclick="adoptFromArc('${escHtml(s.title).replace(/'/g,"\\'")}','${c.contiDate||''}')" style="padding:3px 10px;border-radius:8px;border:.5px solid rgba(48,209,88,.3);background:transparent;font-size:10px;font-weight:700;color:var(--c4);cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='var(--c4d)'" onmouseout="this.style.background='transparent'">&#x2713; 반영됨 처리</button>`:''}
+      </div>
       <div style="display:none;padding:14px 18px 16px;border-top:.5px solid var(--gb)">${buildDetailBlock(s,idx,true)}</div>
     </div>`;
   });
@@ -2764,6 +2732,35 @@ function openArcDetail(i){
   window.scrollTo(0,0);
 }
 
+async function adoptFromArc(title, contiDate){
+  // 추천 목록에서 같은 곡 있는지 먼저 확인
+  const TWO_MONTHS_MS=60*24*60*60*1000;
+  const norm=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
+  const nt=norm(title);
+  const existing=recItems.find(r=>{
+    const nr=norm(r.text);
+    return nr.includes(nt)||nt.includes(nr);
+  });
+  const alreadyAdopted=existing&&existing.adopted&&existing.adoptedAt&&(Date.now()-existing.adoptedAt)<TWO_MONTHS_MS;
+  if(alreadyAdopted){toast('&#x2713; 이미 반영됨 처리된 곡이에요');return;}
+  if(!confirm('"'+title+'"을(를) 반영됨으로 처리할까요?'+(contiDate?'\n날짜: '+contiDate:'')))return;
+  try{
+    if(existing&&!existing.adopted){
+      // 기존 추천 항목 채택 처리
+      await db.collection('recommendations').doc(existing.id).update({
+        adopted:true,adoptedAt:Date.now(),contiDate:contiDate||''
+      });
+    }else{
+      // 새 항목 생성
+      await db.collection('recommendations').add({
+        text:title,likes:0,adopted:true,adoptedAt:Date.now(),
+        contiDate:contiDate||'',autoCreated:true,commentCount:0,
+        ts:Date.now(),deviceId:'system'
+      });
+    }
+    toast('&#x2713; '+title+' 반영됨 처리됐어요!');
+  }catch(err){toast('오류: '+err.message);}
+}
 async function saveArcDate(i){
   const val=document.getElementById('arcDateInput')?.value||'';
   const c=arcAll[i];if(!c)return;
