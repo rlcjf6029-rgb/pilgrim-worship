@@ -1057,14 +1057,26 @@ function openDupCheck(){
 // 관리자 전용: 표 추가
 async function addAdminLike(e,id,currentBonus){
   e.stopPropagation();
-  const newBonus=currentBonus+1;
-  try{
-    await db.collection('recommendations').doc(id).update({
-      bonusLikes:newBonus,
-      likes:firebase.firestore.FieldValue.increment(1)
-    });
-    toast(`&#x2B50; 관리자 표 추가 (총 +${newBonus}표)`);
-  }catch(err){toast('오류: '+err.message);}
+  if(currentBonus>0){
+    // 이미 표가 있으면 전체 취소
+    if(!confirm('관리자 추가 표를 전부 취소할까요? ('+currentBonus+'표 제거)'))return;
+    try{
+      await db.collection('recommendations').doc(id).update({
+        bonusLikes:0,
+        likes:firebase.firestore.FieldValue.increment(-currentBonus)
+      });
+      toast('관리자 표 취소됐어요');
+    }catch(err){toast('오류: '+err.message);}
+  }else{
+    // 표 추가
+    try{
+      await db.collection('recommendations').doc(id).update({
+        bonusLikes:1,
+        likes:firebase.firestore.FieldValue.increment(1)
+      });
+      toast('&#x2B50; 관리자 표 추가됐어요');
+    }catch(err){toast('오류: '+err.message);}
+  }
 }
 // 관리자 전용: 그룹 병합 (첫 번째 항목에 좋아요 합산, 나머지 삭제)
 async function mergeGroup(idsStr,totalLikes){
@@ -1273,7 +1285,9 @@ function buildRecCard(r,liked,recentSongs){
   }
   const bonusLikes=r.bonusLikes||0;
   const bonusBadge=bonusLikes>0?`<span class="rec-admin-bonus">+${bonusLikes} 관리자</span>`:'';
-  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-admin-likes" data-id="${r.id}" data-bonus="${bonusLikes}" onclick="addAdminLike(event,'${r.id}',${bonusLikes})">+1표</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
+  const adminLikeLabel=bonusLikes>0?`+${bonusLikes}표 취소`:'+1표';
+  const adminLikeStyle=bonusLikes>0?'style="border-color:rgba(255,59,48,.3);color:var(--red)"':'';
+  const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-admin-likes" data-id="${r.id}" ${adminLikeStyle} onclick="addAdminLike(event,'${r.id}',${bonusLikes})">${adminLikeLabel}</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
       <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
