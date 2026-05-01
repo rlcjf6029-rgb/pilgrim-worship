@@ -525,6 +525,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-search-input::placeholder{color:var(--t4)}
 .rec-search-clear{background:none;border:none;cursor:pointer;font-size:12px;color:var(--t4);padding:2px 4px;border-radius:4px;transition:color .15s;font-family:inherit}
 .rec-search-clear:hover{color:var(--t2)}
+/* 콘티 반영됨 필터 버튼 */
+.rec-filter-adopted-btn{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 12px;border-radius:10px;border:.5px solid rgba(48,209,88,.3);background:transparent;font-size:12px;font-weight:600;color:var(--c4);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-filter-adopted-btn:hover{background:var(--c4d)}
+.rec-filter-adopted-btn.on{background:var(--c4);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(48,209,88,.3)}
 /* 최근 선곡됨 뱃지 */
 .rec-recent-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(255,159,10,.12);border:.5px solid rgba(255,159,10,.3);border-radius:8px;font-size:10px;font-weight:700;color:var(--orange);margin-left:6px;vertical-align:middle;flex-shrink:0}
 /* 내 추천 dot */
@@ -657,9 +661,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
       </div>
       <div class="rec-header">
         <div class="rec-count">&#x1F3B5; <span id="recTotal">0</span>개의 추천</div>
-        <div class="rec-sort">
-          <button class="rec-sort-btn on" id="sortNew">최신순</button>
-          <button class="rec-sort-btn" id="sortLike">좋아요순</button>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button class="rec-filter-adopted-btn" id="filterAdoptedBtn" onclick="toggleAdoptedFilter()">&#x2713; 콘티 반영됨</button>
+          <div class="rec-sort">
+            <button class="rec-sort-btn on" id="sortNew">최신순</button>
+            <button class="rec-sort-btn" id="sortLike">좋아요순</button>
+          </div>
         </div>
       </div>
       <div class="rec-search-wrap">
@@ -835,7 +842,7 @@ const SITE='https://rlcjf6029-rgb.github.io/pilgrim-worship';
 let isAdmin=false,pendingPdf=null,curData=null,arcAll=[];
 
 // 찬양 추천 상태
-let recItems=[],recSortMode='new',recUnsub=null;
+let recItems=[],recSortMode='new',recUnsub=null,recFilterAdopted=false;
 
 const io=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
@@ -927,6 +934,19 @@ document.getElementById('sortNew').onclick=function(){
 document.getElementById('sortLike').onclick=function(){
   recSortMode='like';this.classList.add('on');document.getElementById('sortNew').classList.remove('on');renderRecList();
 };
+function toggleAdoptedFilter(){
+  recFilterAdopted=!recFilterAdopted;
+  const btn=document.getElementById('filterAdoptedBtn');
+  if(btn)btn.classList.toggle('on',recFilterAdopted);
+  // 필터 ON 시 검색창 초기화
+  if(recFilterAdopted){
+    const si=document.getElementById('recSearch');
+    if(si)si.value='';
+    const sc=document.getElementById('recSearchClear');
+    if(sc)sc.style.display='none';
+  }
+  renderRecList();
+}
 document.getElementById('recSearch').addEventListener('input',function(){
   const q=this.value;
   document.getElementById('recSearchClear').style.display=q?'inline':'none';
@@ -975,7 +995,7 @@ function checkDup(val){
   const dup=targets.find(r=>{const t=r.text.trim().toLowerCase().replace(/\s+/g,' ');return t.includes(norm)||norm.includes(t);});
   if(dup){
     const label=dup.adopted?'콘티에 반영된 곡이에요!':'비슷한 추천이 이미 있어요!';
-    document.getElementById('recDupMsg').textContent=`"${dup.text.slice(0,20)}${dup.text.length>20?'...':''}" &#8212; ${label}`;
+    document.getElementById('recDupMsg').textContent=`"${dup.text.slice(0,20)}${dup.text.length>20?'...':''}" \u2014 ${label}`;
     warn.classList.add('on');
   }else warn.classList.remove('on');
 }
@@ -1012,6 +1032,23 @@ function renderRecList(query){
   const isEffectivelyAdopted=r=>r.adopted&&r.adoptedAt&&(now-r.adoptedAt)<TWO_MONTHS;
   const adopted=recItems.filter(r=>isEffectivelyAdopted(r));
   let normal=recItems.filter(r=>!isEffectivelyAdopted(r));
+  // 콘티 반영됨 필터 모드
+  if(recFilterAdopted){
+    const fl=document.getElementById('recNormalList');
+    if(!adopted.length){
+      fl.innerHTML='<div class="empty"><div class="ei">&#x2713;</div><p>콘티에 반영된 곡이 없어요</p></div>';
+      bindRecEvents();updateRecDot();return;
+    }
+    adopted.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    document.getElementById('recTotal').textContent=recItems.length;
+    let ahtml='<div class="rec-sec-label" style="margin-top:0">&#x2713; 콘티에 반영된 곡 ('+adopted.length+'곡)</div>';
+    ahtml+=adopted.map(r=>buildRecCard(r,liked,recentSongs)).join('');
+    fl.innerHTML=ahtml;
+    fl.querySelectorAll('.rec-card').forEach((el,i)=>{
+      el.style.transitionDelay=i*0.04+'s';el.classList.add('visible');
+    });
+    bindRecEvents();updateRecDot();return;
+  }
   // 검색 필터
   if(q)normal=normal.filter(r=>r.text.toLowerCase().includes(q));
   if(recSortMode==='like')normal.sort((a,b)=>(b.likes||0)-(a.likes||0)||(b.ts||0)-(a.ts||0));
