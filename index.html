@@ -976,6 +976,7 @@ function getRecSeen(){return parseInt(localStorage.getItem('pilgrim_rec_seen')||
 function setRecSeen(ts){localStorage.setItem('pilgrim_rec_seen',String(ts));}
 
 function goPage(id){
+  document.getElementById('pg-arc-detail')?.classList.remove('on');
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   const pg=document.getElementById('pg-'+id);
@@ -1312,10 +1313,7 @@ function renderRecList(query){
     bindRecEvents();updateRecDot();return;
   }
   let html=normal.map(r=>buildRecCard(r,liked,recentSongs)).join('');
-  if(!q&&adopted.length){
-    html+=`<div class="rec-sec-label" style="margin-top:${normal.length?'20px':'0'}">콘티에 반영됨 &#x2713;</div>`;
-    html+=adopted.map(r=>buildRecCard(r,liked,recentSongs)).join('');
-  }
+  // 콘티 반영됨 항목은 토글 필터에서만 보임 - 일반 목록에서 제외
   normalList.innerHTML=html;
   normalList.querySelectorAll('.rec-card').forEach((el,i)=>{
     el.style.transitionDelay=`${i*0.04}s`;
