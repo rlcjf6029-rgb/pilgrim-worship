@@ -1149,7 +1149,7 @@ async function addAdminLike(e,id,currentBonus){
       bonusLikes:n,
       likes:firebase.firestore.FieldValue.increment(diff)
     });
-    toast(''&#11088; 관리자#x2B50; 관리자 +'+n+'표 설정됐어요');
+    toast('&#x2B50; 관리자 +'+n+'표 설정됐어요');
   }catch(err){toast('오류: '+err.message);}
 }
 // 관리자 전용: 그룹 병합 (첫 번째 항목에 좋아요 합산, 나머지 삭제)
