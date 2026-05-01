@@ -548,6 +548,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .date-picked-display .dpd-clear{font-size:12px;color:var(--t4);padding:2px 4px;border-radius:4px;transition:color .15s;border:none;background:none;cursor:pointer;font-family:inherit}
 .date-picked-display .dpd-clear:hover{color:var(--red)}
 input[type="date"]#adminContiDate{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+/* 추천 양식 힌트 */
+.rec-format-hint{font-size:11px;color:var(--t4);margin-top:7px;display:flex;align-items:center;gap:5px;line-height:1.5}
+.rec-format-hint strong{color:var(--t3);font-weight:600}
 /* 포맷 안내 모달 */
 .fmt-backdrop{position:fixed;inset:0;z-index:600;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
 .fmt-backdrop.on{opacity:1;pointer-events:all}
@@ -706,6 +709,7 @@ input[type="date"]#adminContiDate{position:absolute;opacity:0;pointer-events:non
         <div class="rec-form-foot">
           <span class="rec-char" id="recChar">0 / 200</span>
           <button class="rec-submit" id="recSubmit" disabled>추천하기 ✦</button>
+        <div class="rec-format-hint">&#x1F3B5; 형식: <strong>곡명 - 아티스트</strong> &nbsp;<span style="color:var(--t4)">(예: 재림 - 기프티드)</span></div>
         </div>
       </div>
       <div class="rec-header">
@@ -831,12 +835,12 @@ input[type="date"]#adminContiDate{position:absolute;opacity:0;pointer-events:non
 <!-- 포맷 안내 모달 -->
 <div class="fmt-backdrop" id="fmtBackdrop">
   <div class="fmt-card">
-    <div class="fmt-title">&#x270E; 형식을 바꿔드릴까요?</div>
-    <div class="fmt-sub">곡명과 아티스트 사이에 띄어쓰기를 넣으면 더 보기 좋아요 &#x1F3B5;</div>
+    <div class="fmt-title" id="fmtTitle">&#x270E; 형식을 바꿔드릴까요?</div>
+    <div class="fmt-sub" id="fmtSub">곡명과 아티스트 사이에 띄어쓰기를 넣으면 더 보기 좋아요 &#x1F3B5;</div>
     <div class="fmt-preview" id="fmtPreview"></div>
     <div class="fmt-btns">
-      <button class="fmt-no" onclick="submitRecFmt(false)">원문 그대로</button>
-      <button class="fmt-yes" onclick="submitRecFmt(true)">이렇게 저장</button>
+      <button class="fmt-no" id="fmtNoBtn" onclick="submitRecFmt(false)">원문 그대로</button>
+      <button class="fmt-yes" id="fmtYesBtn" onclick="submitRecFmt(true)">이렇게 저장</button>
     </div>
   </div>
 </div>
@@ -1177,35 +1181,49 @@ document.getElementById('recInput').addEventListener('input',function(){
 
 // 포맷 안내 모달 관련
 let _pendingRecText='',_pendingRecFormatted='';
-function suggestFormat(text){
-  // ' - ' (공백포함) 없으면 포맷 제안 필요
-  if(text.includes(' - '))return null;
-  // '-' 기준으로 분리 후 앞뒤 공백 추가
-  const dashIdx=text.lastIndexOf('-');
-  if(dashIdx===-1)return null;
-  const song=text.slice(0,dashIdx).trim();
-  const artist=text.slice(dashIdx+1).trim();
-  if(!song||!artist)return null;
-  return`${song} - ${artist}`;
+function checkRecFormat(text){
+  if(text.includes(' - '))return{c:1};
+  const di=text.lastIndexOf('-');
+  if(di>0&&di<text.length-1){
+    const s=text.slice(0,di).trim(),a=text.slice(di+1).trim();
+    if(s&&a)return{c:2,fmt:s+' - '+a};
+  }
+  return{c:3};
 }
 document.getElementById('recSubmit').onclick=function(){
   const text=document.getElementById('recInput').value.trim();
   if(!text||text.length>200)return;
-  const suggested=suggestFormat(text);
-  if(suggested){
-    _pendingRecText=text;
-    _pendingRecFormatted=suggested;
-    document.getElementById('fmtPreview').textContent=suggested;
-    document.getElementById('fmtBackdrop').classList.add('on');
-    return;
+  const r=checkRecFormat(text);
+  if(r.c===1){doSubmitRec(text);return;}
+  _pendingRecText=text;
+  _pendingRecFormatted=r.fmt||'';
+  if(r.c===2){
+    document.getElementById('fmtTitle').textContent='\u270e 형식을 바꿔드릴까요?';
+    document.getElementById('fmtSub').textContent='공백 하이픈을 넣으면 더 보기 좋아요 &#x1F3B5;';
+    document.getElementById('fmtPreview').textContent=r.fmt;
+    document.getElementById('fmtNoBtn').textContent='원문 그대로';
+    document.getElementById('fmtYesBtn').textContent='이렇게 저장';
+  }else{
+    document.getElementById('fmtTitle').textContent='\u26a0\ufe0f 기입 형식을 확인해주세요';
+    document.getElementById('fmtSub').innerHTML='추천은 <strong style="color:var(--accent)">곡명 - 아티스트</strong> 형식으로 적어주세요!<br><span style="color:var(--t4)">(예: 재림 - 기프티드)</span>';
+    document.getElementById('fmtPreview').textContent=text;
+    document.getElementById('fmtNoBtn').textContent='일단 이대로 등록';
+    document.getElementById('fmtYesBtn').textContent='수정하기';
   }
-  doSubmitRec(text);
+  document.getElementById('fmtBackdrop').classList.add('on');
 };
 async function submitRecFmt(doFormat){
   document.getElementById('fmtBackdrop').classList.remove('on');
-  const text=doFormat?_pendingRecFormatted:_pendingRecText;
+  const r=checkRecFormat(_pendingRecText);
+  if(r.c===3&&doFormat){
+    const inp=document.getElementById('recInput');
+    if(inp){inp.focus();inp.select();}
+    return;
+  }
+  const text=(r.c===2&&doFormat)?_pendingRecFormatted:_pendingRecText;
   if(!text)return;
   doSubmitRec(text);
+}
 }
 async function doSubmitRec(text){
   const btn=document.getElementById('recSubmit');
@@ -2603,6 +2621,23 @@ function openModal(i){
     </a>
   </div>`;
 
+  // 관리자: 예배 날짜 편집 블록
+  if(isAdmin){
+    const cd=c.contiDate||'';
+    let dlabel='날짜 미설정';
+    if(cd){
+      const dd=new Date(cd);
+      const wd=['일','월','화','수','목','금','토'][dd.getDay()];
+      dlabel=(dd.getMonth()+1)+'월 '+dd.getDate()+'일 ('+wd+')';
+    }
+    const dateBlock='<div style="background:var(--adim2);border:.5px solid rgba(0,113,227,.15);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">'
+      +'<div style="font-size:12px;font-weight:600;color:var(--accent)">&#x1F4C5; 예배 날짜: <span id="arcDateLabel">'+dlabel+'</span></div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<input type="date" id="arcDateInput" value="'+cd+'" style="padding:5px 10px;border:.5px solid var(--bg3);border-radius:8px;font-size:12px;background:var(--bg);color:var(--t1);font-family:inherit">'
+      +'<button onclick="saveArcDate('+i+')" style="padding:5px 12px;border-radius:8px;background:var(--accent);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">저장</button>'
+      +'</div></div>';
+    body=dateBlock+body;
+  }
   document.getElementById('arcBody').innerHTML=body;
   document.getElementById('arcDrop').classList.add('on');
 }
@@ -2711,6 +2746,31 @@ function openArcDetail(i){
   window.scrollTo(0,0);
 }
 
+async function saveArcDate(i){
+  const val=document.getElementById('arcDateInput')?.value||'';
+  const c=arcAll[i];if(!c)return;
+  try{
+    // 현재 주차인지 아카이브인지 판단
+    const isCurrentWeek=curData&&curData.week===c.week;
+    if(isCurrentWeek){
+      await db.collection('conti').doc('current').update({contiDate:val});
+      curData.contiDate=val;
+    }else{
+      await db.collection('archives').doc(c.week).update({contiDate:val});
+    }
+    arcAll[i].contiDate=val;
+    // 날짜 레이블 업데이트
+    const lbl=document.getElementById('arcDateLabel');
+    if(lbl&&val){
+      const dd=new Date(val);
+      const wd=['일','월','화','수','목','금','토'][dd.getDay()];
+      lbl.textContent=(dd.getMonth()+1)+'월 '+dd.getDate()+'일 ('+wd+')';
+    }else if(lbl){
+      lbl.textContent='날짜 미설정';
+    }
+    toast('날짜가 저장됐어요 \uD83D\uDCC5');
+  }catch(e){toast('저장 실패: '+e.message);}
+}
 function closeModal(){
   document.getElementById('arcDrop').classList.remove('on');
 }
