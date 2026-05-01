@@ -482,6 +482,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 .rec-card.adopted{border-color:var(--bg3)}
 .rec-card.adopted .rec-body{color:var(--t4);opacity:.6}
 .rec-card.adopted .rec-body-text{text-decoration:line-through;text-decoration-color:var(--t3)}
+.rec-card-badges{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}
 .rec-adopted-badge{display:inline-flex;align-items:center;gap:4px;background:var(--c4);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;flex-shrink:0;margin-top:2px;white-space:nowrap;letter-spacing:.02em}
 .rec-card-top{display:flex;align-items:flex-start;gap:10px}
 .rec-body{flex:1;min-width:0;font-size:14px;color:var(--t1);line-height:1.7;word-break:break-word}
@@ -534,6 +535,39 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 /* 내 추천 dot */
 .rec-mine-dot{width:5px;height:5px;border-radius:50%;background:var(--c1);display:inline-block;margin-left:6px;vertical-align:middle;flex-shrink:0}
 
+/* D-day 뱃지 */
+.rec-dday{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;background:rgba(174,174,178,.12);border:.5px solid rgba(174,174,178,.25);color:var(--t3);margin-left:6px;vertical-align:middle;flex-shrink:0;letter-spacing:.01em}
+.rec-dday.warn{background:rgba(255,159,10,.12);border-color:rgba(255,159,10,.3);color:var(--orange)}
+.rec-dday.danger{background:rgba(255,59,48,.12);border-color:rgba(255,59,48,.3);color:var(--red)}
+/* 포맷 안내 모달 */
+.fmt-backdrop{position:fixed;inset:0;z-index:600;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
+.fmt-backdrop.on{opacity:1;pointer-events:all}
+.fmt-card{width:100%;max-width:480px;background:var(--bg2);border-radius:24px 24px 0 0;padding:24px 24px 36px;transform:translateY(100%);transition:transform .35s var(--spring)}
+.fmt-backdrop.on .fmt-card{transform:translateY(0)}
+.fmt-title{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:6px}
+.fmt-sub{font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:8px}
+.fmt-preview{background:var(--bg3);border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:16px;font-family:'Outfit',monospace}
+.fmt-btns{display:flex;gap:8px}
+.fmt-no{flex:1;padding:12px;border-radius:12px;border:.5px solid var(--bg3);background:transparent;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;font-family:inherit;transition:all .2s}
+.fmt-yes{flex:1;padding:12px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+/* 유사 중복 감지 모달 */
+.dupchk-backdrop{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s;padding:20px}
+.dupchk-backdrop.on{opacity:1;pointer-events:all}
+.dupchk-card{width:100%;max-width:480px;max-height:80vh;background:var(--bg2);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;transform:scale(.95);transition:transform .3s var(--spring)}
+.dupchk-backdrop.on .dupchk-card{transform:scale(1)}
+.dupchk-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:.5px solid var(--bg3)}
+.dupchk-title{font-size:15px;font-weight:700;color:var(--t1)}
+.dupchk-close{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);font-family:inherit}
+.dupchk-body{overflow-y:auto;padding:14px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.dupchk-group{background:var(--surface);border:.5px solid var(--gb);border-radius:14px;padding:14px 16px;backdrop-filter:blur(12px)}
+.dupchk-group-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--orange);text-transform:uppercase;margin-bottom:8px}
+.dupchk-item{font-size:13px;color:var(--t2);padding:6px 0;border-bottom:.5px solid var(--bg3);line-height:1.5}
+.dupchk-item:last-child{border-bottom:none;padding-bottom:0}
+.dupchk-item-meta{font-size:11px;color:var(--t4);margin-top:2px}
+.dupchk-empty{text-align:center;padding:32px 0;color:var(--t3);font-size:14px}
+/* 중복 감지 버튼 */
+.rec-dupchk-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:10px;border:.5px solid rgba(255,159,10,.3);background:transparent;font-size:12px;font-weight:600;color:var(--orange);cursor:pointer;font-family:inherit;transition:all .2s}
+.rec-dupchk-btn:hover{background:rgba(255,159,10,.1)}
 /* 지난기록 풀뷰 페이지 */
 .pg-arc-detail{display:none;min-height:calc(100vh - var(--nh))}
 .pg-arc-detail.on{display:block}
@@ -660,7 +694,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
         </div>
       </div>
       <div class="rec-header">
-        <div class="rec-count">&#x1F3B5; <span id="recTotal">0</span>개의 추천</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="rec-count">&#x1F3B5; <span id="recTotal">0</span>개의 추천</div>
+          <button class="rec-dupchk-btn" onclick="openDupCheck()">&#x26A0; 유사 중복 확인</button>
+        </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <button class="rec-filter-adopted-btn" id="filterAdoptedBtn" onclick="toggleAdoptedFilter()">&#x2713; 콘티 반영됨</button>
           <div class="rec-sort">
@@ -764,6 +801,30 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 </button>
 
 <div class="toast" id="toast"></div>
+
+<!-- 포맷 안내 모달 -->
+<div class="fmt-backdrop" id="fmtBackdrop">
+  <div class="fmt-card">
+    <div class="fmt-title">&#x270E; 추천 형식 안내</div>
+    <div class="fmt-sub">이렇게 바꿔서 저장할까요?<br>곡명 뒤에 아티스트를 함께 적으면 나중에 찾기 편해요 &#x1F3B5;</div>
+    <div class="fmt-preview" id="fmtPreview"></div>
+    <div class="fmt-btns">
+      <button class="fmt-no" onclick="submitRecFmt(false)">원문 그대로</button>
+      <button class="fmt-yes" onclick="submitRecFmt(true)">바꿔서 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 유사 중복 감지 모달 -->
+<div class="dupchk-backdrop" id="dupchkBackdrop">
+  <div class="dupchk-card">
+    <div class="dupchk-hd">
+      <div class="dupchk-title">&#x26A0; 유사 중복 감지</div>
+      <button class="dupchk-close" onclick="closeDupCheck()">&#x2715;</button>
+    </div>
+    <div class="dupchk-body" id="dupchkBody"></div>
+  </div>
+</div>
 
 <!-- 추천곡 매칭 모달 -->
 <div class="match-backdrop" id="matchBackdrop">
@@ -947,6 +1008,52 @@ function toggleAdoptedFilter(){
   }
   renderRecList();
 }
+
+function openDupCheck(){
+  const body=document.getElementById('dupchkBody');
+  body.innerHTML='<div class="dupchk-empty">&#x1F50D; 분석 중...</div>';
+  document.getElementById('dupchkBackdrop').classList.add('on');
+  // 분석: 완전 일치 + 포함 관계 그루핑
+  const items=recItems.filter(r=>!r.autoCreated);
+  const groups=[];
+  const used=new Set();
+  items.forEach((a,i)=>{
+    if(used.has(a.id))return;
+    const na=normTitle(a.text);
+    const similar=items.filter((b,j)=>{
+      if(i===j||used.has(b.id))return false;
+      const nb=normTitle(b.text);
+      // 완전 동일 or 포함 관계
+      return na===nb||na.includes(nb)||nb.includes(na);
+    });
+    if(similar.length){
+      groups.push([a,...similar]);
+      used.add(a.id);
+      similar.forEach(b=>used.add(b.id));
+    }
+  });
+  if(!groups.length){
+    body.innerHTML='<div class="dupchk-empty">&#x2705; 유사한 중복 항목이 없어요!</div>';
+    return;
+  }
+  body.innerHTML=groups.map((grp,gi)=>{
+    const items=grp.map(r=>{
+      const adopted=r.adopted&&r.adoptedAt&&(Date.now()-r.adoptedAt)<60*24*60*60*1000;
+      const badge=adopted?'<span style="font-size:10px;color:var(--c4);font-weight:700"> &#x2713;반영됨</span>':'';
+      return `<div class="dupchk-item">${escHtml(r.text)}${badge}<div class="dupchk-item-meta">&#x2764; ${r.likes||0} &nbsp;&#x1F4AC; ${r.commentCount||0} &nbsp;${timeAgo(r.ts)}</div></div>`;
+    }).join('');
+    return `<div class="dupchk-group"><div class="dupchk-group-label">&#x26A0; 유사 그룹 ${gi+1} (${grp.length}개)</div>${items}</div>`;
+  }).join('');
+}
+function closeDupCheck(){
+  document.getElementById('dupchkBackdrop').classList.remove('on');
+}
+document.getElementById('dupchkBackdrop').addEventListener('click',function(e){
+  if(e.target===this)closeDupCheck();
+});
+document.getElementById('fmtBackdrop').addEventListener('click',function(e){
+  if(e.target===this)document.getElementById('fmtBackdrop').classList.remove('on');
+});
 document.getElementById('recSearch').addEventListener('input',function(){
   const q=this.value;
   document.getElementById('recSearchClear').style.display=q?'inline':'none';
@@ -967,10 +1074,41 @@ document.getElementById('recInput').addEventListener('input',function(){
   checkDup(this.value);
 });
 
-document.getElementById('recSubmit').onclick=async function(){
+// 포맷 안내 모달 관련
+let _pendingRecText='';
+function parseRecFormat(text){
+  // 마지막 ' - ' 기준으로 분리
+  const idx=text.lastIndexOf(' - ');
+  if(idx===-1)return null;
+  const song=text.slice(0,idx).trim();
+  const artist=text.slice(idx+3).trim();
+  if(!song||!artist)return null;
+  return{song,artist,formatted:`${song} - ${artist}`};
+}
+document.getElementById('recSubmit').onclick=function(){
   const text=document.getElementById('recInput').value.trim();
   if(!text||text.length>200)return;
-  this.disabled=true;this.textContent='등록 중...';
+  const parsed=parseRecFormat(text);
+  // ' - ' 없으면 포맷 안내
+  if(!parsed){
+    _pendingRecText=text;
+    // 예시: 원문을 파싱 시도해서 미리보기 제안
+    document.getElementById('fmtPreview').textContent=text+' - 아티스트명';
+    document.getElementById('fmtBackdrop').classList.add('on');
+    return;
+  }
+  // 이미 올바른 포맷이면 바로 제출
+  doSubmitRec(text);
+};
+async function submitRecFmt(doFormat){
+  document.getElementById('fmtBackdrop').classList.remove('on');
+  const text=_pendingRecText;
+  if(!text)return;
+  doSubmitRec(text);
+}
+async function doSubmitRec(text){
+  const btn=document.getElementById('recSubmit');
+  btn.disabled=true;btn.textContent='등록 중...';
   try{
     await db.collection('recommendations').add({text,likes:0,adopted:false,commentCount:0,ts:Date.now(),deviceId:DID});
     document.getElementById('recInput').value='';
@@ -978,8 +1116,8 @@ document.getElementById('recSubmit').onclick=async function(){
     document.getElementById('recDupWarn').classList.remove('on');
     toast('추천이 등록됐어요 🎵');
   }catch(e){console.error(e);toast('등록 실패: '+e.message);}
-  this.disabled=false;this.textContent='추천하기 ✦';
-};
+  btn.disabled=false;btn.textContent='추천하기 ✦';
+}
 
 function checkDup(val){
   const warn=document.getElementById('recDupWarn');
@@ -1040,7 +1178,8 @@ function renderRecList(query){
       bindRecEvents();updateRecDot();return;
     }
     adopted.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    document.getElementById('recTotal').textContent=recItems.length;
+    const visibleCount=recItems.filter(r=>!r.autoCreated).length;
+  document.getElementById('recTotal').textContent=visibleCount;
     let ahtml='<div class="rec-sec-label" style="margin-top:0">&#x2713; 콘티에 반영된 곡 ('+adopted.length+'곡)</div>';
     ahtml+=adopted.map(r=>buildRecCard(r,liked,recentSongs)).join('');
     fl.innerHTML=ahtml;
@@ -1054,7 +1193,8 @@ function renderRecList(query){
   if(recSortMode==='like')normal.sort((a,b)=>(b.likes||0)-(a.likes||0)||(b.ts||0)-(a.ts||0));
   else normal.sort((a,b)=>(b.ts||0)-(a.ts||0));
   adopted.sort((a,b)=>(b.ts||0)-(a.ts||0));
-  document.getElementById('recTotal').textContent=recItems.length;
+  const visibleCount=recItems.filter(r=>!r.autoCreated).length;
+  document.getElementById('recTotal').textContent=visibleCount;
   const normalList=document.getElementById('recNormalList');
   if(!q&&!normal.length&&!adopted.length){
     normalList.innerHTML='<div class="empty"><div class="ei">&#x1F3B5;</div><p>아직 추천된 찬양이 없어요<br>첫 번째로 추천해보세요!</p></div>';
@@ -1087,11 +1227,18 @@ function buildRecCard(r,liked,recentSongs){
   const isRecent=recentSongs&&[...recentSongs].some(t=>r.text.toLowerCase().includes(t));
   const recentBadge=isRecent&&!isAdopted?'<span class="rec-recent-badge">&#x1F3B5; 최근 선곡됨</span>':'';
   const mineDot=isMine?'<span class="rec-mine-dot" title="내가 쓴 추천"></span>':'';
+  // D-day 뱃지 (채택된 곡에만)
+  let ddayBadge='';
+  if(isAdopted&&r.adoptedAt){
+    const daysLeft=Math.ceil((r.adoptedAt+TWO_MONTHS_MS-Date.now())/(1000*60*60*24));
+    const cls=daysLeft<=3?'danger':daysLeft<=7?'warn':'';
+    ddayBadge=`<span class="rec-dday${cls?' '+cls:''}">D-${daysLeft}</span>`;
+  }
   const adminBtns=isAdmin?`<div class="rec-admin-row"><button class="rec-edit-btn" data-id="${r.id}">수정</button><button class="rec-adopt-btn${isAdopted?' cancel':''}" data-id="${r.id}" data-adopted="${isAdopted?'1':'0'}">${isAdopted?'채택 취소':'콘티 반영'}</button><button class="rec-del-btn" data-id="${r.id}">삭제</button></div>`:'';
   return`<div class="rec-card${isAdopted?' adopted':''}" data-id="${r.id}">
     <div class="rec-card-top">
       <div class="rec-body"><span class="rec-body-text" id="recText_${r.id}">${escHtml(r.text)}</span>${mineDot}${recentBadge}</div>
-      ${isAdopted?'<div class="rec-adopted-badge">&#x2713; 콘티 반영됨</div>':''}
+      ${isAdopted?`<div class="rec-card-badges"><div class="rec-adopted-badge">&#x2713; 콘티 반영됨</div>${ddayBadge}</div>`:'' }
     </div>
     <div class="rec-edit-area" id="recEditArea_${r.id}" style="display:none;margin-top:10px">
       <textarea class="rec-textarea" id="recEditInput_${r.id}" style="min-height:60px;margin-bottom:8px">${escHtml(r.text)}</textarea>
@@ -1480,12 +1627,48 @@ async function saveConti(){
     curData=nd;
     toast('콘티가 저장됐어요 🎉');
     btn.textContent='이번 주 콘티 저장 →';btn.disabled=false;
-    // 저장 후 자동 매칭 체크 (recItems 있으면)
-    setTimeout(()=>{
-      const candidates=findMatchCandidates(songs.filter(s=>s.title));
+    // 저장 후 자동 반영됨 처리
+    setTimeout(async()=>{
+      const titledSongs=songs.filter(s=>s.title);
+      if(!titledSongs.length){goPage('home');return;}
+      // 1단계: 기존 추천 중 매칭되는 것 찾기
+      const candidates=findMatchCandidates(titledSongs);
+      // 2단계: 매칭 안 된 콘티 곡 → autoCreated 항목으로 생성
+      const TWO_MONTHS_MS=60*24*60*60*1000;
+      const alreadyAdopted=new Set(
+        recItems.filter(r=>r.adopted&&r.adoptedAt&&(Date.now()-r.adoptedAt)<TWO_MONTHS_MS)
+                .map(r=>normTitle(r.text))
+      );
+      // candidates에서 매칭된 콘티 제목들
+      const matchedTitles=new Set(candidates.map(c=>normTitle(c.contiTitle)));
+      // autoCreated로 만들 곡들 (매칭 안됐고, 이미 채택된 것도 아닌 것)
+      const toCreate=titledSongs.filter(s=>{
+        const nt=normTitle(s.title);
+        if(matchedTitles.has(nt))return false;
+        // 이미 채택된 항목 중 유사한 게 있으면 스킵
+        if([...alreadyAdopted].some(a=>a.includes(nt)||nt.includes(a)))return false;
+        return true;
+      });
+      // autoCreated 일괄 생성
+      if(toCreate.length){
+        try{
+          const batch2=db.batch();
+          toCreate.forEach(s=>{
+            const parts=s.title.lastIndexOf(' - ');
+            const song=parts!==-1?s.title.slice(0,parts).trim():s.title;
+            const artist=parts!==-1?s.title.slice(parts+3).trim():'';
+            const text=artist?`${song} - ${artist}`:song;
+            const ref=db.collection('recommendations').doc();
+            batch2.set(ref,{text,likes:0,adopted:true,adoptedAt:Date.now(),autoCreated:true,commentCount:0,ts:Date.now(),deviceId:'system'});
+          });
+          await batch2.commit();
+        }catch(e){console.error('autoCreate 실패:',e);}
+      }
+      // 3단계: 매칭된 기존 추천 있으면 모달, 없으면 홈
       if(candidates.length){
         openMatchModal(candidates,true);
       }else{
+        if(toCreate.length)toast(`콘티 ${toCreate.length}곡이 반영됨에 등록됐어요 &#x2713;`);
         goPage('home');
       }
     },700);
