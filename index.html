@@ -278,6 +278,29 @@ main{padding-top:var(--nh)}
 .det-pw-cancel{width:100%;margin-top:10px;padding:11px;background:transparent;color:var(--t3);font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;transition:color .2s;border-radius:10px}
 .det-pw-cancel:hover{color:var(--t1)}
 
+/* 추천곡 매칭 모달 */
+.match-backdrop{position:fixed;inset:0;z-index:680;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0);transition:background .35s var(--ease);pointer-events:none}
+.match-backdrop.on{background:rgba(0,0,0,.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);pointer-events:auto}
+.match-card{background:var(--surface);border:.5px solid var(--gb);border-radius:26px;padding:28px 24px 24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.25);opacity:0;transform:translateY(16px) scale(.96);transition:all .4s var(--spring)}
+.match-backdrop.on .match-card{opacity:1;transform:translateY(0) scale(1)}
+.match-title{font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:5px}
+.match-sub{font-size:13px;color:var(--t3);margin-bottom:18px;line-height:1.5}
+.match-item{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border-radius:12px;border:.5px solid var(--gb);background:var(--surface2);margin-bottom:8px;cursor:pointer;transition:all .2s var(--ease)}
+.match-item:hover{border-color:var(--c4);background:color-mix(in srgb,var(--c4) 8%,var(--surface2))}
+.match-item.on{border-color:var(--c4);background:color-mix(in srgb,var(--c4) 12%,var(--surface2))}
+.match-item-check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--bg3);background:var(--bg);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;color:#fff}
+.match-item.on .match-item-check{background:var(--c4);border-color:var(--c4)}
+.match-item-info{flex:1;min-width:0}
+.match-item-rec{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.match-item-conti{font-size:11px;color:var(--t3)}
+.match-item-likes{font-size:11px;color:var(--t4);margin-top:2px}
+.match-empty{text-align:center;padding:28px 0;color:var(--t4);font-size:13px}
+.match-btns{display:flex;gap:8px;margin-top:16px}
+.match-confirm{flex:1;padding:13px;background:var(--c4);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.match-confirm:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.match-confirm:disabled{opacity:.4;cursor:default;transform:none}
+.match-cancel{padding:13px 18px;background:var(--bg3);color:var(--t2);font-size:14px;font-weight:600;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+
 /* 내 파트 버튼 */
 .mypart-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .mypart-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:.5px solid var(--gb);background:var(--surface2);color:var(--t4);cursor:pointer;font-family:inherit;transition:all .25s var(--ease);flex-shrink:0;user-select:none;-webkit-user-select:none}
@@ -685,6 +708,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
         <p style="font-size:11px;color:var(--t4);margin-top:8px;text-align:center">Firebase Storage · 대용량 PDF 지원</p>
       </div>
       <button class="btsave" id="saveBtn">이번 주 콘티 저장 &rarr;</button>
+      <button class="btsave" style="margin-top:10px;background:var(--c4d);color:var(--c4);border:.5px solid rgba(48,209,88,.3)" onclick="runManualMatch()">&#127925; 추천곡 매칭 확인</button>
       <button class="btout" id="logoutBtn">로그아웃</button>
     </div>
   </div>
@@ -733,6 +757,19 @@ textarea{resize:vertical;min-height:72px;line-height:1.65}
 </button>
 
 <div class="toast" id="toast"></div>
+
+<!-- 추천곡 매칭 모달 -->
+<div class="match-backdrop" id="matchBackdrop">
+  <div class="match-card">
+    <div class="match-title">&#127925; 추천곡 매칭</div>
+    <div class="match-sub" id="matchSub">이번 주 콘티 곡과 일치하는 추천이 있어요.<br>콘티 반영 처리할 항목을 선택해주세요.</div>
+    <div id="matchList"></div>
+    <div class="match-btns">
+      <button class="match-cancel" onclick="closeMatchModal()">닫기</button>
+      <button class="match-confirm" id="matchConfirm" onclick="confirmMatches()" disabled>반영 처리</button>
+    </div>
+  </div>
+</div>
 
 <!-- 내 파트 선택 모달 -->
 <div class="mps-backdrop" id="mpsBackdrop">
@@ -928,9 +965,19 @@ function checkDup(val){
   const warn=document.getElementById('recDupWarn');
   if(!val.trim()||!recItems.length){warn.classList.remove('on');return;}
   const norm=val.trim().toLowerCase().replace(/\s+/g,' ');
-  const dup=recItems.find(r=>{const t=r.text.trim().toLowerCase().replace(/\s+/g,' ');return t.includes(norm)||norm.includes(t);});
-  if(dup){document.getElementById('recDupMsg').textContent=`"${dup.text.slice(0,20)}${dup.text.length>20?'...':''}" 와 비슷한 추천이 이미 있어요!`;warn.classList.add('on');}
-  else warn.classList.remove('on');
+  const TWO_MONTHS_MS=60*24*60*60*1000;
+  // 2개월 이내 채택됨 곡도 중복 감지 대상에 포함
+  const targets=recItems.filter(r=>{
+    if(!r.adopted)return true; // 일반 추천
+    if(r.adoptedAt&&(Date.now()-r.adoptedAt)<TWO_MONTHS_MS)return true; // 2개월 이내 채택
+    return false;
+  });
+  const dup=targets.find(r=>{const t=r.text.trim().toLowerCase().replace(/\s+/g,' ');return t.includes(norm)||norm.includes(t);});
+  if(dup){
+    const label=dup.adopted?'콘티에 반영된 곡이에요!':'비슷한 추천이 이미 있어요!';
+    document.getElementById('recDupMsg').textContent=`"${dup.text.slice(0,20)}${dup.text.length>20?'...':''}" &#8212; ${label}`;
+    warn.classList.add('on');
+  }else warn.classList.remove('on');
 }
 
 function openRec(){
@@ -959,8 +1006,12 @@ function renderRecList(query){
   const recentSongs=new Set(
     arcAll.slice(0,8).flatMap(c=>(c.songs||[]).filter(s=>s.title).map(s=>s.title.toLowerCase()))
   );
-  const adopted=recItems.filter(r=>r.adopted);
-  let normal=recItems.filter(r=>!r.adopted);
+  const TWO_MONTHS=60*24*60*60*1000;
+  const now=Date.now();
+  // 2개월 지난 채택은 자동 해제 (렌더링에서만, DB는 건드리지 않음)
+  const isEffectivelyAdopted=r=>r.adopted&&r.adoptedAt&&(now-r.adoptedAt)<TWO_MONTHS;
+  const adopted=recItems.filter(r=>isEffectivelyAdopted(r));
+  let normal=recItems.filter(r=>!isEffectivelyAdopted(r));
   // 검색 필터
   if(q)normal=normal.filter(r=>r.text.toLowerCase().includes(q));
   if(recSortMode==='like')normal.sort((a,b)=>(b.likes||0)-(a.likes||0)||(b.ts||0)-(a.ts||0));
@@ -992,7 +1043,8 @@ function renderRecList(query){
 
 function buildRecCard(r,liked,recentSongs){
   const isLiked=liked.has(r.id);
-  const isAdopted=!!r.adopted;
+  const TWO_MONTHS_MS=60*24*60*60*1000;
+  const isAdopted=!!r.adopted&&!!r.adoptedAt&&(Date.now()-r.adoptedAt)<TWO_MONTHS_MS;
   const isMine=(r.deviceId===DID);
   // 최근 선곡됨 체크 &#8212; 추천 텍스트에 최근 콘티 곡명이 포함되는지
   const isRecent=recentSongs&&[...recentSongs].some(t=>r.text.toLowerCase().includes(t));
@@ -1102,8 +1154,17 @@ function bindRecEvents(){
     document.querySelectorAll('.rec-adopt-btn').forEach(btn=>{
       btn.onclick=async function(){
         const id=this.dataset.id,wasAdopted=this.dataset.adopted==='1';
-        try{await db.collection('recommendations').doc(id).update({adopted:!wasAdopted});toast(wasAdopted?'채택이 취소됐어요':'콘티에 반영됐어요 🎉');}
-        catch(e){toast('오류: '+e.message);}
+        try{
+          if(wasAdopted){
+            // 채택 취소: adopted 해제, adoptedAt 제거
+            await db.collection('recommendations').doc(id).update({adopted:false,adoptedAt:null});
+            toast('채택이 취소됐어요');
+          }else{
+            // 신규 채택 or 재채택: adoptedAt 갱신 + likes 리셋
+            await db.collection('recommendations').doc(id).update({adopted:true,adoptedAt:Date.now(),likes:0});
+            toast('콘티에 반영됐어요 🎉');
+          }
+        }catch(e){toast('오류: '+e.message);}
       };
     });
     document.querySelectorAll('.rec-del-btn').forEach(btn=>{
@@ -1382,11 +1443,111 @@ async function saveConti(){
     curData=nd;
     toast('콘티가 저장됐어요 🎉');
     btn.textContent='이번 주 콘티 저장 →';btn.disabled=false;
-    setTimeout(()=>goPage('home'),700);
+    // 저장 후 자동 매칭 체크 (recItems 있으면)
+    setTimeout(()=>{
+      const candidates=findMatchCandidates(songs.filter(s=>s.title));
+      if(candidates.length){
+        openMatchModal(candidates,true);
+      }else{
+        goPage('home');
+      }
+    },700);
   }catch(err){
     console.error(err);toast('저장 실패: '+err.message);
     btn.textContent='이번 주 콘티 저장 →';btn.disabled=false;
   }
+}
+
+/* ===== 추천곡 매칭 ===== */
+let _matchCandidates=[];
+
+function normTitle(s){return(s||'').trim().toLowerCase().replace(/\s+/g,' ');}
+
+function findMatchCandidates(songs){
+  if(!recItems.length||!songs.length)return[];
+  const TWO_MONTHS_MS=60*24*60*60*1000;
+  const contiTitles=songs.map(s=>s.title).filter(Boolean);
+  const candidates=[];
+  recItems.forEach(r=>{
+    // 이미 2개월 이내 채택됨이면 스킵
+    if(r.adopted&&r.adoptedAt&&(Date.now()-r.adoptedAt)<TWO_MONTHS_MS)return;
+    const rNorm=normTitle(r.text);
+    const matched=contiTitles.find(t=>{
+      const tNorm=normTitle(t);
+      return rNorm.includes(tNorm)||tNorm.includes(rNorm);
+    });
+    if(matched)candidates.push({rec:r,contiTitle:matched});
+  });
+  return candidates;
+}
+
+function openMatchModal(candidates, isAuto){
+  _matchCandidates=candidates;
+  const list=document.getElementById('matchList');
+  const sub=document.getElementById('matchSub');
+  if(!candidates.length){
+    if(!isAuto){
+      list.innerHTML='<div class="match-empty">&#127925; 이번 주 콘티와 일치하는<br>미처리 추천곡이 없어요</div>';
+      document.getElementById('matchConfirm').disabled=true;
+      document.getElementById('matchBackdrop').classList.add('on');
+    }
+    return;
+  }
+  sub.textContent=isAuto
+    ?'이번 주 콘티 곡과 일치하는 추천이 있어요. 콘티 반영 처리할 항목을 선택해주세요.'
+    :'추천곡 중 이번 주 콘티와 일치하는 항목이에요.';
+  list.innerHTML=candidates.map((c,idx)=>`
+    <div class="match-item on" data-idx="${idx}" onclick="toggleMatchItem(this)">
+      <div class="match-item-check">&#10003;</div>
+      <div class="match-item-info">
+        <div class="match-item-rec">${c.rec.text.slice(0,40)}${c.rec.text.length>40?'...':''}</div>
+        <div class="match-item-conti">&#8594; 콘티: ${c.contiTitle}</div>
+        <div class="match-item-likes">&#10084; ${c.rec.likes||0}  &#8226;  ${new Date(c.rec.ts||0).toLocaleDateString('ko-KR')}</div>
+      </div>
+    </div>`).join('');
+  updateMatchConfirm();
+  document.getElementById('matchBackdrop').classList.add('on');
+  document.getElementById('matchBackdrop').onclick=e=>{if(e.target===e.currentTarget)closeMatchModal();};
+}
+
+function toggleMatchItem(el){
+  el.classList.toggle('on');
+  updateMatchConfirm();
+}
+function updateMatchConfirm(){
+  const selected=document.querySelectorAll('.match-item.on').length;
+  const btn=document.getElementById('matchConfirm');
+  if(btn){btn.disabled=selected===0;btn.textContent=selected>0?`${selected}곡 반영 처리`:'반영 처리';}
+}
+function closeMatchModal(){document.getElementById('matchBackdrop').classList.remove('on');}
+
+async function runManualMatch(){
+  // 현재 관리자 폼의 곡 제목 수집
+  const total=4+(typeof extraSongs!=='undefined'?extraSongs:0);
+  const songs=Array.from({length:total},(_,i)=>({
+    title:document.getElementById(`s${i}t`)?.value.trim()||''
+  })).filter(s=>s.title);
+  if(!songs.length){toast('콘티에 곡 제목을 먼저 입력해주세요');return;}
+  if(!recItems.length){toast('추천곡 데이터를 불러오는 중이에요. 잠시 후 다시 시도해주세요');return;}
+  const candidates=findMatchCandidates(songs);
+  openMatchModal(candidates,false);
+}
+
+async function confirmMatches(){
+  const selected=[...document.querySelectorAll('.match-item.on')].map(el=>parseInt(el.dataset.idx));
+  if(!selected.length)return;
+  const btn=document.getElementById('matchConfirm');
+  btn.textContent='처리 중...';btn.disabled=true;
+  try{
+    const batch=db.batch();
+    selected.forEach(idx=>{
+      const rec=_matchCandidates[idx].rec;
+      batch.update(db.collection('recommendations').doc(rec.id),{adopted:true,adoptedAt:Date.now(),likes:0});
+    });
+    await batch.commit();
+    closeMatchModal();
+    toast(`${selected.length}곡이 콘티 반영 처리됐어요 🎉`);
+  }catch(e){toast('오류: '+e.message);btn.textContent=`반영 처리`;btn.disabled=false;}
 }
 
 /* ===== DETAIL FUNCTIONS ===== */
